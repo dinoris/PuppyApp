@@ -8,7 +8,7 @@
 // 0. FIREBASE IMPORTS (ES Modules from CDN)
 // ═══════════════════════════════════════════════
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, push, remove, onValue }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -182,7 +182,7 @@ function updateAuthUI(user) {
 
 btnLogin.addEventListener("click", async () => {
   try {
-    await signInWithRedirect(auth, provider);
+    await signInWithPopup(auth, provider);
   } catch (err) {
     console.error("Login error:", err);
     showMessage("Login failed: " + err.message, "error");
@@ -198,16 +198,6 @@ btnLogout.addEventListener("click", async () => {
 });
 
 onAuthStateChanged(auth, user => updateAuthUI(user));
-
-// Handle redirect result when returning from Google sign-in
-getRedirectResult(auth).then(result => {
-  if (result?.user) updateAuthUI(result.user);
-}).catch(err => {
-  if (err.code !== 'auth/no-current-user') {
-    console.error("Redirect result error:", err);
-    showMessage("Login failed: " + err.message, "error");
-  }
-});
 
 // ═══════════════════════════════════════════════
 // 7. FIREBASE DATA LISTENER (real-time sync)
