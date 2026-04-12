@@ -1,21 +1,9 @@
-/**
- * Puppy Weight Tracker — script.js
- * Firebase Realtime DB + Auth (Google), Chart.js, Vanilla JS
- * Architecture: Config → Data layer → UI layer → Init
- */
-
-// ═══════════════════════════════════════════════
-// 0. FIREBASE IMPORTS (ES Modules from CDN)
-// ═══════════════════════════════════════════════
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, push, remove, onValue }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// ═══════════════════════════════════════════════
-// 1. CONFIG
-// ═══════════════════════════════════════════════
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyDvL0emjzWd450LvuOCTNs-D3yUOlwy4UA",
   authDomain: "puppy-app-41bf0.firebaseapp.com",
@@ -27,35 +15,56 @@ const FIREBASE_CONFIG = {
 const ADMIN_EMAIL = "bios80@gmail.com";
 
 const PUPPIES = [
-  { id: 1,  name: "Green",   gender: "Male",   color: "#3a9e4a" },
-  { id: 2,  name: "Pink",    gender: "Female", color: "#ed7db5" },
-  { id: 3,  name: "Blue",    gender: "Male",   color: "#4c92f4" },
-  { id: 4,  name: "Red",     gender: "Male",   color: "#d94040" },
-  { id: 5,  name: "Yellow",  gender: "Female", color: "#f8e90b" },
-  { id: 7,  name: "Orange",  gender: "Male",   color: "#ff741e" },
-  { id: 8,  name: "White",   gender: "Female", color: "#ededed" },
+  { id: 1, name: "Green",  gender: "Male",   color: "#3a9e4a" },
+  { id: 2, name: "Pink",   gender: "Female", color: "#ed7db5" },
+  { id: 3, name: "Blue",   gender: "Male",   color: "#4c92f4" },
+  { id: 4, name: "Red",    gender: "Male",   color: "#d94040" },
+  { id: 5, name: "Yellow", gender: "Female", color: "#f8e90b" },
+  { id: 7, name: "Orange", gender: "Male",   color: "#ff741e" },
+  { id: 8, name: "White",  gender: "Female", color: "#ededed" },
 ];
 
-// ═══════════════════════════════════════════════
-// 2. FIREBASE INIT
-// ═══════════════════════════════════════════════
-const app      = initializeApp(FIREBASE_CONFIG);
-const auth     = getAuth(app);
-const db       = getDatabase(app);
+const TROPHY_OPTIONS = [
+  "Biggest Crier",
+  "Loudest Puppy",
+  "Greatest Explorer",
+  "Fastest Crawler",
+  "Milk Monster",
+  "Snuggle Champion",
+  "Wiggle Machine",
+  "Most Determined",
+  "Little Escape Artist",
+  "Sleepiest Puppy",
+  "Most Curious",
+  "Strongest Latch"
+];
+
+const MILESTONE_OPTIONS = [
+  "Lost Umbilical Cord",
+  "Eyes Opened",
+  "Started Hearing Sounds",
+  "Started Walking",
+  "First Bark",
+  "First Tail Wag",
+  "Started Peeing on Own",
+  "Started Pooping on Own",
+  "First Tooth",
+  "Started Eating Puppy Mush",
+  "Fully Weaned"
+];
+
+const app = initializeApp(FIREBASE_CONFIG);
+const auth = getAuth(app);
+const db = getDatabase(app);
 const provider = new GoogleAuthProvider();
 
-// ═══════════════════════════════════════════════
-// 3. APP STATE
-// ═══════════════════════════════════════════════
-let currentUser  = null;   // Firebase user or null
-let isAdmin      = false;
-let allEntries   = [];     // [{ id, puppyId, date, weight }]
-let growthChart  = null;   // Chart.js instance
-let activeTab    = "log";
+let currentUser = null;
+let isAdmin = false;
+let allEntries = [];
+let allAwards = [];
+let growthChart = null;
+let activeTab = "log";
 
-// ═══════════════════════════════════════════════
-// 4. HELPERS
-// ═══════════════════════════════════════════════
 function getPuppy(id) {
   return PUPPIES.find(p => p.id === Number(id));
 }
@@ -64,38 +73,73 @@ function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
-/**
- * Given raw Firebase snapshot, return sorted array of entries.
- */
-function parseSnapshot(snapshot) {
+function formatDate(dateStr) {
+  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric"
+  });
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function parseEntriesSnapshot(snapshot) {
   if (!snapshot.exists()) return [];
   const raw = snapshot.val();
   return Object.entries(raw)
-    .map(([id, data]) => ({ id, ...data, puppyId: Number(data.puppyId), weight: Number(data.weight) }))
+    .map(([id, data]) => ({
+      id,
+      ...data,
+      puppyId: Number(data.puppyId),
+      weight: Number(data.weight)
+    }))
     .sort((a, b) => a.date.localeCompare(b.date) || a.puppyId - b.puppyId);
 }
 
-/**
- * Build per-puppy timeline: { puppyId -> [{date, weight, dayNumber}] }
- */
+function parseAwardsSnapshot(snapshot) {
+  if (!snapshot.exists()) return [];
+  const raw = snapshot.val();
+  return Object.entries(raw)
+    .map(([id, data]) => ({
+      id,
+      puppyId: Number(data.puppyId),
+      type: data.type,
+      title: data.title,
+      date: data.date,
+      notes: data.notes || ""
+    }))
+    .sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+}
+
 function buildTimelines(entries) {
   const map = {};
   for (const p of PUPPIES) map[p.id] = [];
   for (const e of entries) {
-    if (map[e.puppyId]) map[e.puppyId].push({ date: e.date, weight: e.weight, entryId: e.id });
+    if (map[e.puppyId]) {
+      map[e.puppyId].push({
+        date: e.date,
+        weight: e.weight,
+        entryId: e.id
+      });
+    }
   }
-  // Add day numbers per puppy (1 = first recorded date)
   for (const pid of Object.keys(map)) {
     const arr = map[pid].sort((a, b) => a.date.localeCompare(b.date));
-    arr.forEach((item, i) => { item.dayNumber = i + 1; });
+    arr.forEach((item, i) => {
+      item.dayNumber = i + 1;
+    });
     map[pid] = arr;
   }
   return map;
 }
 
-/**
- * For a sorted puppy array, compute daily change vs previous entry.
- */
 function computeChange(arr, index) {
   if (index === 0) return null;
   return arr[index].weight - arr[index - 1].weight;
@@ -104,8 +148,8 @@ function computeChange(arr, index) {
 function statusBadge(change, isFirst) {
   if (isFirst) return '<span class="badge badge-first">First</span>';
   if (change === null) return '<span class="badge badge-neutral">—</span>';
-  if (change < 0)           return '<span class="badge badge-loss">⬇ Weight Loss</span>';
-  if (change < 10)          return '<span class="badge badge-low">⚠ Low Gain</span>';
+  if (change < 0) return '<span class="badge badge-loss">⬇ Weight Loss</span>';
+  if (change < 10) return '<span class="badge badge-low">⚠ Low Gain</span>';
   return '<span class="badge badge-good">✓ Good Gain</span>';
 }
 
@@ -116,67 +160,103 @@ function changeCell(change, isFirst) {
   return '<span class="change-neu">±0g</span>';
 }
 
-// All unique sorted dates across all entries
 function allDates(timelines) {
   const set = new Set();
-  for (const arr of Object.values(timelines)) arr.forEach(e => set.add(e.date));
+  for (const arr of Object.values(timelines)) {
+    arr.forEach(e => set.add(e.date));
+  }
   return [...set].sort();
 }
 
-// ═══════════════════════════════════════════════
-// 5. DOM REFERENCES
-// ═══════════════════════════════════════════════
-const btnLogin         = document.getElementById("btn-login");
-const btnLogout        = document.getElementById("btn-logout");
-const authStatus       = document.getElementById("auth-status");
-const readonlyBanner   = document.getElementById("readonly-banner");
-const btnAdd           = document.getElementById("btn-add");
-const inputPuppy       = document.getElementById("input-puppy");
-const inputDate        = document.getElementById("input-date");
-const inputWeight      = document.getElementById("input-weight");
-const formMessage      = document.getElementById("form-message");
-const entriesTbody     = document.getElementById("entries-tbody");
-const filterPuppy      = document.getElementById("filter-puppy");
-const colDelete        = document.getElementById("col-delete");
-const toggleAverage    = document.getElementById("toggle-average");
+function getAutomaticAwards() {
+  const timelines = buildTimelines(allEntries);
+  const autoAwards = [];
 
-// Insights
-const insHeaviest   = document.getElementById("ins-heaviest-val");
-const insLightest   = document.getElementById("ins-lightest-val");
-const insAvg        = document.getElementById("ins-avg-val");
-const insGainer     = document.getElementById("ins-gainer-val");
-const alertsCont    = document.getElementById("alerts-container");
-const milestonesCont= document.getElementById("milestones-container");
-const summaryBody   = document.getElementById("puppy-summary-container");
+  for (const [pid, arr] of Object.entries(timelines)) {
+    if (arr.length < 2) continue;
 
-// ═══════════════════════════════════════════════
-// 6. AUTH UI
-// ═══════════════════════════════════════════════
+    const birthWeight = arr[0].weight;
+    const doubled = arr.find((e, i) => i > 0 && e.weight >= birthWeight * 2);
+
+    if (doubled) {
+      autoAwards.push({
+        id: `auto-double-${pid}`,
+        puppyId: Number(pid),
+        type: "milestone",
+        title: "Doubled Birth Weight",
+        date: doubled.date,
+        notes: `${birthWeight}g → ${doubled.weight}g`,
+        isAuto: true
+      });
+    }
+  }
+
+  return autoAwards.sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function getCombinedAwards() {
+  const manualAwards = allAwards.map(item => ({
+    ...item,
+    isAuto: false
+  }));
+
+  return [...manualAwards, ...getAutomaticAwards()]
+    .sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+}
+
+const btnLogin = document.getElementById("btn-login");
+const btnLogout = document.getElementById("btn-logout");
+const authStatus = document.getElementById("auth-status");
+const readonlyBanner = document.getElementById("readonly-banner");
+const btnAdd = document.getElementById("btn-add");
+const inputPuppy = document.getElementById("input-puppy");
+const inputDate = document.getElementById("input-date");
+const inputWeight = document.getElementById("input-weight");
+const formMessage = document.getElementById("form-message");
+const entriesTbody = document.getElementById("entries-tbody");
+const filterPuppy = document.getElementById("filter-puppy");
+const colDelete = document.getElementById("col-delete");
+const toggleAverage = document.getElementById("toggle-average");
+
+const insHeaviest = document.getElementById("ins-heaviest-val");
+const insLightest = document.getElementById("ins-lightest-val");
+const insAvg = document.getElementById("ins-avg-val");
+const insGainer = document.getElementById("ins-gainer-val");
+const alertsCont = document.getElementById("alerts-container");
+const milestonesCont = document.getElementById("milestones-container");
+const summaryBody = document.getElementById("puppy-summary-container");
+
+const awardPuppy = document.getElementById("award-puppy");
+const awardType = document.getElementById("award-type");
+const awardTitle = document.getElementById("award-title");
+const awardDate = document.getElementById("award-date");
+const awardNotes = document.getElementById("award-notes");
+const btnAwardAdd = document.getElementById("btn-award-add");
+const awardMessage = document.getElementById("award-message");
+const awardFilterPuppy = document.getElementById("award-filter-puppy");
+const awardsContainer = document.getElementById("awards-container");
+
 function updateAuthUI(user) {
   currentUser = user;
-  isAdmin     = user?.email === ADMIN_EMAIL;
+  isAdmin = user?.email === ADMIN_EMAIL;
 
   if (user) {
     authStatus.textContent = isAdmin ? `Editor: ${user.email}` : `Viewer: ${user.email}`;
-    btnLogin.style.display  = "none";
+    btnLogin.style.display = "none";
     btnLogout.style.display = "inline-block";
   } else {
-    authStatus.textContent  = "";
-    btnLogin.style.display  = "inline-block";
+    authStatus.textContent = "";
+    btnLogin.style.display = "inline-block";
     btnLogout.style.display = "none";
   }
 
-  // Read-only banner: show for non-admin (logged out or non-admin user)
   readonlyBanner.style.display = isAdmin ? "none" : "block";
-
-  // Form button
   btnAdd.disabled = !isAdmin;
-
-  // Delete column
+  btnAwardAdd.disabled = !isAdmin;
   colDelete.style.display = isAdmin ? "" : "none";
 
-  // Re-render table to show/hide delete buttons
   renderTable();
+  renderAwards();
 }
 
 btnLogin.addEventListener("click", async () => {
@@ -198,36 +278,37 @@ btnLogout.addEventListener("click", async () => {
 
 onAuthStateChanged(auth, user => updateAuthUI(user));
 
-// ═══════════════════════════════════════════════
-// 7. FIREBASE DATA LISTENER (real-time sync)
-// ═══════════════════════════════════════════════
 const entriesRef = ref(db, "entries");
+const awardsRef = ref(db, "awards");
 
 onValue(entriesRef, (snapshot) => {
-  allEntries = parseSnapshot(snapshot);
+  allEntries = parseEntriesSnapshot(snapshot);
   renderAll();
 }, (err) => {
   console.error("Firebase read error:", err);
   entriesTbody.innerHTML = `<tr><td colspan="8" class="empty-state">⚠ Error loading data: ${err.message}</td></tr>`;
 });
 
-// ═══════════════════════════════════════════════
-// 8. ADD ENTRY
-// ═══════════════════════════════════════════════
+onValue(awardsRef, (snapshot) => {
+  allAwards = parseAwardsSnapshot(snapshot);
+  renderAwards();
+}, (err) => {
+  console.error("Firebase awards read error:", err);
+  awardsContainer.innerHTML = `<p class="empty-state">⚠ Error loading trophies and milestones: ${err.message}</p>`;
+});
+
 btnAdd.addEventListener("click", async () => {
   if (!isAdmin) return;
 
   const puppyId = Number(inputPuppy.value);
-  const date    = inputDate.value;
-  const weight  = Number(inputWeight.value);
+  const date = inputDate.value;
+  const weight = Number(inputWeight.value);
 
-  // Validation
   if (!puppyId || !date || !weight || weight <= 0) {
     showMessage("Please fill in all fields with valid values.", "error");
     return;
   }
 
-  // Check duplicate
   const dup = allEntries.find(e => e.puppyId === puppyId && e.date === date);
   if (dup) {
     showMessage(`${getPuppy(puppyId)?.name} already has an entry for ${date}.`, "error");
@@ -247,18 +328,62 @@ btnAdd.addEventListener("click", async () => {
   }
 });
 
+btnAwardAdd.addEventListener("click", async () => {
+  if (!isAdmin) return;
+
+  const puppyId = Number(awardPuppy.value);
+  const type = awardType.value;
+  const title = awardTitle.value.trim();
+  const date = awardDate.value;
+  const notes = awardNotes.value.trim();
+
+  if (!puppyId || !type || !title || !date) {
+    showAwardMessage("Please complete puppy, type, title, and date.", "error");
+    return;
+  }
+
+  btnAwardAdd.disabled = true;
+  try {
+    await push(awardsRef, {
+      puppyId,
+      type,
+      title,
+      date,
+      notes
+    });
+
+    awardNotes.value = "";
+    showAwardMessage("Trophy or milestone added successfully!", "success");
+  } catch (err) {
+    console.error("Add award error:", err);
+    showAwardMessage("Failed to save: " + err.message, "error");
+  } finally {
+    btnAwardAdd.disabled = false;
+  }
+});
+
 function showMessage(msg, type = "info") {
   formMessage.textContent = msg;
   formMessage.className = "form-message" + (type === "success" ? " success" : "");
-  setTimeout(() => { formMessage.textContent = ""; formMessage.className = "form-message"; }, 4000);
+  setTimeout(() => {
+    formMessage.textContent = "";
+    formMessage.className = "form-message";
+  }, 4000);
 }
 
-// ═══════════════════════════════════════════════
-// 9. DELETE ENTRY
-// ═══════════════════════════════════════════════
+function showAwardMessage(msg, type = "info") {
+  awardMessage.textContent = msg;
+  awardMessage.className = "form-message" + (type === "success" ? " success" : "");
+  setTimeout(() => {
+    awardMessage.textContent = "";
+    awardMessage.className = "form-message";
+  }, 4000);
+}
+
 async function deleteEntry(entryId) {
   if (!isAdmin) return;
   if (!confirm("Delete this entry?")) return;
+
   try {
     await remove(ref(db, `entries/${entryId}`));
   } catch (err) {
@@ -267,23 +392,29 @@ async function deleteEntry(entryId) {
   }
 }
 
-// ═══════════════════════════════════════════════
-// 10. RENDER ALL
-// ═══════════════════════════════════════════════
+async function deleteAward(awardId) {
+  if (!isAdmin) return;
+  if (!confirm("Delete this trophy or milestone?")) return;
+
+  try {
+    await remove(ref(db, `awards/${awardId}`));
+  } catch (err) {
+    console.error("Delete award error:", err);
+    alert("Failed to delete: " + err.message);
+  }
+}
+
 function renderAll() {
   renderTable();
   renderChart();
   renderInsights();
+  renderAwards();
 }
 
-// ═══════════════════════════════════════════════
-// 11. RENDER TABLE
-// ═══════════════════════════════════════════════
 function renderTable() {
   const timelines = buildTimelines(allEntries);
   const filterVal = Number(filterPuppy.value) || "all";
 
-  // Build flat rows with change & status
   const rows = [];
   for (const [pidStr, arr] of Object.entries(timelines)) {
     const pid = Number(pidStr);
@@ -293,10 +424,7 @@ function renderTable() {
     });
   }
 
-  // Filter
   const filtered = filterVal === "all" ? rows : rows.filter(r => r.puppyId === filterVal);
-
-  // Sort by date desc, then puppy
   filtered.sort((a, b) => b.date.localeCompare(a.date) || a.puppyId - b.puppyId);
 
   if (filtered.length === 0) {
@@ -308,13 +436,14 @@ function renderTable() {
   entriesTbody.innerHTML = filtered.map(row => {
     const puppy = getPuppy(row.puppyId);
     if (!puppy) return "";
-    const dateFormatted = new Date(row.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
     const deleteBtn = isAdminNow
       ? `<button class="btn btn-danger" data-id="${row.entryId}" title="Delete entry">✕</button>`
       : "";
+
     return `
       <tr>
-        <td>${dateFormatted}</td>
+        <td>${formatDate(row.date)}</td>
         <td><strong>Day ${row.dayNumber}</strong></td>
         <td>
           <div class="puppy-cell">
@@ -330,50 +459,51 @@ function renderTable() {
       </tr>`;
   }).join("");
 
-  // Attach delete listeners
   entriesTbody.querySelectorAll(".btn-danger[data-id]").forEach(btn => {
     btn.addEventListener("click", () => deleteEntry(btn.dataset.id));
   });
 }
 
-// ═══════════════════════════════════════════════
-// 12. RENDER CHART
-// ═══════════════════════════════════════════════
 function renderChart() {
   const timelines = buildTimelines(allEntries);
   const dates = allDates(timelines);
 
   if (dates.length === 0) {
-    if (growthChart) { growthChart.destroy(); growthChart = null; }
+    if (growthChart) {
+      growthChart.destroy();
+      growthChart = null;
+    }
     return;
   }
 
   const showAverage = toggleAverage.checked;
-  const dateLabels  = dates.map(d => {
+  const dateLabels = dates.map(d => {
     const dt = new Date(d + "T00:00:00");
     return dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   });
 
-  // Build datasets per puppy
   const datasets = PUPPIES.map(puppy => {
     const arr = timelines[puppy.id] || [];
     const dateMap = {};
-    arr.forEach(item => { dateMap[item.date] = item.weight; });
-    const birthWeight = arr.length > 0 ? arr[0].weight : null;
+    arr.forEach(item => {
+      dateMap[item.date] = item.weight;
+    });
 
+    const birthWeight = arr.length > 0 ? arr[0].weight : null;
     const dataPoints = dates.map(d => dateMap[d] ?? null);
 
-    // Point styles: star if weight doubled birth weight
     const pointStyles = dates.map(d => {
       if (!birthWeight || !dateMap[d]) return "circle";
       return dateMap[d] >= birthWeight * 2 ? "star" : "circle";
     });
+
     const pointRadii = dates.map(d => {
       if (!birthWeight || !dateMap[d]) return 3;
       return dateMap[d] >= birthWeight * 2 ? 9 : 3;
     });
 
     const hasData = dataPoints.some(v => v !== null);
+
     return hasData ? {
       label: puppy.name,
       data: dataPoints,
@@ -388,7 +518,6 @@ function renderChart() {
     } : null;
   }).filter(Boolean);
 
-  // Average line
   if (showAverage && dates.length > 0) {
     const avgData = dates.map(d => {
       const weights = PUPPIES.map(p => {
@@ -396,8 +525,12 @@ function renderChart() {
         const found = arr.find(e => e.date === d);
         return found ? found.weight : null;
       }).filter(v => v !== null);
-      return weights.length > 0 ? Math.round(weights.reduce((s, v) => s + v, 0) / weights.length) : null;
+
+      return weights.length > 0
+        ? Math.round(weights.reduce((s, v) => s + v, 0) / weights.length)
+        : null;
     });
+
     datasets.push({
       label: "Litter Average",
       data: avgData,
@@ -449,7 +582,10 @@ function renderChart() {
       scales: {
         x: {
           grid: { color: "#f0ebe1" },
-          ticks: { font: { family: "'DM Sans', sans-serif", size: 11 }, color: "#718096" }
+          ticks: {
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            color: "#718096"
+          }
         },
         y: {
           grid: { color: "#f0ebe1" },
@@ -472,32 +608,30 @@ function renderChart() {
 
 toggleAverage.addEventListener("change", renderChart);
 
-// ═══════════════════════════════════════════════
-// 13. RENDER INSIGHTS
-// ═══════════════════════════════════════════════
 function renderInsights() {
   const timelines = buildTimelines(allEntries);
 
-  // Latest weight per puppy
   const latest = {};
   for (const [pid, arr] of Object.entries(timelines)) {
     if (arr.length > 0) latest[pid] = arr[arr.length - 1].weight;
   }
 
-  const latestEntries = Object.entries(latest).map(([pid, w]) => ({ puppyId: Number(pid), weight: w }));
+  const latestEntries = Object.entries(latest).map(([pid, w]) => ({
+    puppyId: Number(pid),
+    weight: w
+  }));
 
   if (latestEntries.length === 0) {
     insHeaviest.textContent = "—";
     insLightest.textContent = "—";
-    insAvg.textContent      = "—";
-    insGainer.textContent   = "—";
-    alertsCont.innerHTML    = `<p class="empty-state">No data yet.</p>`;
-    milestonesCont.innerHTML= `<p class="empty-state">No milestones yet.</p>`;
-    summaryBody.innerHTML   = "";
+    insAvg.textContent = "—";
+    insGainer.textContent = "—";
+    alertsCont.innerHTML = `<p class="empty-state">No data yet.</p>`;
+    milestonesCont.innerHTML = `<p class="empty-state">No milestones yet.</p>`;
+    summaryBody.innerHTML = "";
     return;
   }
 
-  // Heaviest / lightest
   const sorted = [...latestEntries].sort((a, b) => b.weight - a.weight);
   const heaviest = sorted[0];
   const lightest = sorted[sorted.length - 1];
@@ -508,11 +642,13 @@ function renderInsights() {
   const avg = Math.round(latestEntries.reduce((s, e) => s + e.weight, 0) / latestEntries.length);
   insAvg.textContent = `${avg}g`;
 
-  // Biggest gainer (total gain from first to last)
   const gainers = Object.entries(timelines)
     .map(([pid, arr]) => {
       if (arr.length < 2) return null;
-      return { puppyId: Number(pid), gain: arr[arr.length - 1].weight - arr[0].weight };
+      return {
+        puppyId: Number(pid),
+        gain: arr[arr.length - 1].weight - arr[0].weight
+      };
     })
     .filter(Boolean)
     .sort((a, b) => b.gain - a.gain);
@@ -524,14 +660,15 @@ function renderInsights() {
     insGainer.textContent = "—";
   }
 
-  // ── Alerts ──────────────────────────────────
   const alerts = [];
   for (const [pid, arr] of Object.entries(timelines)) {
     if (arr.length < 2) continue;
+
     const last = arr[arr.length - 1];
     const prev = arr[arr.length - 2];
     const change = last.weight - prev.weight;
     const puppy = getPuppy(Number(pid));
+
     if (change < 0) {
       alerts.push({ type: "loss", puppy, change, date: last.date });
     } else if (change < 10) {
@@ -543,11 +680,12 @@ function renderInsights() {
     alertsCont.innerHTML = `<p class="empty-state">✅ No alerts — all puppies are doing well!</p>`;
   } else {
     alertsCont.innerHTML = alerts.map(a => {
-      const icon  = a.type === "loss" ? "⬇" : "⚠";
-      const cls   = a.type === "loss" ? "alert-loss" : "alert-low";
+      const icon = a.type === "loss" ? "⬇" : "⚠";
+      const cls = a.type === "loss" ? "alert-loss" : "alert-low";
       const label = a.type === "loss"
         ? `Weight loss of ${Math.abs(a.change)}g on ${a.date}`
         : `Low gain of ${a.change}g on ${a.date}`;
+
       return `<div class="alert-item ${cls}">
         <span>${icon}</span>
         <div><strong>${a.puppy?.name}</strong> — ${label}</div>
@@ -555,41 +693,28 @@ function renderInsights() {
     }).join("");
   }
 
-  // ── Milestones ───────────────────────────────
-  const milestones = [];
-  for (const [pid, arr] of Object.entries(timelines)) {
-    if (arr.length < 2) continue;
-    const birthWeight = arr[0].weight;
-    const doubled = arr.find((e, i) => i > 0 && e.weight >= birthWeight * 2);
-    if (doubled) {
-      milestones.push({
-        puppy: getPuppy(Number(pid)),
-        date: doubled.date,
-        weight: doubled.weight,
-        birthWeight
-      });
-    }
-  }
+  const milestones = getAutomaticAwards();
 
   if (milestones.length === 0) {
     milestonesCont.innerHTML = `<p class="empty-state">No puppies have doubled birth weight yet.</p>`;
   } else {
     milestonesCont.innerHTML = milestones.map(m => `
       <div class="milestone-item">
-        🎉 <strong>${m.puppy?.name}</strong> doubled birth weight! (${m.birthWeight}g → ${m.weight}g on ${m.date})
+        🎉 <strong>${m.puppyId ? getPuppy(m.puppyId)?.name : ""}</strong> doubled birth weight! (${m.notes} on ${m.date})
       </div>
     `).join("");
   }
 
-  // ── Per-puppy summary table ──────────────────
   const summaryRows = PUPPIES.map(puppy => {
     const arr = timelines[puppy.id] || [];
     if (arr.length === 0) return null;
+
     const first = arr[0];
-    const last  = arr[arr.length - 1];
+    const last = arr[arr.length - 1];
     const totalGain = last.weight - first.weight;
-    const days  = arr.length;
+    const days = arr.length;
     const avgDaily = days > 1 ? Math.round(totalGain / (days - 1)) : "—";
+
     return { puppy, first, last, totalGain, days, avgDaily };
   }).filter(Boolean);
 
@@ -627,15 +752,103 @@ function renderInsights() {
               <td>${r.totalGain > 0 ? "+" : ""}${r.totalGain}g</td>
               <td>${r.avgDaily !== "—" ? r.avgDaily + "g" : "—"}</td>
               <td>${r.days}</td>
-            </tr>`).join("")}
+            </tr>
+          `).join("")}
         </tbody>
       </table>
     </div>`;
 }
 
-// ═══════════════════════════════════════════════
-// 14. TAB NAVIGATION
-// ═══════════════════════════════════════════════
+function getAwardOptionsByType(type) {
+  return type === "milestone" ? MILESTONE_OPTIONS : TROPHY_OPTIONS;
+}
+
+function populateAwardTitleOptions() {
+  const options = getAwardOptionsByType(awardType.value);
+  awardTitle.innerHTML = options.map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+}
+
+function renderAwards() {
+  if (!awardsContainer) return;
+
+  const combined = getCombinedAwards();
+  const filterVal = Number(awardFilterPuppy.value) || "all";
+
+  const filtered = filterVal === "all"
+    ? combined
+    : combined.filter(item => item.puppyId === filterVal);
+
+  if (filtered.length === 0) {
+    awardsContainer.innerHTML = `<p class="empty-state">No trophies or milestones yet.</p>`;
+    return;
+  }
+
+  const grouped = PUPPIES.map(puppy => {
+    const items = filtered.filter(item => item.puppyId === puppy.id);
+    return { puppy, items };
+  }).filter(group => group.items.length > 0);
+
+  awardsContainer.innerHTML = `
+    <div class="awards-list">
+      ${grouped.map(group => `
+        <div class="award-puppy-card">
+          <div class="award-puppy-header">
+            <span class="color-dot" style="background:${group.puppy.color}"></span>
+            <div>
+              <h3>${group.puppy.name}</h3>
+              <div class="award-puppy-sub">${group.puppy.gender}</div>
+            </div>
+          </div>
+
+          <div class="award-items">
+            ${group.items.map(item => {
+              const badgeClass = item.type === "trophy" ? "award-badge-trophy" : "award-badge-milestone";
+              const badgeLabel = item.type === "trophy" ? "Trophy" : "Milestone";
+              const icon = item.type === "trophy" ? "🏆" : "🎉";
+              const notesHtml = item.notes
+                ? `<div class="award-notes">${escapeHtml(item.notes)}</div>`
+                : "";
+
+              const autoBadge = item.isAuto
+                ? `<span class="award-badge award-badge-auto">Auto</span>`
+                : "";
+
+              const deleteButton = (!item.isAuto && isAdmin)
+                ? `<button class="btn-mini-danger" data-award-id="${item.id}" title="Delete">✕</button>`
+                : "";
+
+              return `
+                <div class="award-item">
+                  <div class="award-main">
+                    <div class="award-icon">${icon}</div>
+                    <div>
+                      <div class="award-title-line">
+                        <span class="award-title">${escapeHtml(item.title)}</span>
+                        <span class="award-date">${formatDate(item.date)}</span>
+                      </div>
+                      ${notesHtml}
+                    </div>
+                  </div>
+
+                  <div class="award-meta">
+                    <span class="award-badge ${badgeClass}">${badgeLabel}</span>
+                    ${autoBadge}
+                    ${deleteButton}
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  awardsContainer.querySelectorAll("[data-award-id]").forEach(btn => {
+    btn.addEventListener("click", () => deleteAward(btn.dataset.awardId));
+  });
+}
+
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
@@ -647,29 +860,33 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.add("active");
     document.getElementById(`tab-${tab}`).classList.add("active");
 
-    // Re-render chart when switching to chart tab (canvas sizing)
     if (tab === "chart") renderChart();
     if (tab === "insights") renderInsights();
+    if (tab === "trophies") renderAwards();
   });
 });
 
-// ═══════════════════════════════════════════════
-// 15. INIT — POPULATE STATIC UI
-// ═══════════════════════════════════════════════
 function initUI() {
-  // Puppy dropdown in form
   inputPuppy.innerHTML = `<option value="">— select puppy —</option>` +
     PUPPIES.map(p => `<option value="${p.id}">${p.name} (${p.gender})</option>`).join("");
 
-  // Puppy filter dropdown
   filterPuppy.innerHTML = `<option value="all">All puppies</option>` +
     PUPPIES.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
 
-  // Date default = today
-  inputDate.value = todayStr();
+  awardPuppy.innerHTML = `<option value="">— select puppy —</option>` +
+    PUPPIES.map(p => `<option value="${p.id}">${p.name} (${p.gender})</option>`).join("");
 
-  // Filter change
+  awardFilterPuppy.innerHTML = `<option value="all">All puppies</option>` +
+    PUPPIES.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+
+  inputDate.value = todayStr();
+  awardDate.value = todayStr();
+
+  populateAwardTitleOptions();
+
   filterPuppy.addEventListener("change", renderTable);
+  awardFilterPuppy.addEventListener("change", renderAwards);
+  awardType.addEventListener("change", populateAwardTitleOptions);
 }
 
 initUI();

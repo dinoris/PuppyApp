@@ -606,3 +606,160 @@ td {
 @media (max-width: 400px) {
   .insights-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Trophies & Milestones ───────────────────── */
+.awards-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.award-puppy-card {
+  border: 1px solid var(--sand);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.award-puppy-header {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .9rem 1rem;
+  background: var(--cream-dark);
+  border-bottom: 1px solid var(--sand);
+}
+
+.award-puppy-header h3 {
+  font-size: 1rem;
+  color: var(--brown);
+  margin: 0;
+}
+
+.award-puppy-sub {
+  font-size: .8rem;
+  color: var(--slate-light);
+}
+
+.award-items {
+  padding: .9rem 1rem;
+}
+
+.award-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: .8rem 0;
+  border-top: 1px solid var(--cream-dark);
+}
+
+.award-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.award-main {
+  display: flex;
+  gap: .75rem;
+  align-items: flex-start;
+}
+
+.award-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-top: .1rem;
+}
+
+.award-title-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+  margin-bottom: .25rem;
+}
+
+.award-title {
+  font-weight: 700;
+  color: var(--slate);
+}
+
+.award-date {
+  font-size: .8rem;
+  color: var(--slate-light);
+}
+
+.award-notes {
+  font-size: .86rem;
+  color: var(--slate-light);
+}
+
+.award-meta {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-shrink: 0;
+}
+
+.award-badge {
+  display: inline-block;
+  padding: .18rem .55rem;
+  border-radius: 20px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+.award-badge-trophy {
+  background: #fff3cd;
+  color: #8a6300;
+}
+
+.award-badge-milestone {
+  background: #e8f0e9;
+  color: #2d5c35;
+}
+
+.award-badge-auto {
+  background: #eef2ff;
+  color: #4c51bf;
+}
+
+.btn-mini-danger {
+  background: transparent;
+  border: none;
+  color: var(--terra);
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: .2rem .35rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-mini-danger:hover {
+  background: var(--terra-pale);
+}
+
+.trophy-form-row .form-group {
+  min-width: 140px;
+}
+
+.trophy-notes-group {
+  width: 100%;
+}
+
+.trophy-action {
+  flex: 0 0 auto;
+  min-width: auto;
+}
+
+@media (max-width: 640px) {
+  .award-item {
+    flex-direction: column;
+  }
+
+  .award-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
