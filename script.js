@@ -12,31 +12,33 @@ const FIREBASE_CONFIG = {
   appId: "1:958889040689:web:694feb88aca77cb2fbae10"
 };
 
-const ADMIN_EMAIL = "bios80@gmail.com";
+const ADMIN_EMAILS = [
+  "bios80@gmail.com",
+  "mouniaabdelkader@gmail.com"
+];
 
 const PUPPIES = [
-  { id: 1, name: "Green",  gender: "Male",   color: "#3a9e4a" },
-  { id: 2, name: "Pink",   gender: "Female", color: "#ed7db5" },
-  { id: 3, name: "Blue",   gender: "Male",   color: "#4c92f4" },
-  { id: 4, name: "Red",    gender: "Male",   color: "#d94040" },
-  { id: 5, name: "Yellow", gender: "Female", color: "#f8e90b" },
-  { id: 7, name: "Orange", gender: "Male",   color: "#ff741e" },
-  { id: 8, name: "White",  gender: "Female", color: "#ededed" },
+  { id: 1, name: "Green",  gender: "Boy",   color: "#3a9e4a" },
+  { id: 2, name: "Pink",   gender: "Girl", color: "#ed7db5" },
+  { id: 3, name: "Blue",   gender: "Boy",   color: "#4c92f4" },
+  { id: 4, name: "Red",    gender: "Girl",   color: "#b40000" },
+  { id: 5, name: "Yellow", gender: "Girl", color: "#f8e90b" },
+  { id: 7, name: "Orange", gender: "Boy",   color: "#ff741e" },
+  { id: 8, name: "White",  gender: "Girl", color: "#ededed" },
 ];
 
 const TROPHY_OPTIONS = [
   "Biggest Crier",
-  "Loudest Puppy",
+  "The Contortionist",
   "Greatest Explorer",
-  "Fastest Crawler",
+  "Speedy Gonzales",
   "Milk Monster",
   "Snuggle Champion",
   "Wiggle Machine",
-  "Most Determined",
+  "The Underpuppy",
   "Little Escape Artist",
-  "Sleepiest Puppy",
-  "Most Curious",
-  "Strongest Latch"
+  "Sleeping Cutie",
+  "The Chupacabra"
 ];
 
 const MILESTONE_OPTIONS = [
@@ -238,7 +240,7 @@ const awardsContainer = document.getElementById("awards-container");
 
 function updateAuthUI(user) {
   currentUser = user;
-  isAdmin = user?.email === ADMIN_EMAIL;
+  isAdmin = ADMIN_EMAILS.includes(user?.email);
 
   if (user) {
     authStatus.textContent = isAdmin ? `Editor: ${user.email}` : `Viewer: ${user.email}`;
