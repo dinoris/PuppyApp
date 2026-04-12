@@ -5,19 +5,19 @@
  */
 
 // ═══════════════════════════════════════════════
-// 0. WAIT FOR FIREBASE MODULES (loaded via type="module" in HTML)
+// 0. FIREBASE IMPORTS (ES Modules from CDN)
 // ═══════════════════════════════════════════════
-const {
-  initializeApp,
-  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-  getDatabase, ref, push, remove, onValue
-} = window.__firebaseModules;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, push, remove, onValue }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // ═══════════════════════════════════════════════
 // 1. CONFIG
 // ═══════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDvL0emjzWd450LvuOCTNs-D3yUOlwy4UA",
+  apiKey: "AIzaSyDvL0emjzWd450LvuOCTNs-D3yU0lwy4UA",
   authDomain: "puppy-app-41bf0.firebaseapp.com",
   databaseURL: "https://puppy-app-41bf0-default-rtdb.firebaseio.com",
   projectId: "puppy-app-41bf0",
@@ -182,7 +182,7 @@ function updateAuthUI(user) {
 
 btnLogin.addEventListener("click", async () => {
   try {
-    await signInWithPopup(auth, provider);
+    await signInWithRedirect(auth, provider);
   } catch (err) {
     console.error("Login error:", err);
     showMessage("Login failed: " + err.message, "error");
@@ -198,6 +198,16 @@ btnLogout.addEventListener("click", async () => {
 });
 
 onAuthStateChanged(auth, user => updateAuthUI(user));
+
+// Handle redirect result when returning from Google sign-in
+getRedirectResult(auth).then(result => {
+  if (result?.user) updateAuthUI(result.user);
+}).catch(err => {
+  if (err.code !== 'auth/no-current-user') {
+    console.error("Redirect result error:", err);
+    showMessage("Login failed: " + err.message, "error");
+  }
+});
 
 // ═══════════════════════════════════════════════
 // 7. FIREBASE DATA LISTENER (real-time sync)
