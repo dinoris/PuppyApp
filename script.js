@@ -28,13 +28,12 @@ const ADMIN_EMAIL = "bios80@gmail.com";
 
 const PUPPIES = [
   { id: 1,  name: "Green",   gender: "Male",   color: "#3a9e4a" },
-  { id: 2,  name: "Pink",    gender: "Female", color: "#e05fa0" },
-  { id: 3,  name: "Blue",    gender: "Male",   color: "#3a7bd5" },
+  { id: 2,  name: "Pink",    gender: "Female", color: "#ed7db5" },
+  { id: 3,  name: "Blue",    gender: "Male",   color: "#4c92f4" },
   { id: 4,  name: "Red",     gender: "Male",   color: "#d94040" },
-  { id: 5,  name: "Yellow",  gender: "Female", color: "#d4a017" },
-  { id: 6,  name: "Purple",  gender: "Female", color: "#7e4cb4" },
-  { id: 7,  name: "Orange",  gender: "Male",   color: "#e07b3a" },
-  { id: 8,  name: "White",   gender: "Female", color: "#9e9e9e" },
+  { id: 5,  name: "Yellow",  gender: "Female", color: "#f8e90b" },
+  { id: 7,  name: "Orange",  gender: "Male",   color: "#ff741e" },
+  { id: 8,  name: "White",   gender: "Female", color: "#ededed" },
 ];
 
 // ═══════════════════════════════════════════════
