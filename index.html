@@ -1,606 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Puppy Weight Tracker</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f5f5f3;
-      --bg-tertiary: #efefec;
-      --bg-info: #e6f1fb;
-      --bg-success: #eaf3de;
-      --bg-danger: #fcebeb;
-      --bg-warning: #faeeda;
-      --text-primary: #1a1a18;
-      --text-secondary: #5f5e5a;
-      --text-info: #0c447c;
-      --text-success: #27500a;
-      --text-danger: #791f1f;
-      --text-warning: #633806;
-      --border: rgba(0,0,0,0.12);
-      --border-md: rgba(0,0,0,0.22);
-      --border-info: rgba(24,95,165,0.4);
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg-primary: #1e1e1c;
-        --bg-secondary: #2a2a28;
-        --bg-tertiary: #232321;
-        --bg-info: #042c53;
-        --bg-success: #173404;
-        --bg-danger: #501313;
-        --bg-warning: #412402;
-        --text-primary: #f0efe8;
-        --text-secondary: #b4b2a9;
-        --text-info: #85b7eb;
-        --text-success: #c0dd97;
-        --text-danger: #f09595;
-        --text-warning: #fac775;
-        --border: rgba(255,255,255,0.12);
-        --border-md: rgba(255,255,255,0.22);
-        --border-info: rgba(133,183,235,0.4);
-      }
-    }
-
-    body { font-family: var(--font); background: var(--bg-tertiary); color: var(--text-primary); min-height: 100vh; padding: 0 0 3rem; }
-
-    .page-header { background: var(--bg-primary); border-bottom: 0.5px solid var(--border); padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 12px; }
-    .page-header h1 { font-size: 20px; font-weight: 500; }
-    .page-header p  { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
-
-    .container { max-width: 960px; margin: 1.5rem auto; padding: 0 1rem; }
-
-    .card { background: var(--bg-primary); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; margin-bottom: 1.25rem; }
-
-    .tab-bar { display: flex; border-bottom: 0.5px solid var(--border); }
-    .tab-item { padding: 12px 20px; font-size: 14px; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; margin-bottom: -1px; user-select: none; transition: color 0.15s; }
-    .tab-item.active { color: var(--text-primary); border-bottom-color: var(--text-primary); font-weight: 500; }
-    .tab-item:hover:not(.active) { color: var(--text-primary); }
-
-    .tab-content { padding: 1.25rem 1.5rem; }
-
-    .section-title { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
-    .section-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
-
-    .form-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 1.25rem; }
-    .form-group { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 130px; }
-    .form-group label { font-size: 12px; color: var(--text-secondary); }
-
-    input[type="text"], input[type="number"], input[type="date"], select {
-      width: 100%; height: 36px; padding: 0 10px;
-      border-radius: var(--radius-md); border: 0.5px solid var(--border-md);
-      background: var(--bg-primary); color: var(--text-primary);
-      font-family: var(--font); font-size: 14px; outline: none;
-    }
-    input:focus, select:focus { border-color: var(--text-info); box-shadow: 0 0 0 2px var(--bg-info); }
-
-    .btn { height: 36px; padding: 0 18px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg-primary); color: var(--text-primary); font-family: var(--font); font-size: 14px; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
-    .btn:hover { background: var(--bg-secondary); }
-    .btn-primary { background: var(--bg-info); color: var(--text-info); border-color: var(--border-info); }
-    .btn-primary:hover { opacity: 0.85; background: var(--bg-info); }
-
-    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .data-table th { text-align: left; padding: 8px 12px; color: var(--text-secondary); font-weight: 400; border-bottom: 0.5px solid var(--border); font-size: 12px; white-space: nowrap; }
-    .data-table td { padding: 9px 12px; border-bottom: 0.5px solid var(--border); }
-    .data-table tbody tr:last-child td { border-bottom: none; }
-    .data-table tbody tr:hover td { background: var(--bg-secondary); }
-
-    .del-btn { background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 14px; padding: 2px 7px; border-radius: 4px; line-height: 1; }
-    .del-btn:hover { background: var(--bg-danger); color: var(--text-danger); }
-
-    .empty-state { text-align: center; padding: 2.5rem; color: var(--text-secondary); font-size: 14px; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
-    .stat-card { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 12px 14px; }
-    .stat-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
-    .stat-value { font-size: 20px; font-weight: 500; }
-    .stat-sub { font-size: 12px; color: var(--text-secondary); margin-top: 3px; display: flex; align-items: center; gap: 5px; }
-
-    .alerts-wrap { margin-bottom: 1.25rem; }
-    .alert-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 12px; border-radius: var(--radius-md); margin-bottom: 6px; font-size: 13px; line-height: 1.5; }
-    .alert-danger  { background: var(--bg-danger);  color: var(--text-danger);  }
-    .alert-warning { background: var(--bg-warning); color: var(--text-warning); }
-    .alert-success { background: var(--bg-success); color: var(--text-success); }
-    .alert-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-
-    .metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
-    .metric-card { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 12px 14px; }
-    .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
-    .metric-value { font-size: 20px; font-weight: 500; }
-    .metric-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-
-    .chart-wrap    { position: relative; width: 100%; height: 300px; }
-    .chart-wrap-sm { position: relative; width: 100%; height: 220px; }
-
-    .legend-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; font-size: 12px; }
-    .legend-item { display: flex; align-items: center; gap: 5px; color: var(--text-secondary); }
-    .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-
-    .filter-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem; }
-    .filter-tab { padding: 5px 13px; border-radius: var(--radius-md); border: 0.5px solid var(--border-md); background: var(--bg-primary); color: var(--text-secondary); font-size: 13px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
-    .filter-tab.active { background: var(--bg-info); color: var(--text-info); border-color: var(--border-info); font-weight: 500; }
-    .filter-tab:hover:not(.active) { background: var(--bg-secondary); }
-
-    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.25rem 0; }
-    .milestone-badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius-md); font-size: 11px; background: var(--bg-success); color: var(--text-success); }
-
-    @media (max-width: 560px) {
-      .form-row { flex-direction: column; }
-      .form-group { min-width: 100%; }
-      .tab-item { padding: 10px 12px; font-size: 13px; }
-    }
-  </style>
+  <title>Puppy Tracker</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 </head>
-<body>
 
-<div class="page-header">
-  <div style="font-size:24px;">🐾</div>
-  <div>
-    <h1>Puppy weight tracker</h1>
-    <p id="header-sub">Loading…</p>
-  </div>
-</div>
+<body style="font-family:sans-serif; padding:20px;">
 
-<div class="container">
-  <div class="card">
-    <div class="tab-bar">
-      <div class="tab-item active" onclick="switchTab('log')">Weight log</div>
-      <div class="tab-item" onclick="switchTab('chart')">Growth chart</div>
-      <div class="tab-item" onclick="switchTab('insights')">Insights</div>
-    </div>
+<h2>🐾 Puppy Weight Tracker</h2>
 
-    <!-- WEIGHT LOG -->
-    <div id="tab-log" class="tab-content">
-      <div class="section-title">Add weight entry</div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Puppy</label>
-          <select id="sel-puppy"></select>
-        </div>
-        <div class="form-group" style="max-width:170px;">
-          <label>Date</label>
-          <input type="date" id="inp-date">
-        </div>
-        <div class="form-group" style="max-width:150px;">
-          <label>Weight (g)</label>
-          <input type="number" id="inp-weight" placeholder="e.g. 250" min="1" step="0.5">
-        </div>
-        <div class="form-group" style="flex:0;">
-          <label>&nbsp;</label>
-          <button class="btn btn-primary" onclick="addEntry()">Add entry</button>
-        </div>
-      </div>
-      <hr class="divider">
-      <div class="section-title">All entries</div>
-      <div style="overflow-x:auto;">
-        <table class="data-table" id="entries-table">
-          <thead>
-            <tr><th>Date</th><th>Day</th><th>Puppy</th><th>Gender</th><th>Weight (g)</th><th>Change</th><th>Status</th><th></th></tr>
-          </thead>
-          <tbody id="entries-body"></tbody>
-        </table>
-      </div>
-      <div id="empty-entries" class="empty-state" style="display:none;">No entries yet — add your first weight above.</div>
-    </div>
+<button id="loginBtn">Login with Google</button>
+<button id="logoutBtn" style="display:none;">Logout</button>
 
-    <!-- CHART -->
-    <div id="tab-chart" class="tab-content" style="display:none;">
-      <div class="section-label">Filter puppies</div>
-      <div class="filter-tabs" id="chart-filter-tabs"></div>
-      <hr class="divider">
-      <div class="section-label">Current weights</div>
-      <div class="metrics" id="metrics-row"></div>
-      <hr class="divider">
-      <div class="section-label">Weight progression · <span style="font-weight:400;">★ = birth weight doubled</span></div>
-      <div class="legend-row" id="chart-legend"></div>
-      <div class="chart-wrap">
-        <canvas id="growthChart" role="img" aria-label="Puppy weight progression over time"></canvas>
-      </div>
-      <hr class="divider">
-      <div class="section-label">Daily weight gain</div>
-      <div class="legend-row" id="gain-legend"></div>
-      <div class="chart-wrap-sm">
-        <canvas id="gainChart" role="img" aria-label="Daily weight gain per puppy"></canvas>
-      </div>
-    </div>
+<hr>
 
-    <!-- INSIGHTS -->
-    <div id="tab-insights" class="tab-content" style="display:none;">
-      <div class="section-label">Summary stats</div>
-      <div class="stats-grid" id="stats-grid"></div>
-      <hr class="divider">
-      <div class="section-label">Health alerts — most recent day</div>
-      <div class="alerts-wrap" id="alerts-wrap"></div>
-      <hr class="divider">
-      <div class="section-label">Birth weight doubling milestones</div>
-      <div id="milestones-wrap" style="overflow-x:auto;"></div>
-    </div>
-  </div>
-</div>
+<select id="puppy">
+  <option>Green</option>
+  <option>Pink</option>
+  <option>Orange</option>
+  <option>Blue</option>
+  <option>White</option>
+  <option>Yellow</option>
+  <option>Red</option>
+</select>
+
+<input type="number" id="weight" placeholder="Weight (g)">
+<button id="addBtn">Add Entry</button>
+
+<h3>Entries</h3>
+<ul id="list"></ul>
 
 <script>
-const STORAGE_KEY = 'puppy-tracker-v2';
-const DAY1 = '2025-04-11';
+  // 🔥 YOUR FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyDVl0emjzWd450LvuOCTNs-D3yU0lwy4UA",
+    authDomain: "puppy-app-41bf0.firebaseapp.com",
+    databaseURL: "https://puppy-app-41bf0-default-rtdb.firebaseio.com",
+    projectId: "puppy-app-41bf0",
+    appId: "1:958889040689:web:694feb88aca77cb2fbae10"
+  };
 
-const PUPPIES_DEFAULT = [
-  { id:1, name:'Green',  gender:'Boy',    color:'#3a9e4a' },
-  { id:2, name:'Pink',   gender:'Female', color:'#e05fa0' },
-  { id:3, name:'Orange', gender:'Boy',    color:'#e07820' },
-  { id:4, name:'Blue',   gender:'Male',   color:'#378ADD' },
-  { id:5, name:'White',  gender:'Female', color:'#FEFEFE' },
-  { id:6, name:'Yellow', gender:'Female', color:'#FFD700' },
-  { id:7, name:'Red',    gender:'Female', color:'#E24B4A' },
-];
-const ENTRIES_DEFAULT = [
-  {id:101,puppyId:1,date:DAY1,weight:214.1},
-  {id:102,puppyId:2,date:DAY1,weight:179.5},
-  {id:103,puppyId:3,date:DAY1,weight:200.5},
-  {id:104,puppyId:4,date:DAY1,weight:191.7},
-  {id:105,puppyId:5,date:DAY1,weight:147.2},
-  {id:106,puppyId:6,date:DAY1,weight:180.6},
-  {id:107,puppyId:7,date:DAY1,weight:187.5},
-];
+  // INIT
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+  const auth = firebase.auth();
 
-function loadState() {
-  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
-  return { puppies: JSON.parse(JSON.stringify(PUPPIES_DEFAULT)), entries: JSON.parse(JSON.stringify(ENTRIES_DEFAULT)), nextId:200, activeTab:'log', chartFilter:[] };
-}
-function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {} }
+  const ADMIN_EMAIL = "bios80@gmail.com";
 
-let state = loadState();
-let growthChart = null, gainChart = null;
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const addBtn = document.getElementById("addBtn");
+  const list = document.getElementById("list");
 
-function today() { return new Date().toISOString().split('T')[0]; }
-function allDates() { return [...new Set(state.entries.map(e=>e.date))].sort(); }
-function dayNum(d) {
-  const all = state.entries.map(e=>e.date).sort();
-  if (!all.length) return 1;
-  return Math.round((new Date(d)-new Date(all[0]))/86400000)+1;
-}
-function fmt(d) { const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
-function getPuppy(id) { return state.puppies.find(p=>p.id===id); }
-function puppyEntries(pid) { return state.entries.filter(e=>e.puppyId===pid).sort((a,b)=>a.date.localeCompare(b.date)); }
-function birthWeight(pid) { const pe=puppyEntries(pid); return pe.length?pe[0].weight:null; }
-function genderIcon(g) {
-  if (!g) return '';
-  const l=g.toLowerCase();
-  if (l==='male'||l==='boy')    return '<span style="color:#378ADD;">♂</span>';
-  if (l==='female'||l==='girl') return '<span style="color:#e05fa0;">♀</span>';
-  return '';
-}
+  let currentUser = null;
 
-function updateHeader() {
-  const dates=allDates();
-  const days=dates.length?dayNum(dates[dates.length-1]):1;
-  document.getElementById('header-sub').textContent=`Litter of ${state.puppies.length} · Day ${days}`;
-}
+  // LOGIN
+  loginBtn.onclick = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+  };
 
-function switchTab(tab) {
-  state.activeTab=tab; saveState();
-  ['log','chart','insights'].forEach((t,i)=>{
-    document.getElementById(`tab-${t}`).style.display=t===tab?'':'none';
-    document.querySelectorAll('.tab-item')[i].classList.toggle('active',t===tab);
-  });
-  if (tab==='chart')    { renderMetrics(); renderChart(); renderGainChart(); }
-  if (tab==='insights') { renderStats(); renderAlerts(); renderMilestones(); }
-}
+  logoutBtn.onclick = () => auth.signOut();
 
-function addEntry() {
-  const pid=parseInt(document.getElementById('sel-puppy').value);
-  const date=document.getElementById('inp-date').value;
-  const weight=parseFloat(document.getElementById('inp-weight').value);
-  if (!pid||!date||isNaN(weight)||weight<1) { alert('Please fill in all fields.'); return; }
-  const ex=state.entries.find(e=>e.puppyId===pid&&e.date===date);
-  if (ex) ex.weight=weight;
-  else state.entries.push({id:state.nextId++,puppyId:pid,date,weight});
-  document.getElementById('inp-weight').value='';
-  saveState(); renderAll(); updateHeader();
-}
+  auth.onAuthStateChanged(user => {
+    currentUser = user;
 
-function deleteEntry(id) {
-  if (!confirm('Delete this entry?')) return;
-  state.entries=state.entries.filter(e=>e.id!==id);
-  saveState(); renderAll(); updateHeader();
-}
-
-/* Puppy select */
-function renderPuppySelect() {
-  document.getElementById('sel-puppy').innerHTML=state.puppies.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
-}
-
-/* Entries table */
-function renderEntries() {
-  const body=document.getElementById('entries-body');
-  const empty=document.getElementById('empty-entries');
-  const thead=document.querySelector('#entries-table thead');
-  const sorted=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date)||a.puppyId-b.puppyId);
-  if (!sorted.length) { body.innerHTML=''; empty.style.display=''; thead.style.display='none'; return; }
-  empty.style.display='none'; thead.style.display='';
-  body.innerHTML=sorted.map(e=>{
-    const p=getPuppy(e.puppyId); if(!p) return '';
-    const prev=state.entries.filter(x=>x.puppyId===e.puppyId&&x.date<e.date).sort((a,b)=>b.date.localeCompare(a.date))[0];
-    let change='<span style="color:var(--text-secondary);font-size:12px;">day 1</span>';
-    let badge='';
-    if (prev) {
-      const diff=e.weight-prev.weight, pct=(diff/prev.weight)*100;
-      const col=diff>=0?'var(--text-success)':'var(--text-danger)';
-      change=`<span style="color:${col};font-size:12px;">${diff>=0?'+':''}${diff.toFixed(1)}g</span>`;
-      if (diff<0) badge=`<span style="font-size:11px;padding:2px 7px;border-radius:6px;background:var(--bg-danger);color:var(--text-danger);">Weight loss</span>`;
-      else if (pct<5) badge=`<span style="font-size:11px;padding:2px 7px;border-radius:6px;background:var(--bg-warning);color:var(--text-warning);">Low gain</span>`;
-      else badge=`<span style="font-size:11px;padding:2px 7px;border-radius:6px;background:var(--bg-success);color:var(--text-success);">Good gain</span>`;
-    }
-    return `<tr>
-      <td>${fmt(e.date)}</td>
-      <td style="color:var(--text-secondary);">Day ${dayNum(e.date)}</td>
-      <td><span style="display:inline-flex;align-items:center;gap:6px;"><span class="dot" style="background:${p.color};"></span>${p.name}</span></td>
-      <td>${genderIcon(p.gender)} <span style="font-size:12px;color:var(--text-secondary);">${p.gender}</span></td>
-      <td style="font-weight:500;">${e.weight}g</td>
-      <td>${change}</td>
-      <td>${badge}</td>
-      <td><button class="del-btn" onclick="deleteEntry(${e.id})">✕</button></td>
-    </tr>`;
-  }).join('');
-}
-
-/* Chart filter */
-function renderChartFilter() {
-  document.getElementById('chart-filter-tabs').innerHTML=
-    [{id:0,name:'All puppies',color:null},...state.puppies].map(p=>{
-      const active=p.id===0?!state.chartFilter.length:state.chartFilter.includes(p.id);
-      const dot=p.color?`<span class="dot" style="background:${p.color};"></span>`:'';
-      return `<div class="filter-tab${active?' active':''}" onclick="toggleChartFilter(${p.id})">${dot}${p.name}</div>`;
-    }).join('');
-}
-
-function toggleChartFilter(id) {
-  if (id===0) state.chartFilter=[];
-  else { if(state.chartFilter.includes(id)) state.chartFilter=state.chartFilter.filter(x=>x!==id); else state.chartFilter.push(id); }
-  saveState(); renderChartFilter(); renderMetrics(); renderChart(); renderGainChart();
-}
-
-function activePuppies() {
-  return state.chartFilter.length ? state.puppies.filter(p=>state.chartFilter.includes(p.id)) : state.puppies;
-}
-
-/* Metric cards */
-function renderMetrics() {
-  const row=document.getElementById('metrics-row');
-  if (!state.entries.length) { row.innerHTML=''; return; }
-  row.innerHTML=activePuppies().map(p=>{
-    const pe=puppyEntries(p.id); if(!pe.length) return '';
-    const latest=pe[pe.length-1].weight, first=pe[0].weight, gain=latest-first;
-    const pct=first>0?((gain/first)*100).toFixed(1):'0';
-    return `<div class="metric-card">
-      <div class="metric-label"><span class="dot" style="background:${p.color};"></span>${p.name} ${genderIcon(p.gender)}</div>
-      <div class="metric-value">${latest}g</div>
-      <div class="metric-sub">${gain>=0?'+':''}${gain.toFixed(1)}g (${pct}%)</div>
-    </div>`;
-  }).join('');
-}
-
-/* Growth chart */
-function renderChart() {
-  const ap=activePuppies(), dates=allDates();
-  const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const gridC=isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)';
-  const tickC=isDark?'#b4b2a9':'#5f5e5a';
-  const avgC=isDark?'#666':'#bbb';
-
-  document.getElementById('chart-legend').innerHTML=[
-    ...ap.map(p=>`<div class="legend-item"><span class="legend-dot" style="background:${p.color};"></span>${p.name}</div>`),
-    `<div class="legend-item"><span style="width:18px;display:inline-block;border-top:2px dashed ${avgC};"></span>&nbsp;Litter avg</div>`,
-    `<div class="legend-item" style="color:var(--text-primary);">★ doubled birth weight</div>`,
-  ].join('');
-
-  const avgData=dates.map(d=>{
-    const ws=state.puppies.map(p=>{const e=state.entries.find(x=>x.puppyId===p.id&&x.date===d);return e?e.weight:null;}).filter(w=>w!==null);
-    return ws.length?ws.reduce((a,b)=>a+b,0)/ws.length:null;
-  });
-
-  const datasets=[
-    ...ap.map(p=>({
-      label:p.name,
-      data:dates.map(d=>{const e=state.entries.find(x=>x.puppyId===p.id&&x.date===d);return e?e.weight:null;}),
-      borderColor:p.color, backgroundColor:p.color+'22',
-      pointBackgroundColor:dates.map(d=>{
-        const bw=birthWeight(p.id), e=state.entries.find(x=>x.puppyId===p.id&&x.date===d);
-        if(!bw||!e||e.weight<bw*2) return p.color;
-        const prevD=dates[dates.indexOf(d)-1], pe=prevD?state.entries.find(x=>x.puppyId===p.id&&x.date===prevD):null;
-        return (!pe||pe.weight<bw*2)?'#f5c400':p.color;
-      }),
-      pointRadius:dates.map(d=>{
-        const bw=birthWeight(p.id), e=state.entries.find(x=>x.puppyId===p.id&&x.date===d);
-        if(!bw||!e||e.weight<bw*2) return 5;
-        const prevD=dates[dates.indexOf(d)-1], pe=prevD?state.entries.find(x=>x.puppyId===p.id&&x.date===prevD):null;
-        return (!pe||pe.weight<bw*2)?10:5;
-      }),
-      pointHoverRadius:7, tension:0.3, spanGaps:false, fill:false,
-    })),
-    { label:'Litter avg', data:avgData, borderColor:avgC, borderDash:[6,3], borderWidth:1.5, pointRadius:0, pointHoverRadius:4, tension:0.3, spanGaps:true, fill:false },
-  ];
-
-  const labels=dates.map((d,i)=>{const p=d.split('-');return `Day ${i+1} (${p[2]}/${p[1]})`;});
-  if (growthChart) { growthChart.destroy(); growthChart=null; }
-  if (!dates.length) return;
-
-  growthChart=new Chart(document.getElementById('growthChart'),{
-    type:'line', data:{labels,datasets},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{
-          label:ctx=>ctx.parsed.y===null?null:`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}g${ctx.dataset.label==='Litter avg'?' (avg)':''}`,
-          afterBody:items=>{
-            const notes=[];
-            items.forEach(item=>{
-              const p=state.puppies.find(x=>x.name===item.dataset.label); if(!p) return;
-              const bw=birthWeight(p.id), e=state.entries.find(x=>x.puppyId===p.id&&x.date===dates[item.dataIndex]);
-              if(bw&&e&&e.weight>=bw*2){
-                const prevD=dates[item.dataIndex-1], pe=prevD?state.entries.find(x=>x.puppyId===p.id&&x.date===prevD):null;
-                if(!pe||pe.weight<bw*2) notes.push(`★ ${p.name} just doubled birth weight!`);
-              }
-            });
-            return notes;
-          }
-        }}
-      },
-      scales:{
-        x:{grid:{color:gridC},ticks:{font:{size:11},color:tickC,maxRotation:45,autoSkip:true,maxTicksLimit:14}},
-        y:{grid:{color:gridC},ticks:{callback:v=>v+'g',font:{size:11},color:tickC},title:{display:true,text:'Weight (g)',font:{size:12},color:tickC},min:100}
-      }
+    if (user) {
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline";
+    } else {
+      loginBtn.style.display = "inline";
+      logoutBtn.style.display = "none";
     }
   });
-}
 
-/* Daily gain chart */
-function renderGainChart() {
-  const ap=activePuppies(), dates=allDates();
-  const gainLeg=document.getElementById('gain-legend');
-  if (dates.length<2) {
-    gainLeg.innerHTML='<span style="color:var(--text-secondary);font-size:13px;">Need at least 2 days of data.</span>';
-    if(gainChart){gainChart.destroy();gainChart=null;} return;
-  }
-  const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const gridC=isDark?'rgba(255,255,255,0.08)':'rgba(0,0,0,0.07)';
-  const tickC=isDark?'#b4b2a9':'#5f5e5a';
-  const gainDates=dates.slice(1);
-  gainLeg.innerHTML=ap.map(p=>`<div class="legend-item"><span class="legend-dot" style="background:${p.color};border-radius:2px;"></span>${p.name}</div>`).join('');
-  const datasets=ap.map(p=>({
-    label:p.name,
-    data:gainDates.map(d=>{
-      const idx=dates.indexOf(d), prevD=dates[idx-1];
-      const e=state.entries.find(x=>x.puppyId===p.id&&x.date===d);
-      const ep=state.entries.find(x=>x.puppyId===p.id&&x.date===prevD);
-      return (e&&ep)?parseFloat((e.weight-ep.weight).toFixed(1)):null;
-    }),
-    backgroundColor:p.color+'bb', borderColor:p.color, borderWidth:1, borderRadius:3,
-  }));
-  const labels=gainDates.map((d,i)=>{const p=d.split('-');return `Day ${i+2} (${p[2]}/${p[1]})`;});
-  if(gainChart){gainChart.destroy();gainChart=null;}
-  gainChart=new Chart(document.getElementById('gainChart'),{
-    type:'bar', data:{labels,datasets},
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y!==null?`${ctx.dataset.label}: ${ctx.parsed.y>0?'+':''}${ctx.parsed.y}g`:null}}},
-      scales:{
-        x:{grid:{display:false},ticks:{font:{size:11},color:tickC,maxRotation:45,autoSkip:true,maxTicksLimit:12}},
-        y:{grid:{color:gridC},ticks:{callback:v=>(v>0?'+':'')+v+'g',font:{size:11},color:tickC},title:{display:true,text:'Daily gain (g)',font:{size:12},color:tickC}}
-      }
+  // ADD ENTRY
+  addBtn.onclick = () => {
+    if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+      alert("Read-only mode");
+      return;
     }
+
+    const puppy = document.getElementById("puppy").value;
+    const weight = document.getElementById("weight").value;
+
+    db.ref("entries").push({
+      puppy,
+      weight,
+      date: new Date().toISOString()
+    });
+
+    document.getElementById("weight").value = "";
+  };
+
+  // REAL-TIME LISTENER
+  db.ref("entries").on("value", snapshot => {
+    list.innerHTML = "";
+
+    const data = snapshot.val();
+    if (!data) return;
+
+    Object.values(data).forEach(e => {
+      const li = document.createElement("li");
+      li.textContent = `${e.puppy} - ${e.weight}g`;
+      list.appendChild(li);
+    });
   });
-}
-
-/* Summary stats */
-function renderStats() {
-  const grid=document.getElementById('stats-grid');
-  const dates=allDates();
-  if (!dates.length) { grid.innerHTML='<div class="empty-state">No data yet.</div>'; return; }
-  const latestDate=dates[dates.length-1], prevDate=dates.length>1?dates[dates.length-2]:null;
-  const lw=state.puppies.map(p=>{const e=state.entries.find(x=>x.puppyId===p.id&&x.date===latestDate);return e?{p,w:e.weight}:null;}).filter(Boolean);
-  if (!lw.length) { grid.innerHTML=''; return; }
-  lw.sort((a,b)=>b.w-a.w);
-  const heaviest=lw[0], lightest=lw[lw.length-1];
-  const avg=lw.reduce((s,x)=>s+x.w,0)/lw.length;
-  const total=lw.reduce((s,x)=>s+x.w,0);
-  let biggestGainer=null;
-  if (prevDate) {
-    const gains=state.puppies.map(p=>{
-      const e=state.entries.find(x=>x.puppyId===p.id&&x.date===latestDate);
-      const ep=state.entries.find(x=>x.puppyId===p.id&&x.date===prevDate);
-      return (e&&ep)?{p,gain:e.weight-ep.weight}:null;
-    }).filter(Boolean).sort((a,b)=>b.gain-a.gain);
-    if (gains.length) biggestGainer=gains[0];
-  }
-  const doubled=state.puppies.filter(p=>{
-    const bw=birthWeight(p.id), le=puppyEntries(p.id); if(!bw||!le.length) return false;
-    return le[le.length-1].weight>=bw*2;
-  }).length;
-  grid.innerHTML=[
-    `<div class="stat-card"><div class="stat-label">Heaviest today</div><div class="stat-value" style="color:var(--text-success);">${heaviest.w}g</div><div class="stat-sub"><span class="dot" style="background:${heaviest.p.color};"></span>${heaviest.p.name}</div></div>`,
-    `<div class="stat-card"><div class="stat-label">Lightest today</div><div class="stat-value" style="color:var(--text-warning);">${lightest.w}g</div><div class="stat-sub"><span class="dot" style="background:${lightest.p.color};"></span>${lightest.p.name}</div></div>`,
-    `<div class="stat-card"><div class="stat-label">Litter avg</div><div class="stat-value">${avg.toFixed(1)}g</div><div class="stat-sub">${fmt(latestDate)}</div></div>`,
-    `<div class="stat-card"><div class="stat-label">Total litter weight</div><div class="stat-value">${total.toFixed(0)}g</div><div class="stat-sub">${lw.length} puppies</div></div>`,
-    biggestGainer?`<div class="stat-card"><div class="stat-label">Biggest gainer</div><div class="stat-value" style="color:var(--text-success);">+${biggestGainer.gain.toFixed(1)}g</div><div class="stat-sub"><span class="dot" style="background:${biggestGainer.p.color};"></span>${biggestGainer.p.name}</div></div>`:'',
-    `<div class="stat-card"><div class="stat-label">Doubled birth wt</div><div class="stat-value">${doubled} / ${state.puppies.length}</div><div class="stat-sub">puppies</div></div>`,
-    `<div class="stat-card"><div class="stat-label">Days tracked</div><div class="stat-value">${dayNum(latestDate)}</div><div class="stat-sub">since ${fmt(dates[0])}</div></div>`,
-  ].join('');
-}
-
-/* Health alerts */
-function renderAlerts() {
-  const wrap=document.getElementById('alerts-wrap');
-  const dates=allDates();
-  if (dates.length<2) { wrap.innerHTML='<div class="empty-state" style="padding:1rem 0;">Need at least 2 days of data.</div>'; return; }
-  const latestDate=dates[dates.length-1], prevDate=dates[dates.length-2];
-  const alerts=state.puppies.map(p=>{
-    const e=state.entries.find(x=>x.puppyId===p.id&&x.date===latestDate);
-    const ep=state.entries.find(x=>x.puppyId===p.id&&x.date===prevDate);
-    if (!e||!ep) return null;
-    const diff=e.weight-ep.weight, pct=(diff/ep.weight)*100;
-    if (diff<0) return {type:'danger', icon:'⚠', msg:`<strong>${p.name}</strong> lost ${Math.abs(diff).toFixed(1)}g since ${fmt(prevDate)} — monitor closely.`, color:p.color};
-    if (pct<5)  return {type:'warning',icon:'!', msg:`<strong>${p.name}</strong> gained only ${diff.toFixed(1)}g (${pct.toFixed(1)}%) — below the healthy 5–10% daily target.`, color:p.color};
-    return {type:'success',icon:'✓', msg:`<strong>${p.name}</strong> gained ${diff.toFixed(1)}g (${pct.toFixed(1)}%) — on track.`, color:p.color};
-  }).filter(Boolean).sort((a,b)=>({'danger':0,'warning':1,'success':2}[a.type]-{'danger':0,'warning':1,'success':2}[b.type]));
-  wrap.innerHTML=alerts.map(a=>
-    `<div class="alert-item alert-${a.type}">
-      <span class="alert-icon">${a.icon}</span>
-      <span><span class="dot" style="background:${a.color};margin-right:5px;"></span>${a.msg}</span>
-    </div>`
-  ).join('');
-}
-
-/* Milestones */
-function renderMilestones() {
-  const wrap=document.getElementById('milestones-wrap');
-  if (!allDates().length) { wrap.innerHTML='<div class="empty-state" style="padding:1rem 0;">No data yet.</div>'; return; }
-  const rows=state.puppies.map(p=>{
-    const pe=puppyEntries(p.id); if(!pe.length) return null;
-    const bw=pe[0].weight, target=bw*2;
-    const hit=pe.find(e=>e.weight>=target);
-    const latest=pe[pe.length-1];
-    const pct=Math.min(100,((latest.weight/target)*100)).toFixed(0);
-    const barCol=hit?'#3a9e4a':parseInt(pct)>=80?'#BA7517':'#378ADD';
-    return `<tr>
-      <td><span style="display:inline-flex;align-items:center;gap:6px;"><span class="dot" style="background:${p.color};"></span>${p.name}</span></td>
-      <td>${bw}g</td><td>${target}g</td><td style="font-weight:500;">${latest.weight}g</td>
-      <td style="min-width:130px;">
-        <div style="background:var(--bg-secondary);border-radius:4px;height:8px;overflow:hidden;margin-bottom:3px;">
-          <div style="width:${pct}%;height:100%;background:${barCol};border-radius:4px;"></div>
-        </div>
-        <span style="font-size:11px;color:var(--text-secondary);">${pct}% of target</span>
-      </td>
-      <td>${hit?`<span class="milestone-badge">★ Day ${dayNum(hit.date)} · ${fmt(hit.date)}</span>`:'<span style="font-size:12px;color:var(--text-secondary);">Not yet</span>'}</td>
-    </tr>`;
-  }).filter(Boolean);
-  wrap.innerHTML=`<table class="data-table">
-    <thead><tr><th>Puppy</th><th>Birth wt</th><th>Target (2×)</th><th>Current</th><th>Progress</th><th>Milestone</th></tr></thead>
-    <tbody>${rows.join('')}</tbody>
-  </table>`;
-}
-
-function renderAll() {
-  renderPuppySelect(); renderEntries(); renderChartFilter();
-  if (state.activeTab==='chart')    { renderMetrics(); renderChart(); renderGainChart(); }
-  if (state.activeTab==='insights') { renderStats(); renderAlerts(); renderMilestones(); }
-}
-
-document.getElementById('inp-date').value=today();
-switchTab(state.activeTab);
-renderAll();
-updateHeader();
 </script>
+
 </body>
 </html>
