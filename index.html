@@ -3,9 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Puppy Tracker</title>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
 </head>
 
 <body style="font-family:sans-serif; padding:20px;">
@@ -33,82 +30,92 @@
 <h3>Entries</h3>
 <ul id="list"></ul>
 
-<script>
-  // 🔥 YOUR FIREBASE CONFIG
-  const firebaseConfig = {
-    apiKey: "AIzaSyDVl0emjzWd450LvuOCTNs-D3yU0lwy4UA",
-    authDomain: "puppy-app-41bf0.firebaseapp.com",
-    databaseURL: "https://puppy-app-41bf0-default-rtdb.firebaseio.com",
-    projectId: "puppy-app-41bf0",
-    appId: "1:958889040689:web:694feb88aca77cb2fbae10"
-  };
+<script type="module">
 
-  // INIT
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const auth = firebase.auth();
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, push, onValue } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-  const ADMIN_EMAIL = "bios80@gmail.com";
+// 🔥 YOUR CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyDvL0emjzWd450LvuOCTNs-D3yUOlwy4UA",
+  authDomain: "puppy-app-41bf0.firebaseapp.com",
+  databaseURL: "https://puppy-app-41bf0-default-rtdb.firebaseio.com",
+  projectId: "puppy-app-41bf0",
+  appId: "1:958889040689:web:694feb88aca77cb2fbae10"
+};
 
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const addBtn = document.getElementById("addBtn");
-  const list = document.getElementById("list");
+// INIT
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
 
-  let currentUser = null;
+const ADMIN_EMAIL = "bios80@gmail.com";
 
-  // LOGIN
-  loginBtn.onclick = () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider);
-  };
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const addBtn = document.getElementById("addBtn");
+const list = document.getElementById("list");
 
-  logoutBtn.onclick = () => auth.signOut();
+let currentUser = null;
 
-  auth.onAuthStateChanged(user => {
-    currentUser = user;
+// LOGIN
+loginBtn.onclick = async () => {
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(auth, provider);
+};
 
-    if (user) {
-      loginBtn.style.display = "none";
-      logoutBtn.style.display = "inline";
-    } else {
-      loginBtn.style.display = "inline";
-      logoutBtn.style.display = "none";
-    }
+// LOGOUT
+logoutBtn.onclick = () => signOut(auth);
+
+// AUTH STATE
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+
+  if (user) {
+    loginBtn.style.display = "none";
+    logoutBtn.style.display = "inline";
+  } else {
+    loginBtn.style.display = "inline";
+    logoutBtn.style.display = "none";
+  }
+});
+
+// ADD ENTRY
+addBtn.onclick = () => {
+  if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+    alert("Read-only mode");
+    return;
+  }
+
+  const puppy = document.getElementById("puppy").value;
+  const weight = document.getElementById("weight").value;
+
+  push(ref(db, "entries"), {
+    puppy,
+    weight,
+    date: new Date().toISOString()
   });
 
-  // ADD ENTRY
-  addBtn.onclick = () => {
-    if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
-      alert("Read-only mode");
-      return;
-    }
+  document.getElementById("weight").value = "";
+};
 
-    const puppy = document.getElementById("puppy").value;
-    const weight = document.getElementById("weight").value;
+// REAL-TIME LISTENER
+onValue(ref(db, "entries"), (snapshot) => {
+  list.innerHTML = "";
 
-    db.ref("entries").push({
-      puppy,
-      weight,
-      date: new Date().toISOString()
-    });
+  const data = snapshot.val();
+  if (!data) return;
 
-    document.getElementById("weight").value = "";
-  };
-
-  // REAL-TIME LISTENER
-  db.ref("entries").on("value", snapshot => {
-    list.innerHTML = "";
-
-    const data = snapshot.val();
-    if (!data) return;
-
-    Object.values(data).forEach(e => {
-      const li = document.createElement("li");
-      li.textContent = `${e.puppy} - ${e.weight}g`;
-      list.appendChild(li);
-    });
+  Object.values(data).forEach(e => {
+    const li = document.createElement("li");
+    li.textContent = `${e.puppy} - ${e.weight}g`;
+    list.appendChild(li);
   });
+});
+
 </script>
 
 </body>
