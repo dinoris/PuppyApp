@@ -17,7 +17,7 @@ const {
 // 1. CONFIG
 // ═══════════════════════════════════════════════
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDvL0emjzWd450LvuOCTNs-D3yU0lwy4UA",
+  apiKey: "AIzaSyDVl0emjzWd450LvuOCTNs-D3yU0lwy4UA",
   authDomain: "puppy-app-41bf0.firebaseapp.com",
   databaseURL: "https://puppy-app-41bf0-default-rtdb.firebaseio.com",
   projectId: "puppy-app-41bf0",
