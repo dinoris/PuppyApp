@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puppy Weight Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f3;
+      --bg-tertiary: #efefec;
+      --bg-info: #e6f1fb;
+      --bg-success: #eaf3de;
+      --bg-danger: #fcebeb;
+      --text-primary: #1a1a18;
+      --text-secondary: #5f5e5a;
+      --text-info: #0c447c;
+      --text-success: #27500a;
+      --text-danger: #791f1f;
+      --border: rgba(0,0,0,0.12);
+      --border-md: rgba(0,0,0,0.22);
+      --border-info: rgba(24,95,165,0.4);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1e1e1c;
+        --bg-secondary: #2a2a28;
+        --bg-tertiary: #232321;
+        --bg-info: #042c53;
+        --bg-success: #173404;
+        --bg-danger: #501313;
+        --text-primary: #f0efe8;
+        --text-secondary: #b4b2a9;
+        --text-info: #85b7eb;
+        --text-success: #c0dd97;
+        --text-danger: #f09595;
+        --border: rgba(255,255,255,0.12);
+        --border-md: rgba(255,255,255,0.22);
+        --border-info: rgba(133,183,235,0.4);
+      }
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 0 0 3rem;
+    }
+
+    .page-header {
+      background: var(--bg-primary);
+      border-bottom: 0.5px solid var(--border);
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .paw { font-size: 24px; }
+
+    .page-header h1 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .page-header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 0.5px solid var(--border);
+      background: var(--bg-primary);
+    }
+
+    .tab-item {
+      padding: 12px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      user-select: none;
+      transition: color 0.15s;
+    }
+
+    .tab-item.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .tab-item:hover:not(.active) { color: var(--text-primary); }
+
+    .tab-content { padding: 1.25rem 1.5rem; }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      height: 36px;
+      padding: 0 10px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--text-info);
+      box-shadow: 0 0 0 2px var(--bg-info);
+    }
+
+    .btn {
+      height: 36px;
+      padding: 0 18px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-md);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .btn:hover { background: var(--bg-secondary); }
+
+    .btn-primary {
+      background: var(--bg-info);
+      color: var(--text-info);
+      border-color: var(--border-info);
+    }
+
+    .btn-primary:hover { opacity: 0.85; background: var(--bg-info); }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      border-bottom: 0.5px solid var(--border);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 9px 12px;
+      border-bottom: 0.5px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: var(--bg-secondary); }
+
+    .del-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 14px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+
+    .del-btn:hover { background: var(--bg-danger); color: var(--text-danger); }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.5rem;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .metric-card {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .metric-value {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      width: 100%;
+      height: 300px;
+    }
+
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .filter-tab {
+      padding: 5px 13px;
+      border-radius: var(--radius-md);
+      border: 0.5px solid var(--border-md);
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-tab.active {
+      background: var(--bg-info);
+      color: var(--text-info);
+      border-color: var(--border-info);
+      font-weight: 500;
+    }
+
+    .filter-tab:hover:not(.active) { background: var(--bg-secondary); }
+
+    .color-picker {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.1s;
+    }
+
+    .color-swatch.selected {
+      border-color: var(--text-primary);
+      transform: scale(1.15);
+    }
+
+    .new-puppy-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      padding: 12px 14px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      margin-bottom: 1rem;
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+    .divider { border: none; border-top: 0.5px solid var(--border); margin: 1rem 0; }
+
+    @media (max-width: 560px) {
+      .form-row { flex-direction: column; }
+      .form-group { min-width: 100%; }
+      .tab-item { padding: 10px 12px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="paw">🐾</div>
+  <div>
+    <h1>Puppy weight tracker</h1>
+    <p id="header-sub">Loading…</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="tab-bar">
+      <div class="tab-item active" onclick="switchTab('log')">Weight log</div>
+      <div class="tab-item" onclick="switchTab('chart')">Growth chart</div>
+      <div class="tab-item" onclick="switchTab('manage')">Puppies</div>
+    </div>
+
+    <!-- WEIGHT LOG TAB -->
+    <div id="tab-log" class="tab-content">
+      <div class="section-title">Add weight entry</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Puppy</label>
+          <select id="sel-puppy"></select>
+        </div>
+        <div class="form-group" style="max-width:170px;">
+          <label>Date</label>
+          <input type="date" id="inp-date">
+        </div>
+        <div class="form-group" style="max-width:140px;">
+          <label>Weight (g)</label>
+          <input type="number" id="inp-weight" placeholder="e.g. 250" min="1" step="0.5">
+        </div>
+        <div class="form-group" style="flex:0;">
+          <label>&nbsp;</label>
+          <button class="btn btn-primary" onclick="addEntry()">Add entry</button>
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="section-title">All entries</div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="entries-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Day</th>
+              <th>Puppy</th>
+              <th>Gender</th>
+              <th>Weight (g)</th>
+              <th>Change</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="entries-body"></tbody>
+        </table>
+      </div>
+      <div id="empty-entries" class="empty-state" style="display:none;">No entries yet — add your first weight above.</div>
+    </div>
+
+    <!-- CHART TAB -->
+    <div id="tab-chart" class="tab-content" style="display:none;">
+      <div class="section-title">Filter puppies</div>
+      <div class="filter-tabs" id="chart-filter-tabs"></div>
+      <hr class="divider">
+      <div class="metrics" id="metrics-row"></div>
+      <div class="legend-row" id="chart-legend"></div>
+      <div class="chart-wrap">
+        <canvas id="growthChart" role="img" aria-label="Puppy weight progression over time"></canvas>
+      </div>
+    </div>
+
+    <!-- MANAGE TAB -->
+    <div id="tab-manage" class="tab-content" style="display:none;">
+      <div class="section-title">Add a puppy</div>
+      <div class="new-puppy-row">
+        <div class="form-group" style="min-width:140px;max-width:180px;">
+          <label>Name</label>
+          <input type="text" id="inp-name" placeholder="e.g. Biscuit">
+        </div>
+        <div class="form-group" style="min-width:110px;max-width:140px;">
+          <label>Gender</label>
+          <select id="inp-gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:0;">
+          <label>Color</label>
+          <div class="color-picker" id="color-picker"></div>
+        </div>
+        <div class="form-group" style="flex:0;">
+          <label>&nbsp;</label>
+          <button class="btn btn-primary" onclick="addPuppy()">Add puppy</button>
+        </div>
+      </div>
+
+      <div class="section-title">Your litter</div>
+      <div id="puppies-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'puppy-tracker-v1';
+
+  const PALETTE = {
+    Green:  '#3a9e4a',
+    Pink:   '#e05fa0',
+    Orange: '#e07820',
+    Blue:   '#378ADD',
+    White:  '#888780',
+    Yellow: '#BA7517',
+    Red:    '#E24B4A',
+  };
+
+  const ALL_COLORS = ['#3a9e4a','#e05fa0','#e07820','#378ADD','#888780','#BA7517','#E24B4A','#7F77DD','#1D9E75','#639922'];
+
+  const DAY1 = '2025-04-11';
+
+  const DEFAULT_STATE = {
+    puppies: [
+      { id: 1, name: 'Green',  gender: 'Boy',    color: PALETTE.Green  },
+      { id: 2, name: 'Pink',   gender: 'Female', color: PALETTE.Pink   },
+      { id: 3, name: 'Orange', gender: 'Boy',    color: PALETTE.Orange },
+      { id: 4, name: 'Blue',   gender: 'Male',   color: PALETTE.Blue   },
+      { id: 5, name: 'White',  gender: 'Female', color: PALETTE.White  },
+      { id: 6, name: 'Yellow', gender: 'Female', color: PALETTE.Yellow },
+      { id: 7, name: 'Red',    gender: 'Female', color: PALETTE.Red    },
+    ],
+    entries: [
+      { id: 101, puppyId: 1, date: DAY1, weight: 214   },
+      { id: 102, puppyId: 2, date: DAY1, weight: 179   },
+      { id: 103, puppyId: 3, date: DAY1, weight: 200   },
+      { id: 104, puppyId: 4, date: DAY1, weight: 191   },
+      { id: 105, puppyId: 5, date: DAY1, weight: 147   },
+      { id: 106, puppyId: 6, date: DAY1, weight: 180   },
+      { id: 107, puppyId: 7, date: DAY1, weight: 187.5 },
+    ],
+    nextId: 200,
+    selectedColor: ALL_COLORS[0],
+    activeTab: 'log',
+    chartFilter: [],
+  };
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  let state = loadState();
+  let growthChart = null;
+
+  function today() { return new Date().toISOString().split('T')[0]; }
+
+  function dayNum(dateStr) {
+    const allDates = state.entries.map(e => e.date).sort();
+    if (!allDates.length) return 1;
+    const d1 = new Date(allDates[0]), d2 = new Date(dateStr);
+    return Math.round((d2 - d1) / 86400000) + 1;
+  }
+
+  function fmt(d) {
+    const [y, m, dd] = d.split('-');
+    return `${dd}/${m}/${y}`;
+  }
+
+  function getPuppy(id) { return state.puppies.find(p => p.id === id); }
+
+  function genderIcon(g) {
+    if (!g) return '';
+    const l = g.toLowerCase();
+    if (l === 'male' || l === 'boy')    return '<span style="color:#378ADD;">♂</span>';
+    if (l === 'female' || l === 'girl') return '<span style="color:#e05fa0;">♀</span>';
+    return '';
+  }
+
+  function updateHeaderSub() {
+    const n = state.puppies.length;
+    const days = state.entries.length
+      ? dayNum([...state.entries].sort((a,b) => b.date.localeCompare(a.date))[0].date)
+      : 1;
+    document.getElementById('header-sub').textContent =
+      `Litter of ${n} · Day ${days}`;
+  }
+
+  function switchTab(tab) {
+    state.activeTab = tab;
+    saveState();
+    const tabs = ['log', 'chart', 'manage'];
+    document.querySelectorAll('.tab-item').forEach((el, i) => {
+      el.classList.toggle('active', tabs[i] === tab);
+    });
+    document.getElementById('tab-log').style.display    = tab === 'log'    ? '' : 'none';
+    document.getElementById('tab-chart').style.display  = tab === 'chart'  ? '' : 'none';
+    document.getElementById('tab-manage').style.display = tab === 'manage' ? '' : 'none';
+    if (tab === 'chart')  { renderChart(); renderMetrics(); }
+    if (tab === 'manage') renderManage();
+  }
+
+  function addPuppy() {
+    const name   = document.getElementById('inp-name').value.trim();
+    const gender = document.getElementById('inp-gender').value;
+    if (!name) { alert('Please enter a name for the puppy.'); return; }
+    state.puppies.push({ id: state.nextId++, name, gender, color: state.selectedColor });
+    document.getElementById('inp-name').value = '';
+    saveState();
+    renderAll();
+  }
+
+  function removePuppy(id) {
+    if (!confirm('Remove this puppy and all their weight entries?')) return;
+    state.puppies     = state.puppies.filter(p => p.id !== id);
+    state.entries     = state.entries.filter(e => e.puppyId !== id);
+    state.chartFilter = state.chartFilter.filter(x => x !== id);
+    saveState();
+    renderAll();
+    if (state.activeTab === 'chart') { renderChart(); renderMetrics(); }
+  }
+
+  function addEntry() {
+    const pid    = parseInt(document.getElementById('sel-puppy').value);
+    const date   = document.getElementById('inp-date').value;
+    const weight = parseFloat(document.getElementById('inp-weight').value);
+    if (!pid || !date || isNaN(weight) || weight < 1) {
+      alert('Please fill in all fields with valid values.');
+      return;
+    }
+    const exists = state.entries.find(e => e.puppyId === pid && e.date === date);
+    if (exists) { exists.weight = weight; }
+    else { state.entries.push({ id: state.nextId++, puppyId: pid, date, weight }); }
+    document.getElementById('inp-weight').value = '';
+    saveState();
+    renderAll();
+    updateHeaderSub();
+  }
+
+  function deleteEntry(id) {
+    if (!confirm('Delete this entry?')) return;
+    state.entries = state.entries.filter(e => e.id !== id);
+    saveState();
+    renderAll();
+    updateHeaderSub();
+  }
+
+  function renderPuppySelect() {
+    const sel = document.getElementById('sel-puppy');
+    sel.innerHTML = state.puppies.map(p =>
+      `<option value="${p.id}">${p.name}</option>`
+    ).join('');
+  }
+
+  function renderEntries() {
+    const body  = document.getElementById('entries-body');
+    const empty = document.getElementById('empty-entries');
+    const thead = document.querySelector('#entries-table thead');
+    const sorted = [...state.entries].sort((a,b) =>
+      b.date.localeCompare(a.date) || a.puppyId - b.puppyId
+    );
+    if (!sorted.length) {
+      body.innerHTML = '';
+      empty.style.display = '';
+      thead.style.display = 'none';
+      return;
+    }
+    empty.style.display = 'none';
+    thead.style.display = '';
+    body.innerHTML = sorted.map(e => {
+      const p = getPuppy(e.puppyId);
+      if (!p) return '';
+      const prev = state.entries
+        .filter(x => x.puppyId === e.puppyId && x.date < e.date)
+        .sort((a,b) => b.date.localeCompare(a.date))[0];
+      let change = '<span style="color:var(--text-secondary);font-size:12px;">day 1</span>';
+      if (prev) {
+        const diff = e.weight - prev.weight;
+        const sign = diff >= 0 ? '+' : '';
+        const col  = diff >= 0 ? 'var(--text-success)' : 'var(--text-danger)';
+        change = `<span style="color:${col};font-size:12px;">${sign}${diff.toFixed(1)}g</span>`;
+      }
+      return `<tr>
+        <td>${fmt(e.date)}</td>
+        <td style="color:var(--text-secondary);">Day ${dayNum(e.date)}</td>
+        <td>
+          <span style="display:inline-flex;align-items:center;gap:6px;">
+            <span class="dot" style="background:${p.color};"></span>${p.name}
+          </span>
+        </td>
+        <td>${genderIcon(p.gender)} <span style="font-size:12px;color:var(--text-secondary);">${p.gender}</span></td>
+        <td style="font-weight:500;">${e.weight}g</td>
+        <td>${change}</td>
+        <td><button class="del-btn" onclick="deleteEntry(${e.id})">✕</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderChartFilter() {
+    const wrap = document.getElementById('chart-filter-tabs');
+    const tabs = [{ id: 0, name: 'All puppies', color: null }, ...state.puppies];
+    wrap.innerHTML = tabs.map(p => {
+      const isActive = p.id === 0
+        ? !state.chartFilter.length
+        : state.chartFilter.includes(p.id);
+      const dot = p.color
+        ? `<span class="dot" style="background:${p.color};"></span>`
+        : '';
+      return `<div class="filter-tab${isActive ? ' active' : ''}" onclick="toggleChartFilter(${p.id})">${dot}${p.name}</div>`;
+    }).join('');
+  }
+
+  function toggleChartFilter(id) {
+    if (id === 0) { state.chartFilter = []; }
+    else {
+      if (state.chartFilter.includes(id))
+        state.chartFilter = state.chartFilter.filter(x => x !== id);
+      else
+        state.chartFilter.push(id);
+    }
+    saveState();
+    renderChartFilter();
+    renderChart();
+    renderMetrics();
+  }
+
+  function renderMetrics() {
+    const row = document.getElementById('metrics-row');
+    const activePuppies = state.chartFilter.length
+      ? state.puppies.filter(p => state.chartFilter.includes(p.id))
+      : state.puppies;
+    if (!state.entries.length) { row.innerHTML = ''; return; }
+    row.innerHTML = activePuppies.map(p => {
+      const pe = state.entries
+        .filter(e => e.puppyId === p.id)
+        .sort((a,b) => a.date.localeCompare(b.date));
+      if (!pe.length) return '';
+      const latest = pe[pe.length - 1].weight;
+      const first  = pe[0].weight;
+      const gain   = latest - first;
+      const gainPct = first > 0 ? ((gain / first) * 100).toFixed(1) : '0';
+      const gainStr = gain !== 0
+        ? `${gain >= 0 ? '+' : ''}${gain.toFixed(1)}g (${gainPct}%)`
+        : 'no change yet';
+      return `<div class="metric-card">
+        <div class="metric-label">
+          <span class="dot" style="background:${p.color};"></span>
+          ${p.name} ${genderIcon(p.gender)}
+        </div>
+        <div class="metric-value">${latest}g</div>
+        <div class="metric-sub">${gainStr}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderChart() {
+    const activePuppies = state.chartFilter.length
+      ? state.puppies.filter(p => state.chartFilter.includes(p.id))
+      : state.puppies;
+    const allDates = [...new Set(state.entries.map(e => e.date))].sort();
+
+    const legend = document.getElementById('chart-legend');
+    legend.innerHTML = activePuppies.map(p =>
+      `<div class="legend-item"><span class="legend-dot" style="background:${p.color};"></span>${p.name}</div>`
+    ).join('');
+
+    if (growthChart) { growthChart.destroy(); growthChart = null; }
+
+    if (!allDates.length) {
+      legend.innerHTML = '<span style="color:var(--text-secondary);font-size:13px;">No data to display yet — add some entries first.</span>';
+      return;
+    }
+
+    const datasets = activePuppies.map(p => ({
+      label: p.name,
+      data: allDates.map(d => {
+        const e = state.entries.find(x => x.puppyId === p.id && x.date === d);
+        return e ? e.weight : null;
+      }),
+      borderColor: p.color,
+      backgroundColor: p.color + '22',
+      pointBackgroundColor: p.color,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      tension: 0.3,
+      spanGaps: false,
+      fill: false,
+    }));
+
+    const labels = allDates.map((d, i) => {
+      const parts = d.split('-');
+      return `Day ${i+1} (${parts[2]}/${parts[1]})`;
+    });
+
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+    const tickColor = isDark ? '#b4b2a9' : '#5f5e5a';
+
+    growthChart = new Chart(document.getElementById('growthChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ctx.parsed.y !== null
+                ? `${ctx.dataset.label}: ${ctx.parsed.y}g`
+                : null,
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: gridColor },
+            ticks: { font: { size: 11 }, color: tickColor, maxRotation: 45, autoSkip: true, maxTicksLimit: 14 }
+          },
+          y: {
+            grid: { color: gridColor },
+            ticks: { callback: v => v + 'g', font: { size: 11 }, color: tickColor },
+            title: { display: true, text: 'Weight (g)', font: { size: 12 }, color: tickColor },
+            min: 100,
+          }
+        }
+      }
+    });
+  }
+
+  function renderColorPicker() {
+    const wrap = document.getElementById('color-picker');
+    if (!wrap) return;
+    wrap.innerHTML = ALL_COLORS.map(c =>
+      `<div class="color-swatch${c === state.selectedColor ? ' selected' : ''}"
+        style="background:${c};"
+        onclick="selectColor('${c}')"></div>`
+    ).join('');
+  }
+
+  function selectColor(c) {
+    state.selectedColor = c;
+    saveState();
+    renderColorPicker();
+  }
+
+  function renderManage() {
+    renderColorPicker();
+    const list = document.getElementById('puppies-list');
+    if (!state.puppies.length) {
+      list.innerHTML = '<div class="empty-state">No puppies yet — add one above.</div>';
+      return;
+    }
+    list.innerHTML = `<div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Color</th>
+            <th>Entries</th>
+            <th>Latest weight</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>${state.puppies.map(p => {
+          const pe = state.entries
+            .filter(e => e.puppyId === p.id)
+            .sort((a,b) => a.date.localeCompare(b.date));
+          const latest = pe.length ? pe[pe.length-1].weight + 'g' : '—';
+          return `<tr>
+            <td style="font-weight:500;">${p.name}</td>
+            <td>${genderIcon(p.gender)} <span style="font-size:12px;color:var(--text-secondary);">${p.gender}</span></td>
+            <td><span class="dot" style="background:${p.color};width:14px;height:14px;"></span></td>
+            <td style="color:var(--text-secondary);">${pe.length}</td>
+            <td>${latest}</td>
+            <td><button class="del-btn" onclick="removePuppy(${p.id})">✕</button></td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+  }
+
+  function renderAll() {
+    renderPuppySelect();
+    renderEntries();
+    renderChartFilter();
+    renderManage();
+    updateHeaderSub();
+    if (state.activeTab === 'chart') { renderChart(); renderMetrics(); }
+  }
+
+  document.getElementById('inp-date').value = today();
+  switchTab(state.activeTab);
+  renderAll();
+</script>
+</body>
+</html>
