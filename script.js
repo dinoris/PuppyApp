@@ -686,7 +686,7 @@ function renderPawrents() {
   }
 
   const cards = PAWRENTS.map(parent => {
-    const bannerTextColor = isLightColor(parent.color) ? "#333" : "#fff";
+    const bannerTextColor = isLightColor(parent.color) ? "#fff" : "#fff";
 
     return `
       <div class="pawrents-card">
