@@ -84,8 +84,8 @@ function formatDate(dateStr) {
 }
 
 function genderIcon(gender) {
-  if (gender === "Boy") return "♂️";
-  if (gender === "Girl") return "♀️";
+  if (gender === "Boy") return '<span class="gender male">♂</span>';
+  if (gender === "Girl") return '<span class="gender female">♀</span>';
   return "";
 }
 
