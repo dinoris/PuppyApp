@@ -762,40 +762,67 @@ td {
     width: 100%;
     justify-content: space-between;
   }
+
+}
+.puppies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .puppy-profile-card {
+  background: #fff;
+  border: 1px solid #eadfce;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  padding: 0;
 }
 
-.puppy-banner {
-  width: 100%;
-  padding: 18px 22px;
-  margin: 0;
-}
-
-.puppy-banner-content {
+.puppy-profile-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-start;
-  font-weight: 700;
-  font-size: 1.8rem;
-}
-
-.puppy-profile-body {
-  padding: 20px 22px 22px;
-}
-
-.puppy-gender-line {
   margin-bottom: 16px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #6b7280;
 }
 
 .puppy-profile-stats {
   display: grid;
-  gap: 10px;
-  margin-bottom: 22px;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.puppy-profile-section {
+  margin-top: 14px;
+}
+
+.puppy-profile-section h4 {
+  margin-bottom: 8px;
+  color: #8b6f47;
+}
+
+.puppy-profile-section ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.gender.male {
+  color: #4c92f4;
+  font-weight: bold;
+}
+
+.gender.female {
+  color: #e05fa0;
+  font-weight: bold;
+}
+
+.puppy-banner {
+  padding: 12px 16px;
+}
+
+.puppy-banner-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
 }
