@@ -1,3 +1,5 @@
+import { getCombinedAwards } from "./trophies.js";
+import { getAutomaticMilestones } from "./milestones.js";
 import { ADMIN_EMAILS, PUPPIES, TROPHY_OPTIONS, MILESTONE_OPTIONS } from "./config.js";
 import { todayStr, formatDate, escapeHtml } from "./helpers.js";
 import { state } from "./state.js";
@@ -108,42 +110,6 @@ function allDates(timelines) {
     arr.forEach(e => set.add(e.date));
   }
   return [...set].sort();
-}
-
-function getAutomaticAwards() {
-  const timelines = buildTimelines(allEntries);
-  const autoAwards = [];
-
-  for (const [pid, arr] of Object.entries(timelines)) {
-    if (arr.length < 2) continue;
-
-    const birthWeight = arr[0].weight;
-    const doubled = arr.find((e, i) => i > 0 && e.weight >= birthWeight * 2);
-
-    if (doubled) {
-      autoAwards.push({
-        id: `auto-double-${pid}`,
-        puppyId: Number(pid),
-        type: "milestone",
-        title: "Doubled Birth Weight",
-        date: doubled.date,
-        notes: `${birthWeight}g → ${doubled.weight}g`,
-        isAuto: true
-      });
-    }
-  }
-
-  return autoAwards.sort((a, b) => b.date.localeCompare(a.date));
-}
-
-function getCombinedAwards() {
-  const manualAwards = allAwards.map(item => ({
-    ...item,
-    isAuto: false
-  }));
-
-  return [...manualAwards, ...getAutomaticAwards()]
-    .sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 }
 
 const btnLogin = document.getElementById("btn-login");
@@ -651,7 +617,7 @@ function renderInsights() {
     }).join("");
   }
 
-  const milestones = getAutomaticAwards();
+  const milestones = getAutomaticMilestones(allEntries);
 
   if (milestones.length === 0) {
     milestonesCont.innerHTML = `<p class="empty-state">No puppies have doubled birth weight yet.</p>`;
@@ -731,7 +697,7 @@ function populateAwardTitleOptions() {
 function renderAwards() {
   if (!awardsContainer) return;
 
-  const combined = getCombinedAwards();
+  const combined = getCombinedAwards(allAwards, allEntries);
   const filterVal = Number(awardFilterPuppy.value) || "all";
 
   const filtered = filterVal === "all"
