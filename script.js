@@ -69,8 +69,11 @@ const PAWRENTS = [
     personality: "Sweet, protective, dramatic",
     nickname: "Mama Bear",
     funFact: "Can demand snacks with one look",
-    quote: "I carried this whole family on my back."
-  },
+quotes: [
+  "I carried this whole family on my back.",
+  "Feed the babies, then feed me.",
+  "Give me that sock, now!"
+]  },
   {
     id: "dad",
     role: "Dad",
@@ -84,8 +87,11 @@ const PAWRENTS = [
     personality: "Energetic, scared, sneaky",
     nickname: "The Thief",
     funFact: "Acts like he owns the couch",
-    quote: "I may not help much, but I bring presence."
-  }
+    quotes: [
+  "I may not help much, but I bring presence.",
+  "Feed me, then feed the babies.",
+  "What was that noise?."
+]  }
 ];
 
 const app = initializeApp(FIREBASE_CONFIG);

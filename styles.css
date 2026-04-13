@@ -912,7 +912,10 @@ td {
 
 .pawrents-banner-content {
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 2rem;
+  font-family: 'Lora', serif;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 .pawrents-body {
@@ -953,6 +956,11 @@ td {
   font-style: italic;
   line-height: 1.5;
   color: #4a5568;
+}
+
+.pawrents-quotes {
+  display: grid;
+  gap: 8px;
 }
 
 @media (max-width: 700px) {
