@@ -157,8 +157,11 @@ function statusBadge(change, isFirst) {
 
 function changeCell(change, isFirst) {
   if (isFirst || change === null) return '<span class="change-neu">—</span>';
-  if (change > 0) return `<span class="change-pos">+${change}g</span>`;
-  if (change < 0) return `<span class="change-neg">${change}g</span>`;
+
+  const formatted = Number(change).toFixed(1);
+
+  if (change > 0) return `<span class="change-pos">+${formatted}g</span>`;
+  if (change < 0) return `<span class="change-neg">${formatted}g</span>`;
   return '<span class="change-neu">±0g</span>';
 }
 
