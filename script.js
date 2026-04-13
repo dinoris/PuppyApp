@@ -220,6 +220,8 @@ function renderPuppies() {
 
   const timelines = buildTimelines(allEntries);
   const combinedAwards = getCombinedAwards();
+  const allDatesList = allDates(timelines);
+const puppyAge = allDatesList.length;
 
   function isLightColor(hex) {
     const c = hex.replace("#", "");
@@ -267,6 +269,10 @@ function renderPuppies() {
       ? last.weight - arr[arr.length - 2].weight
       : null;
 
+      const avgDaily = arr.length > 1
+  ? (totalGain / (arr.length - 1))
+  : null;
+
     let latestStatus = "First Entry";
     if (latestChange !== null) {
       if (latestChange < 0) latestStatus = "Weight Loss";
@@ -288,17 +294,21 @@ function renderPuppies() {
           </div>
 
           <div class="puppy-profile-stats">
-            <div><strong>Birth Weight:</strong> ${first.weight}g</div>
-            <div><strong>Current Weight:</strong> ${last.weight}g</div>
-            <div><strong>Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
-            <div><strong>Days Logged:</strong> ${arr.length}</div>
-            <div><strong>Latest Change:</strong> ${
-              latestChange === null
-                ? "—"
-                : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
-            }</div>
-            <div><strong>Status:</strong> ${latestStatus}</div>
-          </div>
+  <div><strong>🐣 Birth:</strong> ${first.weight}g</div>
+  <div><strong>⚖️ Current:</strong> ${last.weight}g</div>
+  <div><strong>📈 Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
+  <div><strong>🚀 Latest Gain:</strong> ${
+    latestChange === null
+      ? "—"
+      : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
+  }</div>
+  <div><strong>📊 Avg / Day:</strong> ${
+    avgDaily === null
+      ? "—"
+      : `${avgDaily > 0 ? "+" : ""}${Number(avgDaily).toFixed(1)}g`
+  }</div>
+  <div><strong>Status:</strong> ${latestStatus}</div>
+</div>
 
           <div class="puppy-profile-section">
             <h4>Milestones</h4>
@@ -322,7 +332,12 @@ function renderPuppies() {
     `;
   }).join("");
 
-  puppiesContainer.innerHTML = `<div class="puppies-grid">${cards}</div>`;
+puppiesContainer.innerHTML = `
+  <div class="puppies-age-banner">
+    Puppies are <strong>${puppyAge} day${puppyAge === 1 ? "" : "s"} old</strong>
+  </div>
+  <div class="puppies-grid">${cards}</div>
+`;
 }
 
 const btnLogin = document.getElementById("btn-login");
