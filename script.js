@@ -659,11 +659,11 @@ function renderInsights() {
     .sort((a, b) => b.gain - a.gain);
 
   if (gainers.length > 0) {
-    const top = gainers[0];
-    insGainer.textContent = `${getPuppy(top.puppyId)?.name} (+${top.gain}g)`;
-  } else {
-    insGainer.textContent = "—";
-  }
+  const top = gainers[0];
+  insGainer.textContent = `${getPuppy(top.puppyId)?.name} (+${Number(top.gain).toFixed(1)}g)`;
+} else {
+  insGainer.textContent = "—";
+}
 
   const alerts = [];
   for (const [pid, arr] of Object.entries(timelines)) {
@@ -687,9 +687,9 @@ function renderInsights() {
     alertsCont.innerHTML = alerts.map(a => {
       const icon = a.type === "loss" ? "⬇" : "⚠";
       const cls = a.type === "loss" ? "alert-loss" : "alert-low";
-      const label = a.type === "loss"
-        ? `Weight loss of ${Math.abs(a.change)}g on ${a.date}`
-        : `Low gain of ${a.change}g on ${a.date}`;
+const label = a.type === "loss"
+  ? `Weight loss of ${Number(Math.abs(a.change)).toFixed(1)}g on ${a.date}`
+  : `Low gain of ${Number(a.change).toFixed(1)}g on ${a.date}`;
 
       return `<div class="alert-item ${cls}">
         <span>${icon}</span>
@@ -754,7 +754,7 @@ function renderInsights() {
               <td>${r.puppy.gender}</td>
               <td>${r.first.weight}g</td>
               <td>${r.last.weight}g</td>
-              <td>${r.totalGain > 0 ? "+" : ""}${r.totalGain}g</td>
+              <td>${r.totalGain > 0 ? "+" : ""}${Number(r.totalGain).toFixed(1)}g</td>
               <td>${r.avgDaily !== "—" ? r.avgDaily + "g" : "—"}</td>
               <td>${r.days}</td>
             </tr>
