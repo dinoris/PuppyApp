@@ -84,34 +84,24 @@ function buildTimelines(entries) {
   return map;
 }
 
-function computeChange(arr, index) {
-  if (index === 0) return null;
-  return arr[index].weight - arr[index - 1].weight;
-}
+// ✅ NEW DOM (split)
+const trophyPuppy = document.getElementById("trophy-puppy");
+const trophyTitle = document.getElementById("trophy-title");
+const trophyDate = document.getElementById("trophy-date");
+const trophyNotes = document.getElementById("trophy-notes");
+const btnTrophyAdd = document.getElementById("btn-trophy-add");
+const trophyFilter = document.getElementById("trophy-filter-puppy");
+const trophiesContainer = document.getElementById("trophies-container");
 
-function statusBadge(change, isFirst) {
-  if (isFirst) return '<span class="badge badge-first">First</span>';
-  if (change === null) return '<span class="badge badge-neutral">—</span>';
-  if (change < 0) return '<span class="badge badge-loss">⬇ Weight Loss</span>';
-  if (change < 10) return '<span class="badge badge-low">⚠ Low Gain</span>';
-  return '<span class="badge badge-good">✓ Good Gain</span>';
-}
+const milestonePuppy = document.getElementById("milestone-puppy");
+const milestoneTitle = document.getElementById("milestone-title");
+const milestoneDate = document.getElementById("milestone-date");
+const milestoneNotes = document.getElementById("milestone-notes");
+const btnMilestoneAdd = document.getElementById("btn-milestone-add");
+const milestoneFilter = document.getElementById("milestone-filter-puppy");
+const milestonesAwardsContainer = document.getElementById("milestones-awards-container");
 
-function changeCell(change, isFirst) {
-  if (isFirst || change === null) return '<span class="change-neu">—</span>';
-  if (change > 0) return `<span class="change-pos">+${change}g</span>`;
-  if (change < 0) return `<span class="change-neg">${change}g</span>`;
-  return '<span class="change-neu">±0g</span>';
-}
-
-function allDates(timelines) {
-  const set = new Set();
-  for (const arr of Object.values(timelines)) {
-    arr.forEach(e => set.add(e.date));
-  }
-  return [...set].sort();
-}
-
+// EXISTING DOM (unchanged)
 const btnLogin = document.getElementById("btn-login");
 const btnLogout = document.getElementById("btn-logout");
 const authStatus = document.getElementById("auth-status");
@@ -125,24 +115,6 @@ const entriesTbody = document.getElementById("entries-tbody");
 const filterPuppy = document.getElementById("filter-puppy");
 const colDelete = document.getElementById("col-delete");
 const toggleAverage = document.getElementById("toggle-average");
-
-const insHeaviest = document.getElementById("ins-heaviest-val");
-const insLightest = document.getElementById("ins-lightest-val");
-const insAvg = document.getElementById("ins-avg-val");
-const insGainer = document.getElementById("ins-gainer-val");
-const alertsCont = document.getElementById("alerts-container");
-const milestonesCont = document.getElementById("milestones-container");
-const summaryBody = document.getElementById("puppy-summary-container");
-
-const awardPuppy = document.getElementById("award-puppy");
-const awardType = document.getElementById("award-type");
-const awardTitle = document.getElementById("award-title");
-const awardDate = document.getElementById("award-date");
-const awardNotes = document.getElementById("award-notes");
-const btnAwardAdd = document.getElementById("btn-award-add");
-const awardMessage = document.getElementById("award-message");
-const awardFilterPuppy = document.getElementById("award-filter-puppy");
-const awardsContainer = document.getElementById("awards-container");
 
 function syncState() {
   state.currentUser = currentUser;
@@ -158,628 +130,71 @@ function updateAuthUI(user) {
   isAdmin = ADMIN_EMAILS.includes(user?.email);
   syncState();
 
-  if (user) {
-    authStatus.textContent = isAdmin ? `Editor: ${user.email}` : `Viewer: ${user.email}`;
-    btnLogin.style.display = "none";
-    btnLogout.style.display = "inline-block";
-  } else {
-    authStatus.textContent = "";
-    btnLogin.style.display = "inline-block";
-    btnLogout.style.display = "none";
-  }
-
-  readonlyBanner.style.display = isAdmin ? "none" : "block";
   btnAdd.disabled = !isAdmin;
-  btnAwardAdd.disabled = !isAdmin;
-  colDelete.style.display = isAdmin ? "" : "none";
+  btnTrophyAdd.disabled = !isAdmin;
+  btnMilestoneAdd.disabled = !isAdmin;
 
   renderTable();
-  renderAwards();
+  renderTrophies();
+  renderMilestonesAwards();
 }
 
-btnLogin.addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (err) {
-    console.error("Login error:", err);
-    showMessage("Login failed: " + err.message, "error");
-  }
-});
-
-btnLogout.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-  } catch (err) {
-    console.error("Logout error:", err);
-  }
-});
-
-onAuthStateChanged(auth, user => updateAuthUI(user));
-
-const entriesRef = ref(db, "entries");
-const awardsRef = ref(db, "awards");
-
-onValue(entriesRef, (snapshot) => {
-  allEntries = parseEntriesSnapshot(snapshot);
-  syncState();
-  renderAll();
-}, (err) => {
-  console.error("Firebase read error:", err);
-  entriesTbody.innerHTML = `<tr><td colspan="8" class="empty-state">⚠ Error loading data: ${err.message}</td></tr>`;
-});
-
-onValue(awardsRef, (snapshot) => {
-  allAwards = parseAwardsSnapshot(snapshot);
-  syncState();
-  renderAwards();
-}, (err) => {
-  console.error("Firebase awards read error:", err);
-  awardsContainer.innerHTML = `<p class="empty-state">⚠ Error loading trophies and milestones: ${err.message}</p>`;
-});
-
-btnAdd.addEventListener("click", async () => {
+// 🔥 NEW ADD FUNCTIONS
+btnTrophyAdd?.addEventListener("click", async () => {
   if (!isAdmin) return;
 
-  const puppyId = Number(inputPuppy.value);
-  const date = inputDate.value;
-  const weight = Number(inputWeight.value);
-
-  if (!puppyId || !date || !weight || weight <= 0) {
-    showMessage("Please fill in all fields with valid values.", "error");
-    return;
-  }
-
-  const dup = allEntries.find(e => e.puppyId === puppyId && e.date === date);
-  if (dup) {
-    showMessage(`${getPuppy(puppyId)?.name} already has an entry for ${date}.`, "error");
-    return;
-  }
-
-  btnAdd.disabled = true;
-  try {
-    await push(entriesRef, { puppyId, date, weight });
-    inputWeight.value = "";
-    showMessage("Entry added successfully!", "success");
-  } catch (err) {
-    console.error("Add entry error:", err);
-    showMessage("Failed to save: " + err.message, "error");
-  } finally {
-    btnAdd.disabled = false;
-  }
-});
-
-btnAwardAdd.addEventListener("click", async () => {
-  if (!isAdmin) return;
-
-  const puppyId = Number(awardPuppy.value);
-  const type = awardType.value;
-  const title = awardTitle.value.trim();
-  const date = awardDate.value;
-  const notes = awardNotes.value.trim();
-
-  if (!puppyId || !type || !title || !date) {
-    showAwardMessage("Please complete puppy, type, title, and date.", "error");
-    return;
-  }
-
-  btnAwardAdd.disabled = true;
-  try {
-    await push(awardsRef, {
-      puppyId,
-      type,
-      title,
-      date,
-      notes
-    });
-
-    awardNotes.value = "";
-    showAwardMessage("Trophy or milestone added successfully!", "success");
-  } catch (err) {
-    console.error("Add award error:", err);
-    showAwardMessage("Failed to save: " + err.message, "error");
-  } finally {
-    btnAwardAdd.disabled = false;
-  }
-});
-
-function showMessage(msg, type = "info") {
-  formMessage.textContent = msg;
-  formMessage.className = "form-message" + (type === "success" ? " success" : "");
-  setTimeout(() => {
-    formMessage.textContent = "";
-    formMessage.className = "form-message";
-  }, 4000);
-}
-
-function showAwardMessage(msg, type = "info") {
-  awardMessage.textContent = msg;
-  awardMessage.className = "form-message" + (type === "success" ? " success" : "");
-  setTimeout(() => {
-    awardMessage.textContent = "";
-    awardMessage.className = "form-message";
-  }, 4000);
-}
-
-async function deleteEntry(entryId) {
-  if (!isAdmin) return;
-  if (!confirm("Delete this entry?")) return;
-
-  try {
-    await remove(ref(db, `entries/${entryId}`));
-  } catch (err) {
-    console.error("Delete error:", err);
-    alert("Failed to delete: " + err.message);
-  }
-}
-
-async function deleteAward(awardId) {
-  if (!isAdmin) return;
-  if (!confirm("Delete this trophy or milestone?")) return;
-
-  try {
-    await remove(ref(db, `awards/${awardId}`));
-  } catch (err) {
-    console.error("Delete award error:", err);
-    alert("Failed to delete: " + err.message);
-  }
-}
-
-function renderAll() {
-  renderTable();
-  renderChart();
-  renderInsights();
-  renderAwards();
-}
-
-function renderTable() {
-  const timelines = buildTimelines(allEntries);
-  const filterVal = Number(filterPuppy.value) || "all";
-
-  const rows = [];
-  for (const [pidStr, arr] of Object.entries(timelines)) {
-    const pid = Number(pidStr);
-    arr.forEach((item, i) => {
-      const change = computeChange(arr, i);
-      rows.push({ ...item, puppyId: pid, change, isFirst: i === 0 });
-    });
-  }
-
-  const filtered = filterVal === "all" ? rows : rows.filter(r => r.puppyId === filterVal);
-  filtered.sort((a, b) => b.date.localeCompare(a.date) || a.puppyId - b.puppyId);
-
-  if (filtered.length === 0) {
-    entriesTbody.innerHTML = `<tr><td colspan="8" class="empty-state">No entries yet. Add the first weight above!</td></tr>`;
-    return;
-  }
-
-  const isAdminNow = isAdmin;
-  entriesTbody.innerHTML = filtered.map(row => {
-    const puppy = getPuppy(row.puppyId);
-    if (!puppy) return "";
-
-    const deleteBtn = isAdminNow
-      ? `<button class="btn btn-danger" data-id="${row.entryId}" title="Delete entry">✕</button>`
-      : "";
-
-    return `
-      <tr>
-        <td>${formatDate(row.date)}</td>
-        <td><strong>Day ${row.dayNumber}</strong></td>
-        <td>
-          <div class="puppy-cell">
-            <span class="color-dot" style="background:${puppy.color}"></span>
-            ${puppy.name}
-          </div>
-        </td>
-        <td>${puppy.gender}</td>
-        <td><strong>${row.weight}g</strong></td>
-        <td>${changeCell(row.change, row.isFirst)}</td>
-        <td>${statusBadge(row.change, row.isFirst)}</td>
-        <td>${deleteBtn}</td>
-      </tr>`;
-  }).join("");
-
-  entriesTbody.querySelectorAll(".btn-danger[data-id]").forEach(btn => {
-    btn.addEventListener("click", () => deleteEntry(btn.dataset.id));
+  await push(ref(db, "awards"), {
+    puppyId: Number(trophyPuppy.value),
+    type: "trophy",
+    title: trophyTitle.value,
+    date: trophyDate.value,
+    notes: trophyNotes.value
   });
-}
+});
 
-function renderChart() {
-  const timelines = buildTimelines(allEntries);
-  const dates = allDates(timelines);
+btnMilestoneAdd?.addEventListener("click", async () => {
+  if (!isAdmin) return;
 
-  if (dates.length === 0) {
-    if (growthChart) {
-      growthChart.destroy();
-      growthChart = null;
-      syncState();
-    }
-    return;
-  }
-
-  const showAverage = toggleAverage.checked;
-  const dateLabels = dates.map(d => {
-    const dt = new Date(d + "T00:00:00");
-    return dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  await push(ref(db, "awards"), {
+    puppyId: Number(milestonePuppy.value),
+    type: "milestone",
+    title: milestoneTitle.value,
+    date: milestoneDate.value,
+    notes: milestoneNotes.value
   });
+});
+// 🔥 SPLIT RENDERING
 
-  const datasets = PUPPIES.map(puppy => {
-    const arr = timelines[puppy.id] || [];
-    const dateMap = {};
-
-    arr.forEach(item => {
-      dateMap[item.date] = item.weight;
-    });
-
-    const birthWeight = arr.length > 0 ? arr[0].weight : null;
-    const dataPoints = dates.map(d => dateMap[d] ?? null);
-
-    const pointStyles = dates.map(d => {
-      if (!birthWeight || !dateMap[d]) return "circle";
-      return dateMap[d] >= birthWeight * 2 ? "star" : "circle";
-    });
-
-    const pointRadii = dates.map(d => {
-      if (!birthWeight || !dateMap[d]) return 3;
-      return dateMap[d] >= birthWeight * 2 ? 9 : 3;
-    });
-
-    const hasData = dataPoints.some(v => v !== null);
-
-    return hasData ? {
-      label: puppy.name,
-      data: dataPoints,
-      borderColor: puppy.color,
-      backgroundColor: puppy.color + "22",
-      borderWidth: 2.5,
-      tension: 0.3,
-      spanGaps: true,
-      pointStyle: pointStyles,
-      pointRadius: pointRadii,
-      pointHoverRadius: 6,
-    } : null;
-  }).filter(Boolean);
-
-  if (showAverage && dates.length > 0) {
-    const avgData = dates.map(d => {
-      const weights = PUPPIES.map(p => {
-        const arr = timelines[p.id] || [];
-        const found = arr.find(e => e.date === d);
-        return found ? found.weight : null;
-      }).filter(v => v !== null);
-
-      return weights.length > 0
-        ? Math.round(weights.reduce((s, v) => s + v, 0) / weights.length)
-        : null;
-    });
-
-    datasets.push({
-      label: "Litter Average",
-      data: avgData,
-      borderColor: "#999",
-      backgroundColor: "transparent",
-      borderWidth: 2,
-      borderDash: [6, 3],
-      tension: 0.3,
-      spanGaps: true,
-      pointRadius: 2,
-      pointStyle: "circle",
-    });
-  }
-
-  const ctx = document.getElementById("growth-chart").getContext("2d");
-
-  if (growthChart) growthChart.destroy();
-
-  growthChart = new Chart(ctx, {
-    type: "line",
-    data: { labels: dateLabels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: "index", intersect: false },
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            usePointStyle: true,
-            padding: 16,
-            font: { family: "'DM Sans', sans-serif", size: 12 }
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label(ctx) {
-              return ctx.parsed.y !== null ? ` ${ctx.dataset.label}: ${ctx.parsed.y}g` : null;
-            }
-          },
-          backgroundColor: "#fff",
-          titleColor: "#4a5568",
-          bodyColor: "#4a5568",
-          borderColor: "#e8dfd0",
-          borderWidth: 1,
-          padding: 10,
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: "#f0ebe1" },
-          ticks: {
-            font: { family: "'DM Sans', sans-serif", size: 11 },
-            color: "#718096"
-          }
-        },
-        y: {
-          grid: { color: "#f0ebe1" },
-          ticks: {
-            font: { family: "'DM Sans', sans-serif", size: 11 },
-            color: "#718096",
-            callback: v => v + "g"
-          },
-          title: {
-            display: true,
-            text: "Weight (g)",
-            color: "#8b6f47",
-            font: { family: "'Lora', serif", size: 12 }
-          }
-        }
-      }
-    }
-  });
-
-  syncState();
-}
-
-toggleAverage.addEventListener("change", renderChart);
-
-function renderInsights() {
-  const timelines = buildTimelines(allEntries);
-  const latest = {};
-
-  for (const [pid, arr] of Object.entries(timelines)) {
-    if (arr.length > 0) latest[pid] = arr[arr.length - 1].weight;
-  }
-
-  const latestEntries = Object.entries(latest).map(([pid, w]) => ({
-    puppyId: Number(pid),
-    weight: w
-  }));
-
-  if (latestEntries.length === 0) {
-    insHeaviest.textContent = "—";
-    insLightest.textContent = "—";
-    insAvg.textContent = "—";
-    insGainer.textContent = "—";
-    alertsCont.innerHTML = `<p class="empty-state">No data yet.</p>`;
-    milestonesCont.innerHTML = `<p class="empty-state">No milestones yet.</p>`;
-    summaryBody.innerHTML = "";
-    return;
-  }
-
-  const sorted = [...latestEntries].sort((a, b) => b.weight - a.weight);
-  const heaviest = sorted[0];
-  const lightest = sorted[sorted.length - 1];
-
-  insHeaviest.textContent = `${getPuppy(heaviest.puppyId)?.name} (${heaviest.weight}g)`;
-  insLightest.textContent = `${getPuppy(lightest.puppyId)?.name} (${lightest.weight}g)`;
-
-  const avg = Math.round(latestEntries.reduce((s, e) => s + e.weight, 0) / latestEntries.length);
-  insAvg.textContent = `${avg}g`;
-
-  const gainers = Object.entries(timelines)
-    .map(([pid, arr]) => {
-      if (arr.length < 2) return null;
-      return {
-        puppyId: Number(pid),
-        gain: arr[arr.length - 1].weight - arr[0].weight
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => b.gain - a.gain);
-
-  if (gainers.length > 0) {
-    const top = gainers[0];
-    insGainer.textContent = `${getPuppy(top.puppyId)?.name} (+${top.gain}g)`;
-  } else {
-    insGainer.textContent = "—";
-  }
-
-  const alerts = [];
-  for (const [pid, arr] of Object.entries(timelines)) {
-    if (arr.length < 2) continue;
-
-    const last = arr[arr.length - 1];
-    const prev = arr[arr.length - 2];
-    const change = last.weight - prev.weight;
-    const puppy = getPuppy(Number(pid));
-
-    if (change < 0) {
-      alerts.push({ type: "loss", puppy, change, date: last.date });
-    } else if (change < 10) {
-      alerts.push({ type: "low", puppy, change, date: last.date });
-    }
-  }
-
-  if (alerts.length === 0) {
-    alertsCont.innerHTML = `<p class="empty-state">✅ No alerts — all puppies are doing well!</p>`;
-  } else {
-    alertsCont.innerHTML = alerts.map(a => {
-      const icon = a.type === "loss" ? "⬇" : "⚠";
-      const cls = a.type === "loss" ? "alert-loss" : "alert-low";
-      const label = a.type === "loss"
-        ? `Weight loss of ${Math.abs(a.change)}g on ${a.date}`
-        : `Low gain of ${a.change}g on ${a.date}`;
-
-      return `<div class="alert-item ${cls}">
-        <span>${icon}</span>
-        <div><strong>${a.puppy?.name}</strong> — ${label}</div>
-      </div>`;
-    }).join("");
-  }
-
-  const milestones = getAutomaticMilestones(allEntries);
-
-  if (milestones.length === 0) {
-    milestonesCont.innerHTML = `<p class="empty-state">No puppies have doubled birth weight yet.</p>`;
-  } else {
-    milestonesCont.innerHTML = milestones.map(m => `
-      <div class="milestone-item">
-        🎉 <strong>${m.puppyId ? getPuppy(m.puppyId)?.name : ""}</strong> doubled birth weight! (${m.notes} on ${m.date})
-      </div>
-    `).join("");
-  }
-
-  const summaryRows = PUPPIES.map(puppy => {
-    const arr = timelines[puppy.id] || [];
-    if (arr.length === 0) return null;
-
-    const first = arr[0];
-    const last = arr[arr.length - 1];
-    const totalGain = last.weight - first.weight;
-    const days = arr.length;
-    const avgDaily = days > 1 ? Math.round(totalGain / (days - 1)) : "—";
-
-    return { puppy, first, last, totalGain, days, avgDaily };
-  }).filter(Boolean);
-
-  if (summaryRows.length === 0) {
-    summaryBody.innerHTML = `<p class="empty-state">No data yet.</p>`;
-    return;
-  }
-
-  summaryBody.innerHTML = `
-    <div class="table-wrapper">
-      <table class="summary-table">
-        <thead>
-          <tr>
-            <th>Puppy</th>
-            <th>Gender</th>
-            <th>Birth Weight</th>
-            <th>Current Weight</th>
-            <th>Total Gain</th>
-            <th>Avg Daily Gain</th>
-            <th>Days Logged</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${summaryRows.map(r => `
-            <tr>
-              <td>
-                <div class="puppy-cell">
-                  <span class="color-dot" style="background:${r.puppy.color}"></span>
-                  ${r.puppy.name}
-                </div>
-              </td>
-              <td>${r.puppy.gender}</td>
-              <td>${r.first.weight}g</td>
-              <td>${r.last.weight}g</td>
-              <td>${r.totalGain > 0 ? "+" : ""}${r.totalGain}g</td>
-              <td>${r.avgDaily !== "—" ? r.avgDaily + "g" : "—"}</td>
-              <td>${r.days}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    </div>`;
-}
-
-function getAwardOptionsByType(type) {
-  return type === "milestone" ? MILESTONE_OPTIONS : TROPHY_OPTIONS;
-}
-
-function populateAwardTitleOptions() {
-  const options = getAwardOptionsByType(awardType.value);
-  awardTitle.innerHTML = options
-    .map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`)
-    .join("");
-}
-
-function renderAwards() {
-  if (!awardsContainer) return;
+function renderTrophies() {
+  if (!trophiesContainer) return;
 
   const combined = getCombinedAwards(allAwards, allEntries);
-  const filterVal = Number(awardFilterPuppy.value) || "all";
+  const trophies = combined.filter(a => a.type === "trophy");
 
-  const filtered = filterVal === "all"
-    ? combined
-    : combined.filter(item => item.puppyId === filterVal);
-
-  if (filtered.length === 0) {
-    awardsContainer.innerHTML = `<p class="empty-state">No trophies or milestones yet.</p>`;
-    return;
-  }
-
-  const grouped = PUPPIES.map(puppy => {
-    const items = filtered.filter(item => item.puppyId === puppy.id);
-    return { puppy, items };
-  }).filter(group => group.items.length > 0);
-
-  awardsContainer.innerHTML = `
-    <div class="awards-list">
-      ${grouped.map(group => `
-        <div class="award-puppy-card">
-          <div class="award-puppy-header">
-            <span class="color-dot" style="background:${group.puppy.color}"></span>
-            <div>
-              <h3>${group.puppy.name}</h3>
-              <div class="award-puppy-sub">${group.puppy.gender}</div>
-            </div>
-          </div>
-
-          <div class="award-items">
-            ${group.items.map(item => {
-              const badgeClass = item.type === "trophy" ? "award-badge-trophy" : "award-badge-milestone";
-              const badgeLabel = item.type === "trophy" ? "Trophy" : "Milestone";
-              const icon = item.type === "trophy" ? "🏆" : "🎉";
-              const notesHtml = item.notes
-                ? `<div class="award-notes">${escapeHtml(item.notes)}</div>`
-                : "";
-
-              const autoBadge = item.isAuto
-                ? `<span class="award-badge award-badge-auto">Auto</span>`
-                : "";
-
-              const deleteButton = (!item.isAuto && isAdmin)
-                ? `<button class="btn-mini-danger" data-award-id="${item.id}" title="Delete">✕</button>`
-                : "";
-
-              return `
-                <div class="award-item">
-                  <div class="award-main">
-                    <div class="award-icon">${icon}</div>
-                    <div>
-                      <div class="award-title-line">
-                        <span class="award-title">${escapeHtml(item.title)}</span>
-                        <span class="award-date">${formatDate(item.date)}</span>
-                      </div>
-                      ${notesHtml}
-                    </div>
-                  </div>
-
-                  <div class="award-meta">
-                    <span class="award-badge ${badgeClass}">${badgeLabel}</span>
-                    ${autoBadge}
-                    ${deleteButton}
-                  </div>
-                </div>
-              `;
-            }).join("")}
-          </div>
-        </div>
-      `).join("")}
+  trophiesContainer.innerHTML = trophies.map(t => `
+    <div class="award-item">
+      🏆 ${escapeHtml(t.title)} (${formatDate(t.date)})
     </div>
-  `;
-
-  awardsContainer.querySelectorAll("[data-award-id]").forEach(btn => {
-    btn.addEventListener("click", () => deleteAward(btn.dataset.awardId));
-  });
+  `).join("") || `<p class="empty-state">No trophies yet.</p>`;
 }
 
+function renderMilestonesAwards() {
+  if (!milestonesAwardsContainer) return;
+
+  const combined = getCombinedAwards(allAwards, allEntries);
+  const milestones = combined.filter(a => a.type === "milestone");
+
+  milestonesAwardsContainer.innerHTML = milestones.map(m => `
+    <div class="award-item">
+      🎉 ${escapeHtml(m.title)} (${formatDate(m.date)})
+    </div>
+  `).join("") || `<p class="empty-state">No milestones yet.</p>`;
+}
+
+// 🔥 TAB LOGIC
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     const tab = btn.dataset.tab;
-    activeTab = tab;
-    syncState();
 
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
@@ -787,33 +202,33 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.add("active");
     document.getElementById(`tab-${tab}`).classList.add("active");
 
-    if (tab === "chart") renderChart();
-    if (tab === "insights") renderInsights();
-    if (tab === "trophies") renderAwards();
+    if (tab === "trophies") renderTrophies();
+    if (tab === "milestones") renderMilestonesAwards();
   });
 });
 
+// 🔥 INIT UI (FIXED)
 function initUI() {
-  inputPuppy.innerHTML = `<option value="">— select puppy —</option>` +
-    PUPPIES.map(p => `<option value="${p.id}">${p.name} (${p.gender})</option>`).join("");
+  const puppyOptions = PUPPIES.map(p =>
+    `<option value="${p.id}">${p.name}</option>`
+  ).join("");
 
-  filterPuppy.innerHTML = `<option value="all">All puppies</option>` +
-    PUPPIES.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+  inputPuppy.innerHTML = `<option value="">— select puppy —</option>` + puppyOptions;
 
-  awardPuppy.innerHTML = `<option value="">— select puppy —</option>` +
-    PUPPIES.map(p => `<option value="${p.id}">${p.name} (${p.gender})</option>`).join("");
+  trophyPuppy.innerHTML = `<option value="">— select puppy —</option>` + puppyOptions;
+  milestonePuppy.innerHTML = `<option value="">— select puppy —</option>` + puppyOptions;
 
-  awardFilterPuppy.innerHTML = `<option value="all">All puppies</option>` +
-    PUPPIES.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
+  trophyTitle.innerHTML = TROPHY_OPTIONS.map(t =>
+    `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`
+  ).join("");
+
+  milestoneTitle.innerHTML = MILESTONE_OPTIONS.map(m =>
+    `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`
+  ).join("");
 
   inputDate.value = todayStr();
-  awardDate.value = todayStr();
-
-  populateAwardTitleOptions();
-
-  filterPuppy.addEventListener("change", renderTable);
-  awardFilterPuppy.addEventListener("change", renderAwards);
-  awardType.addEventListener("change", populateAwardTitleOptions);
+  trophyDate.value = todayStr();
+  milestoneDate.value = todayStr();
 }
 
 initUI();
