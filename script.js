@@ -238,6 +238,10 @@ const puppyAge = allDatesList.length;
     const milestones = puppyAwards.filter(item => item.type === "milestone");
     const trophies = puppyAwards.filter(item => item.type === "trophy");
 
+    const completedMilestones = new Map(
+      milestones.map(item => [item.title, item])
+    );
+
     const bannerTextColor = isLightColor(puppy.color) ? "#333" : "#fff";
 
     // 🟡 NO DATA CASE
@@ -312,11 +316,25 @@ const puppyAge = allDatesList.length;
 
           <div class="puppy-profile-section">
             <h4>Milestones</h4>
-            ${
-              milestones.length
-                ? `<ul>${milestones.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
-                : `<p class="empty-state">No milestones yet.</p>`
-            }
+            <div class="puppy-milestones-table">
+              ${MILESTONE_OPTIONS.map(title => {
+                const completed = completedMilestones.get(title);
+
+                return `
+                  <div class="puppy-milestone-row">
+                    <div class="puppy-milestone-status">
+                      ${completed ? "✅" : "—"}
+                    </div>
+                    <div class="puppy-milestone-title">
+                      ${title}
+                    </div>
+                    <div class="puppy-milestone-date">
+                      ${completed ? formatDate(completed.date) : ""}
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
           </div>
 
           <div class="puppy-profile-section">

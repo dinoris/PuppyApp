@@ -851,3 +851,33 @@ td {
 .puppy-gender-line {
   margin-bottom: 20px;
 }
+
+.puppy-milestones-table {
+  display: grid;
+  gap: 8px;
+}
+
+.puppy-milestone-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid #eadfce;
+  border-radius: 12px;
+}
+
+.puppy-milestone-status {
+  font-size: 1rem;
+  text-align: center;
+}
+
+.puppy-milestone-title {
+  font-weight: 500;
+}
+
+.puppy-milestone-date {
+  font-size: 0.9rem;
+  color: #7a869a;
+  white-space: nowrap;
+}
