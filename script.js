@@ -240,14 +240,16 @@ function renderPuppies() {
     if (arr.length === 0) {
       return `
         <div class="puppy-profile-card">
-        <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+<div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
   <div class="puppy-banner-content">
     <strong>${puppy.name}</strong>
-    <span>${genderIcon(puppy.gender)} ${puppy.gender}</span>
   </div>
 </div>
 
-          <div class="empty-state">No weight data yet.</div>
+<div class="puppy-profile-body">
+  <div class="puppy-gender-line">${genderIcon(puppy.gender)} ${puppy.gender}</div>
+  <div class="empty-state">No weight data yet.</div>
+</div>
         </div>
       `;
     }
@@ -266,12 +268,14 @@ function renderPuppies() {
 
     return `
       <div class="puppy-profile-card">
-       <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+<div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
   <div class="puppy-banner-content">
     <strong>${puppy.name}</strong>
-    <span>${genderIcon(puppy.gender)} ${puppy.gender}</span>
   </div>
 </div>
+
+<div class="puppy-profile-body">
+  <div class="puppy-gender-line">${genderIcon(puppy.gender)} ${puppy.gender}</div>
 
         <div class="puppy-profile-stats">
           <div><strong>Birth Weight:</strong> ${first.weight}g</div>
@@ -291,16 +295,17 @@ function renderPuppies() {
           }
         </div>
 
-        <div class="puppy-profile-section">
-          <h4>Trophies</h4>
-          ${
-            trophies.length
-              ? `<ul>${trophies.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
-              : `<p class="empty-state">No trophies yet.</p>`
-          }
-        </div>
+      <div class="puppy-profile-section">
+        <h4>Trophies</h4>
+        ${
+          trophies.length
+            ? `<ul>${trophies.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
+            : `<p class="empty-state">No trophies yet.</p>`
+        }
       </div>
-    `;
+    </div>
+  </div>
+`;
   }).join("");
 
   puppiesContainer.innerHTML = `<div class="puppies-grid">${cards}</div>`;
