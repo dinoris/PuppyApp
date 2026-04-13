@@ -890,3 +890,77 @@ td {
   border-radius: 18px;
   font-weight: 600;
 }
+
+.pawrents-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.pawrents-card {
+  background: #fff;
+  border: 1px solid #eadfce;
+  border-radius: 22px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.pawrents-banner {
+  width: 100%;
+  padding: 14px 18px;
+}
+
+.pawrents-banner-content {
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.pawrents-body {
+  padding: 18px 20px 20px;
+}
+
+.pawrents-role {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.pawrents-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+  margin-bottom: 20px;
+}
+
+.pawrents-quote-box {
+  padding: 14px 16px;
+  background: #faf7f2;
+  border: 1px solid #eadfce;
+  border-radius: 16px;
+}
+
+.pawrents-quote-label {
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #8b6f47;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pawrents-quote {
+  font-style: italic;
+  line-height: 1.5;
+  color: #4a5568;
+}
+
+@media (max-width: 700px) {
+  .pawrents-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pawrents-stats {
+    grid-template-columns: 1fr;
+  }
+}

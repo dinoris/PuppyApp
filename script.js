@@ -55,6 +55,39 @@ const MILESTONE_OPTIONS = [
   "Fully Weaned"
 ];
 
+const PAWRENTS = [
+  {
+    id: "mom",
+    role: "Mom",
+    name: "Roma",
+    color: "#e8b7c8",
+    breed: "Shih Tzu",
+    age: "1 year",
+    favoriteFood: "Chicken",
+    favoriteSong: "Eye of the Tiger",
+    favoriteActivity: "Sleeping like a queen",
+    personality: "Sweet, protective, dramatic",
+    nickname: "Mama Bear",
+    funFact: "Can demand snacks with one look",
+    quote: "I carried this whole family on my back."
+  },
+  {
+    id: "dad",
+    role: "Dad",
+    name: "Leone",
+    color: "#c8b089",
+    breed: "Yorkshire Terrier",
+    age: "almost 2 years",
+    favoriteFood: "Beef",
+    favoriteSong: "Single Ladies",
+    favoriteActivity: "Patrolling the house",
+    personality: "Energetic, scared, sneaky",
+    nickname: "The Thief",
+    funFact: "Acts like he owns the couch",
+    quote: "I may not help much, but I bring presence."
+  }
+];
+
 const app = initializeApp(FIREBASE_CONFIG);
 const auth = getAuth(app);
 const db = getDatabase(app);
@@ -390,6 +423,7 @@ const btnAwardAdd = document.getElementById("btn-award-add");
 const awardMessage = document.getElementById("award-message");
 const awardFilterPuppy = document.getElementById("award-filter-puppy");
 const awardsContainer = document.getElementById("awards-container");
+const pawrentsContainer = document.getElementById("pawrents-container");
 
 function updateAuthUI(user) {
   currentUser = user;
@@ -632,6 +666,55 @@ function renderTable() {
   entriesTbody.querySelectorAll(".btn-danger[data-id]").forEach(btn => {
     btn.addEventListener("click", () => deleteEntry(btn.dataset.id));
   });
+}
+
+function renderPawrents() {
+  if (!pawrentsContainer) return;
+
+  function isLightColor(hex) {
+    const c = hex.replace("#", "");
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 180;
+  }
+
+  const cards = PAWRENTS.map(parent => {
+    const bannerTextColor = isLightColor(parent.color) ? "#333" : "#fff";
+
+    return `
+      <div class="pawrents-card">
+        <div class="pawrents-banner" style="background:${parent.color}; color:${bannerTextColor}">
+          <div class="pawrents-banner-content">
+            <strong>${parent.name}</strong>
+          </div>
+        </div>
+
+        <div class="pawrents-body">
+          <div class="pawrents-role">${parent.role}</div>
+
+          <div class="pawrents-stats">
+            <div><strong>Breed:</strong> ${parent.breed}</div>
+            <div><strong>Age:</strong> ${parent.age}</div>
+            <div><strong>Favorite Food:</strong> ${parent.favoriteFood}</div>
+            <div><strong>Favorite Song:</strong> ${parent.favoriteSong}</div>
+            <div><strong>Favorite Activity:</strong> ${parent.favoriteActivity}</div>
+            <div><strong>Personality:</strong> ${parent.personality}</div>
+            <div><strong>Nickname:</strong> ${parent.nickname}</div>
+            <div><strong>Fun Fact:</strong> ${parent.funFact}</div>
+          </div>
+
+          <div class="pawrents-quote-box">
+            <div class="pawrents-quote-label">Signature Quote</div>
+            <div class="pawrents-quote">“${parent.quote}”</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  pawrentsContainer.innerHTML = `<div class="pawrents-grid">${cards}</div>`;
 }
 
 function renderChart() {
@@ -1036,6 +1119,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (tab === "insights") renderInsights();
     if (tab === "puppies") renderPuppies();
     if (tab === "trophies") renderAwards();
+    if (tab === "pawrents") renderPawrents();
   });
 });
 
