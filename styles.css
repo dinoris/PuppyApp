@@ -762,8 +762,9 @@ td {
     width: 100%;
     justify-content: space-between;
   }
+}
 
-}.puppy-profile-card {
+.puppy-profile-card {
   overflow: hidden;
   padding: 0;
 }
