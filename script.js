@@ -492,6 +492,20 @@ btnAwardAdd.addEventListener("click", async () => {
   const date = awardDate.value;
   const notes = awardNotes.value.trim();
 
+// 🚫 Prevent duplicate milestones
+if (type === "milestone") {
+  const alreadyExists = allAwards.some(a =>
+    a.puppyId === puppyId &&
+    a.type === "milestone" &&
+    a.title === title
+  );
+
+  if (alreadyExists) {
+    showAwardMessage("This milestone has already been added for this puppy.", "error");
+    return;
+  }
+}
+
   if (!puppyId || !type || !title || !date) {
     showAwardMessage("Please complete puppy, type, title, and date.", "error");
     return;
