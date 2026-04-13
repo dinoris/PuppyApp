@@ -89,7 +89,7 @@ quotes: [
     funFact: "Acts like he owns the couch",
     quotes: [
   "I may not help much, but I bring presence.",
-  "Feed me, then feed the babies.",
+  "That thing you are looking for? I haven't seen it.",
   "What was that noise?."
 ]  }
 ];
@@ -713,7 +713,11 @@ function renderPawrents() {
 
           <div class="pawrents-quote-box">
             <div class="pawrents-quote-label">Signature Quote</div>
-            <div class="pawrents-quote">“${parent.quote}”</div>
+<div class="pawrents-quotes">
+  ${parent.quotes.map(q => `
+    <div class="pawrents-quote">“${q}”</div>
+  `).join("")}
+</div>
           </div>
         </div>
       </div>
