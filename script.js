@@ -222,81 +222,77 @@ function renderPuppies() {
   const combinedAwards = getCombinedAwards();
 
   const cards = PUPPIES.map(puppy => {
-    const arr = timelines[puppy.id] || [];
-    const puppyAwards = combinedAwards.filter(item => item.puppyId === puppy.id);
-    const milestones = puppyAwards.filter(item => item.type === "milestone");
-    const trophies = puppyAwards.filter(item => item.type === "trophy");
+  const arr = timelines[puppy.id] || [];
+  const puppyAwards = combinedAwards.filter(item => item.puppyId === puppy.id);
+  const milestones = puppyAwards.filter(item => item.type === "milestone");
+  const trophies = puppyAwards.filter(item => item.type === "trophy");
+  const bannerTextColor = isLightColor(puppy.color) ? "#333" : "#fff";
 
-    if (arr.length === 0) {
-      return `
-        <div class="puppy-profile-card">
-          <div class="puppy-profile-header">
-            <div class="puppy-cell">
-              <span class="color-dot" style="background:${puppy.color}"></span>
-              <strong>${puppy.name}</strong>
-            </div>
-            <div class="award-puppy-sub">${genderIcon(puppy.gender)} ${puppy.gender}</div>
-          </div>
-
-          <div class="empty-state">No weight data yet.</div>
-        </div>
-      `;
-    }
-
-    const first = arr[0];
-    const last = arr[arr.length - 1];
-    const totalGain = last.weight - first.weight;
-    const latestChange = arr.length > 1 ? last.weight - arr[arr.length - 2].weight : null;
-
-    let latestStatus = "First Entry";
-    if (latestChange !== null) {
-      if (latestChange < 0) latestStatus = "Weight Loss";
-      else if (latestChange < 10) latestStatus = "Low Gain";
-      else latestStatus = "Good Gain";
-    }
-
+  if (arr.length === 0) {
     return `
       <div class="puppy-profile-card">
-        <div class="puppy-profile-header">
-          <div class="puppy-cell">
-            <span class="color-dot" style="background:${puppy.color}"></span>
+        <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+          <div class="puppy-banner-content">
             <strong>${puppy.name}</strong>
+            <span>${genderIcon(puppy.gender)} ${puppy.gender}</span>
           </div>
-          <div class="award-puppy-sub">${genderIcon(puppy.gender)} ${puppy.gender}</div>
         </div>
 
-        <div class="puppy-profile-stats">
-          <div><strong>Birth Weight:</strong> ${first.weight}g</div>
-          <div><strong>Current Weight:</strong> ${last.weight}g</div>
-          <div><strong>Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
-          <div><strong>Days Logged:</strong> ${arr.length}</div>
-          <div><strong>Latest Change:</strong> ${latestChange === null ? "—" : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`}</div>
-          <div><strong>Status:</strong> ${latestStatus}</div>
-        </div>
-
-        <div class="puppy-profile-section">
-          <h4>Milestones</h4>
-          ${
-            milestones.length
-              ? `<ul>${milestones.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
-              : `<p class="empty-state">No milestones yet.</p>`
-          }
-        </div>
-
-        <div class="puppy-profile-section">
-          <h4>Trophies</h4>
-          ${
-            trophies.length
-              ? `<ul>${trophies.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
-              : `<p class="empty-state">No trophies yet.</p>`
-          }
-        </div>
+        <div class="empty-state">No weight data yet.</div>
       </div>
     `;
-  }).join("");
+  }
 
-  puppiesContainer.innerHTML = `<div class="puppies-grid">${cards}</div>`;
-}
+  const first = arr[0];
+  const last = arr[arr.length - 1];
+  const totalGain = last.weight - first.weight;
+  const latestChange = arr.length > 1 ? last.weight - arr[arr.length - 2].weight : null;
+
+  let latestStatus = "First Entry";
+  if (latestChange !== null) {
+    if (latestChange < 0) latestStatus = "Weight Loss";
+    else if (latestChange < 10) latestStatus = "Low Gain";
+    else latestStatus = "Good Gain";
+  }
+
+  return `
+    <div class="puppy-profile-card">
+      <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+        <div class="puppy-banner-content">
+          <strong>${puppy.name}</strong>
+          <span>${genderIcon(puppy.gender)} ${puppy.gender}</span>
+        </div>
+      </div>
+
+      <div class="puppy-profile-stats">
+        <div><strong>Birth Weight:</strong> ${first.weight}g</div>
+        <div><strong>Current Weight:</strong> ${last.weight}g</div>
+        <div><strong>Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
+        <div><strong>Days Logged:</strong> ${arr.length}</div>
+        <div><strong>Latest Change:</strong> ${latestChange === null ? "—" : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`}</div>
+        <div><strong>Status:</strong> ${latestStatus}</div>
+      </div>
+
+      <div class="puppy-profile-section">
+        <h4>Milestones</h4>
+        ${
+          milestones.length
+            ? `<ul>${milestones.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
+            : `<p class="empty-state">No milestones yet.</p>`
+        }
+      </div>
+
+      <div class="puppy-profile-section">
+        <h4>Trophies</h4>
+        ${
+          trophies.length
+            ? `<ul>${trophies.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
+            : `<p class="empty-state">No trophies yet.</p>`
+        }
+      </div>
+    </div>
+  `;
+}).join("");
 
 const btnLogin = document.getElementById("btn-login");
 const btnLogout = document.getElementById("btn-logout");
