@@ -63,16 +63,16 @@ const PAWRENTS = [
     color: "#e8b7c8",
     breed: "Shih Tzu",
     age: "1 year",
-    favoriteFood: "Chicken",
+    favoriteFood: "Anything",
     favoriteSong: "Eye of the Tiger",
     favoriteActivity: "Stealing socks",
     personality: "Sweet, protective, dramatic",
-    nickname: "Mama Bear",
+    nickname: "Bella, Romita, Good Girl",
     funFact: "Can demand snacks with one look",
 quotes: [
   "I carried this whole family on my back.",
-  "Feed the babies, then feed me.",
-  "Give me that sock, now!"
+  "I'll keep an eye on your food. Don't worry.",
+  "Give me that sock!"
 ]  },
   {
     id: "dad",
@@ -81,14 +81,13 @@ quotes: [
     color: "#c8b089",
     breed: "Yorkshire Terrier",
     age: "almost 2 years",
-    favoriteFood: "Beef",
+    favoriteFood: "The one I stole",
     favoriteSong: "Single Ladies",
     favoriteActivity: "Eating toyes",
     personality: "Energetic, scared, sneaky",
-    nickname: "The Thief",
+    nickname: "Good Boy, Thief",
     funFact: "Acts like he owns the couch",
     quotes: [
-  "I may not help much, but I bring presence.",
   "That thing you are looking for? I haven't seen it.",
   "What was that noise?."
 ]  }
