@@ -764,6 +764,7 @@ td {
   }
 
 }
+
 .puppies-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -774,22 +775,46 @@ td {
   background: #fff;
   border: 1px solid #eadfce;
   border-radius: 22px;
-  padding: 20px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+  padding: 0;
 }
 
-.puppy-profile-header {
+/* Banner (no margin, full width inside card) */
+.puppy-banner {
+  width: 100%;
+  padding: 14px 18px;
+}
+
+.puppy-banner-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: flex-start;
+  font-weight: 700;
 }
 
+/* 👇 THIS is the key fix */
+.puppy-profile-body {
+  padding: 18px 20px 20px;
+}
+
+/* Remove padding from stats (now handled by body) */
 .puppy-profile-stats {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
   margin-bottom: 18px;
+}
+
+.puppy-profile-stats div {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 500px) {
+  .puppy-profile-stats {
+    grid-template-columns: 1fr;
+  }
 }
 
 .puppy-profile-section {
@@ -806,6 +831,7 @@ td {
   padding-left: 18px;
 }
 
+/* Gender styling */
 .gender.male {
   color: #4c92f4;
   font-weight: bold;
@@ -814,15 +840,4 @@ td {
 .gender.female {
   color: #e05fa0;
   font-weight: bold;
-}
-
-.puppy-banner {
-  padding: 12px 16px;
-}
-
-.puppy-banner-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
 }
