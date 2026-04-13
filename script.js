@@ -83,6 +83,12 @@ function formatDate(dateStr) {
   });
 }
 
+function genderIcon(gender) {
+  if (gender === "Boy") return "♂️";
+  if (gender === "Girl") return "♀️";
+  return "";
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -229,7 +235,7 @@ function renderPuppies() {
               <span class="color-dot" style="background:${puppy.color}"></span>
               <strong>${puppy.name}</strong>
             </div>
-            <div class="award-puppy-sub">${puppy.gender}</div>
+            <div class="award-puppy-sub">${genderIcon(puppy.gender)} ${puppy.gender}</div>
           </div>
 
           <div class="empty-state">No weight data yet.</div>
@@ -256,7 +262,7 @@ function renderPuppies() {
             <span class="color-dot" style="background:${puppy.color}"></span>
             <strong>${puppy.name}</strong>
           </div>
-          <div class="award-puppy-sub">${puppy.gender}</div>
+          <div class="award-puppy-sub">${genderIcon(puppy.gender)} ${puppy.gender}</div>
         </div>
 
         <div class="puppy-profile-stats">
@@ -541,7 +547,7 @@ function renderTable() {
             ${puppy.name}
           </div>
         </td>
-        <td>${puppy.gender}</td>
+        <td>${genderIcon(puppy.gender)} ${puppy.gender}</td>
         <td><strong>${row.weight}g</strong></td>
         <td>${changeCell(row.change, row.isFirst)}</td>
         <td>${statusBadge(row.change, row.isFirst)}</td>
@@ -886,7 +892,9 @@ function renderAwards() {
             <span class="color-dot" style="background:${group.puppy.color}"></span>
             <div>
               <h3>${group.puppy.name}</h3>
-              <div class="award-puppy-sub">${group.puppy.gender}</div>
+<div class="award-puppy-sub">
+  ${genderIcon(group.puppy.gender)} ${group.puppy.gender}
+</div>
             </div>
           </div>
 

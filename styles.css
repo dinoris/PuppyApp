@@ -762,7 +762,7 @@ td {
     width: 100%;
     justify-content: space-between;
   }
-  
+
 }
 .puppies-grid {
   display: grid;
@@ -803,4 +803,14 @@ td {
 .puppy-profile-section ul {
   margin: 0;
   padding-left: 18px;
+}
+
+.gender.male {
+  color: #4c92f4;
+  font-weight: bold;
+}
+
+.gender.female {
+  color: #e05fa0;
+  font-weight: bold;
 }
