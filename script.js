@@ -221,22 +221,31 @@ function renderPuppies() {
   const timelines = buildTimelines(allEntries);
   const combinedAwards = getCombinedAwards();
 
+  function isLightColor(hex) {
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 180;
+}
+
   const cards = PUPPIES.map(puppy => {
     const arr = timelines[puppy.id] || [];
     const puppyAwards = combinedAwards.filter(item => item.puppyId === puppy.id);
     const milestones = puppyAwards.filter(item => item.type === "milestone");
     const trophies = puppyAwards.filter(item => item.type === "trophy");
+    const bannerTextColor = isLightColor(puppy.color) ? "#333" : "#fff";
 
     if (arr.length === 0) {
       return `
         <div class="puppy-profile-card">
-          <div class="puppy-profile-header">
-            <div class="puppy-cell">
-              <span class="color-dot" style="background:${puppy.color}"></span>
-              <strong>${puppy.name}</strong>
-            </div>
-            <div class="award-puppy-sub">${genderIcon(puppy.gender)} ${puppy.gender}</div>
-          </div>
+        <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+  <div class="puppy-banner-content">
+    <strong>${puppy.name}</strong>
+    <span>${genderIcon(puppy.gender)} ${puppy.gender}</span>
+  </div>
+</div>
 
           <div class="empty-state">No weight data yet.</div>
         </div>
@@ -257,13 +266,12 @@ function renderPuppies() {
 
     return `
       <div class="puppy-profile-card">
-        <div class="puppy-profile-header">
-          <div class="puppy-cell">
-            <span class="color-dot" style="background:${puppy.color}"></span>
-            <strong>${puppy.name}</strong>
-          </div>
-          <div class="award-puppy-sub">${genderIcon(puppy.gender)} ${puppy.gender}</div>
-        </div>
+       <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+  <div class="puppy-banner-content">
+    <strong>${puppy.name}</strong>
+    <span>${genderIcon(puppy.gender)} ${puppy.gender}</span>
+  </div>
+</div>
 
         <div class="puppy-profile-stats">
           <div><strong>Birth Weight:</strong> ${first.weight}g</div>
