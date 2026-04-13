@@ -222,42 +222,50 @@ function renderPuppies() {
   const combinedAwards = getCombinedAwards();
 
   function isLightColor(hex) {
-  const c = hex.replace("#", "");
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  return brightness > 180;
-}
+    const c = hex.replace("#", "");
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 180;
+  }
 
   const cards = PUPPIES.map(puppy => {
     const arr = timelines[puppy.id] || [];
     const puppyAwards = combinedAwards.filter(item => item.puppyId === puppy.id);
     const milestones = puppyAwards.filter(item => item.type === "milestone");
     const trophies = puppyAwards.filter(item => item.type === "trophy");
+
     const bannerTextColor = isLightColor(puppy.color) ? "#333" : "#fff";
 
+    // 🟡 NO DATA CASE
     if (arr.length === 0) {
       return `
         <div class="puppy-profile-card">
-<div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
-  <div class="puppy-banner-content">
-    <strong>${puppy.name}</strong>
-  </div>
-</div>
+          <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+            <div class="puppy-banner-content">
+              <strong>${puppy.name}</strong>
+            </div>
+          </div>
 
-<div class="puppy-profile-body">
-  <div class="puppy-gender-line">${genderIcon(puppy.gender)} ${puppy.gender}</div>
-  <div class="empty-state">No weight data yet.</div>
-</div>
+          <div class="puppy-profile-body">
+            <div class="puppy-gender-line">
+              ${genderIcon(puppy.gender)} ${puppy.gender}
+            </div>
+
+            <div class="empty-state">No weight data yet.</div>
+          </div>
         </div>
       `;
     }
 
+    // 🟢 DATA CASE
     const first = arr[0];
     const last = arr[arr.length - 1];
     const totalGain = last.weight - first.weight;
-    const latestChange = arr.length > 1 ? last.weight - arr[arr.length - 2].weight : null;
+    const latestChange = arr.length > 1
+      ? last.weight - arr[arr.length - 2].weight
+      : null;
 
     let latestStatus = "First Entry";
     if (latestChange !== null) {
@@ -268,44 +276,50 @@ function renderPuppies() {
 
     return `
       <div class="puppy-profile-card">
-<div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
-  <div class="puppy-banner-content">
-    <strong>${puppy.name}</strong>
-  </div>
-</div>
-
-<div class="puppy-profile-body">
-  <div class="puppy-gender-line">${genderIcon(puppy.gender)} ${puppy.gender}</div>
-
-        <div class="puppy-profile-stats">
-          <div><strong>Birth Weight:</strong> ${first.weight}g</div>
-          <div><strong>Current Weight:</strong> ${last.weight}g</div>
-          <div><strong>Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
-          <div><strong>Days Logged:</strong> ${arr.length}</div>
-          <div><strong>Latest Change:</strong> ${latestChange === null ? "—" : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`}</div>
-          <div><strong>Status:</strong> ${latestStatus}</div>
+        <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
+          <div class="puppy-banner-content">
+            <strong>${puppy.name}</strong>
+          </div>
         </div>
 
-        <div class="puppy-profile-section">
-          <h4>Milestones</h4>
-          ${
-            milestones.length
-              ? `<ul>${milestones.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
-              : `<p class="empty-state">No milestones yet.</p>`
-          }
-        </div>
+        <div class="puppy-profile-body">
+          <div class="puppy-gender-line">
+            ${genderIcon(puppy.gender)} ${puppy.gender}
+          </div>
 
-      <div class="puppy-profile-section">
-        <h4>Trophies</h4>
-        ${
-          trophies.length
-            ? `<ul>${trophies.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
-            : `<p class="empty-state">No trophies yet.</p>`
-        }
+          <div class="puppy-profile-stats">
+            <div><strong>Birth Weight:</strong> ${first.weight}g</div>
+            <div><strong>Current Weight:</strong> ${last.weight}g</div>
+            <div><strong>Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
+            <div><strong>Days Logged:</strong> ${arr.length}</div>
+            <div><strong>Latest Change:</strong> ${
+              latestChange === null
+                ? "—"
+                : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
+            }</div>
+            <div><strong>Status:</strong> ${latestStatus}</div>
+          </div>
+
+          <div class="puppy-profile-section">
+            <h4>Milestones</h4>
+            ${
+              milestones.length
+                ? `<ul>${milestones.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
+                : `<p class="empty-state">No milestones yet.</p>`
+            }
+          </div>
+
+          <div class="puppy-profile-section">
+            <h4>Trophies</h4>
+            ${
+              trophies.length
+                ? `<ul>${trophies.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
+                : `<p class="empty-state">No trophies yet.</p>`
+            }
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-`;
+    `;
   }).join("");
 
   puppiesContainer.innerHTML = `<div class="puppies-grid">${cards}</div>`;
