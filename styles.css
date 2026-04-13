@@ -762,4 +762,45 @@ td {
     width: 100%;
     justify-content: space-between;
   }
+  
+}
+.puppies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.puppy-profile-card {
+  background: #fff;
+  border: 1px solid #eadfce;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.puppy-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.puppy-profile-stats {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.puppy-profile-section {
+  margin-top: 14px;
+}
+
+.puppy-profile-section h4 {
+  margin-bottom: 8px;
+  color: #8b6f47;
+}
+
+.puppy-profile-section ul {
+  margin: 0;
+  padding-left: 18px;
 }

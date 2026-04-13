@@ -209,6 +209,89 @@ function getCombinedAwards() {
     .sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 }
 
+function renderPuppies() {
+  if (!puppiesContainer) return;
+
+  const timelines = buildTimelines(allEntries);
+  const combinedAwards = getCombinedAwards();
+
+  const cards = PUPPIES.map(puppy => {
+    const arr = timelines[puppy.id] || [];
+    const puppyAwards = combinedAwards.filter(item => item.puppyId === puppy.id);
+    const milestones = puppyAwards.filter(item => item.type === "milestone");
+    const trophies = puppyAwards.filter(item => item.type === "trophy");
+
+    if (arr.length === 0) {
+      return `
+        <div class="puppy-profile-card">
+          <div class="puppy-profile-header">
+            <div class="puppy-cell">
+              <span class="color-dot" style="background:${puppy.color}"></span>
+              <strong>${puppy.name}</strong>
+            </div>
+            <div class="award-puppy-sub">${puppy.gender}</div>
+          </div>
+
+          <div class="empty-state">No weight data yet.</div>
+        </div>
+      `;
+    }
+
+    const first = arr[0];
+    const last = arr[arr.length - 1];
+    const totalGain = last.weight - first.weight;
+    const latestChange = arr.length > 1 ? last.weight - arr[arr.length - 2].weight : null;
+
+    let latestStatus = "First Entry";
+    if (latestChange !== null) {
+      if (latestChange < 0) latestStatus = "Weight Loss";
+      else if (latestChange < 10) latestStatus = "Low Gain";
+      else latestStatus = "Good Gain";
+    }
+
+    return `
+      <div class="puppy-profile-card">
+        <div class="puppy-profile-header">
+          <div class="puppy-cell">
+            <span class="color-dot" style="background:${puppy.color}"></span>
+            <strong>${puppy.name}</strong>
+          </div>
+          <div class="award-puppy-sub">${puppy.gender}</div>
+        </div>
+
+        <div class="puppy-profile-stats">
+          <div><strong>Birth Weight:</strong> ${first.weight}g</div>
+          <div><strong>Current Weight:</strong> ${last.weight}g</div>
+          <div><strong>Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
+          <div><strong>Days Logged:</strong> ${arr.length}</div>
+          <div><strong>Latest Change:</strong> ${latestChange === null ? "—" : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`}</div>
+          <div><strong>Status:</strong> ${latestStatus}</div>
+        </div>
+
+        <div class="puppy-profile-section">
+          <h4>Milestones</h4>
+          ${
+            milestones.length
+              ? `<ul>${milestones.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
+              : `<p class="empty-state">No milestones yet.</p>`
+          }
+        </div>
+
+        <div class="puppy-profile-section">
+          <h4>Trophies</h4>
+          ${
+            trophies.length
+              ? `<ul>${trophies.map(item => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
+              : `<p class="empty-state">No trophies yet.</p>`
+          }
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  puppiesContainer.innerHTML = `<div class="puppies-grid">${cards}</div>`;
+}
+
 const btnLogin = document.getElementById("btn-login");
 const btnLogout = document.getElementById("btn-logout");
 const authStatus = document.getElementById("auth-status");
@@ -230,6 +313,7 @@ const insGainer = document.getElementById("ins-gainer-val");
 const alertsCont = document.getElementById("alerts-container");
 const milestonesCont = document.getElementById("milestones-container");
 const summaryBody = document.getElementById("puppy-summary-container");
+const puppiesContainer = document.getElementById("puppies-container");
 
 const awardPuppy = document.getElementById("award-puppy");
 const awardType = document.getElementById("award-type");
@@ -413,6 +497,7 @@ function renderAll() {
   renderTable();
   renderChart();
   renderInsights();
+  renderPuppies();
   renderAwards();
 }
 
@@ -867,6 +952,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 
     if (tab === "chart") renderChart();
     if (tab === "insights") renderInsights();
+    if (tab === "puppies") renderPuppies();
     if (tab === "trophies") renderAwards();
   });
 });
