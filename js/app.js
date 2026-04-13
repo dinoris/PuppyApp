@@ -125,19 +125,106 @@ function syncState() {
   state.activeTab = activeTab;
 }
 
+function renderAll() {
+  renderTable();
+  renderChart();
+  renderInsights();
+  renderTrophies();
+  renderMilestonesAwards();
+}
+
 function updateAuthUI(user) {
   currentUser = user;
   isAdmin = ADMIN_EMAILS.includes(user?.email);
   syncState();
 
-  btnAdd.disabled = !isAdmin;
-  btnTrophyAdd.disabled = !isAdmin;
-  btnMilestoneAdd.disabled = !isAdmin;
+  if (user) {
+    authStatus.textContent = isAdmin ? `Editor: ${user.email}` : `Viewer: ${user.email}`;
+    btnLogin.style.display = "none";
+    btnLogout.style.display = "inline-block";
+  } else {
+    authStatus.textContent = "";
+    btnLogin.style.display = "inline-block";
+    btnLogout.style.display = "none";
+  }
 
-  renderTable();
+  readonlyBanner.style.display = isAdmin ? "none" : "block";
+
+  if (btnAdd) btnAdd.disabled = !isAdmin;
+  if (btnTrophyAdd) btnTrophyAdd.disabled = !isAdmin;
+  if (btnMilestoneAdd) btnMilestoneAdd.disabled = !isAdmin;
+
+  if (colDelete) colDelete.style.display = isAdmin ? "" : "none";
+
+  renderAll();
+}
+
+
+
+btnLogin?.addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    console.error("Login error:", err);
+  }
+});
+
+btnLogout?.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (err) {
+    console.error("Logout error:", err);
+  }
+});
+
+onAuthStateChanged(auth, user => updateAuthUI(user));
+
+const entriesRef = ref(db, "entries");
+const awardsRef = ref(db, "awards");
+
+onValue(entriesRef, (snapshot) => {
+  allEntries = parseEntriesSnapshot(snapshot);
+  syncState();
+  renderAll();
+});
+
+onValue(awardsRef, (snapshot) => {
+  allAwards = parseAwardsSnapshot(snapshot);
+  syncState();
   renderTrophies();
   renderMilestonesAwards();
-}
+});
+
+onAuthStateChanged(auth, user => updateAuthUI(user));
+
+const entriesRef = ref(db, "entries");
+const awardsRef = ref(db, "awards");
+
+onValue(entriesRef, (snapshot) => {
+  allEntries = parseEntriesSnapshot(snapshot);
+  syncState();
+  renderAll();
+}, (err) => {
+  console.error("Firebase read error:", err);
+  entriesTbody.innerHTML = `<tr><td colspan="8" class="empty-state">⚠ Error loading data: ${err.message}</td></tr>`;
+});
+
+onValue(awardsRef, (snapshot) => {
+  allAwards = parseAwardsSnapshot(snapshot);
+  syncState();
+  renderTrophies();
+  renderMilestonesAwards();
+}, (err) => {
+  console.error("Firebase awards read error:", err);
+
+  if (trophiesContainer) {
+    trophiesContainer.innerHTML = `<p class="empty-state">⚠ Error loading trophies: ${err.message}</p>`;
+  }
+
+  if (milestonesAwardsContainer) {
+    milestonesAwardsContainer.innerHTML = `<p class="empty-state">⚠ Error loading milestones: ${err.message}</p>`;
+  }
+});
 
 // 🔥 NEW ADD FUNCTIONS
 btnTrophyAdd?.addEventListener("click", async () => {
@@ -229,6 +316,13 @@ function initUI() {
   inputDate.value = todayStr();
   trophyDate.value = todayStr();
   milestoneDate.value = todayStr();
+  if (trophyPuppy) {
+  trophyPuppy.innerHTML = `<option value="">— select puppy —</option>` + puppyOptions;
+}
+
+if (milestonePuppy) {
+  milestonePuppy.innerHTML = `<option value="">— select puppy —</option>` + puppyOptions;
+}
 }
 
 initUI();
