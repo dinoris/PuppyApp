@@ -881,3 +881,12 @@ td {
   color: #7a869a;
   white-space: nowrap;
 }
+
+.puppies-age-banner {
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid #eadfce;
+  border-radius: 18px;
+  font-weight: 600;
+}
