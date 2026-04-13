@@ -52,7 +52,8 @@
       <button class="tab-btn active" data-tab="log">📋 Weight Log</button>
       <button class="tab-btn" data-tab="chart">📈 Growth Chart</button>
       <button class="tab-btn" data-tab="insights">💡 Insights</button>
-      <button class="tab-btn" data-tab="trophies">🏆 Trophies &amp; Milestones</button>
+      <button class="tab-btn" data-tab="trophies">🏆 Trophies</button>
+      <button class="tab-btn" data-tab="milestones">🎉 Milestones</button>
     </nav>
 
     <section id="tab-log" class="tab-panel active">
@@ -172,59 +173,102 @@
 
     <section id="tab-trophies" class="tab-panel">
       <div class="card form-card">
-        <h2 class="card-title">Add Trophy or Milestone</h2>
+        <h2 class="card-title">Add Trophy</h2>
         <div class="form-row trophy-form-row">
           <div class="form-group">
-            <label for="award-puppy">Puppy</label>
-            <select id="award-puppy"></select>
+            <label for="trophy-puppy">Puppy</label>
+            <select id="trophy-puppy"></select>
           </div>
 
           <div class="form-group">
-            <label for="award-type">Type</label>
-            <select id="award-type">
-              <option value="trophy">🏆 Trophy</option>
-              <option value="milestone">🎉 Milestone</option>
-            </select>
+            <label for="trophy-title">Title</label>
+            <select id="trophy-title"></select>
           </div>
 
           <div class="form-group">
-            <label for="award-title">Title</label>
-            <select id="award-title"></select>
-          </div>
-
-          <div class="form-group">
-            <label for="award-date">Date</label>
-            <input type="date" id="award-date" />
+            <label for="trophy-date">Date</label>
+            <input type="date" id="trophy-date" />
           </div>
 
           <div class="form-group trophy-action">
-            <button id="btn-award-add" class="btn btn-primary" disabled>Add</button>
+            <button id="btn-trophy-add" class="btn btn-primary" disabled>Add Trophy</button>
           </div>
         </div>
 
         <div class="form-row trophy-notes-row">
           <div class="form-group trophy-notes-group">
-            <label for="award-notes">Notes (optional)</label>
-            <input type="text" id="award-notes" placeholder="Example: Crawled to the edge of the box today" />
+            <label for="trophy-notes">Notes (optional)</label>
+            <input type="text" id="trophy-notes" placeholder="Example: Always the first to complain for milk" />
           </div>
         </div>
 
-        <p id="award-message" class="form-message"></p>
+        <p id="trophy-message" class="form-message"></p>
       </div>
 
       <div class="card">
         <div class="table-header-row">
-          <h2 class="card-title">All Trophies &amp; Milestones</h2>
+          <h2 class="card-title">All Trophies</h2>
           <div class="table-filters">
-            <label for="award-filter-puppy">Filter:</label>
-            <select id="award-filter-puppy">
+            <label for="trophy-filter-puppy">Filter:</label>
+            <select id="trophy-filter-puppy">
               <option value="all">All puppies</option>
             </select>
           </div>
         </div>
 
-        <div id="awards-container">
-          <p class="empty-state">No trophies or milestones yet.</p>
+        <div id="trophies-container">
+          <p class="empty-state">No trophies yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-milestones" class="tab-panel">
+      <div class="card form-card">
+        <h2 class="card-title">Add Milestone</h2>
+        <div class="form-row trophy-form-row">
+          <div class="form-group">
+            <label for="milestone-puppy">Puppy</label>
+            <select id="milestone-puppy"></select>
+          </div>
+
+          <div class="form-group">
+            <label for="milestone-title">Title</label>
+            <select id="milestone-title"></select>
+          </div>
+
+          <div class="form-group">
+            <label for="milestone-date">Date</label>
+            <input type="date" id="milestone-date" />
+          </div>
+
+          <div class="form-group trophy-action">
+            <button id="btn-milestone-add" class="btn btn-primary" disabled>Add Milestone</button>
+          </div>
+        </div>
+
+        <div class="form-row trophy-notes-row">
+          <div class="form-group trophy-notes-group">
+            <label for="milestone-notes">Notes (optional)</label>
+            <input type="text" id="milestone-notes" placeholder="Example: Opened both eyes today" />
+          </div>
+        </div>
+
+        <p id="milestone-message" class="form-message"></p>
+      </div>
+
+      <div class="card">
+        <div class="table-header-row">
+          <h2 class="card-title">All Milestones</h2>
+          <div class="table-filters">
+            <label for="milestone-filter-puppy">Filter:</label>
+            <select id="milestone-filter-puppy">
+              <option value="all">All puppies</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="milestones-awards-container">
+          <p class="empty-state">No milestones yet.</p>
         </div>
       </div>
     </section>
