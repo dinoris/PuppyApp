@@ -950,10 +950,10 @@ td {
 /* Dog image — overlapping circle, bottom-right */
 .pawrents-dog-img {
   position: absolute;
-  bottom: -24px;
-  right: 18px;
-  width: 148px;
-  height: 148px;
+  bottom: -50px;
+  right: 16px;
+  width: 124px;
+  height: 124px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
