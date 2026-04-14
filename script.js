@@ -28,7 +28,7 @@ const PUPPIES = [
 ];
 
 const TROPHY_OPTIONS = [
-  "Biggest Crier",
+  "Drama Queen",
   "The Contortionist",
   "Greatest Explorer",
   "Speedy Gonzales",
