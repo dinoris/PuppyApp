@@ -440,9 +440,8 @@ function updateAuthUI(user) {
   isAdmin = ADMIN_EMAILS.includes(user?.email);
 
   if (user) {
-    authStatus.textContent = "";
+    if (authStatus) authStatus.textContent = "";
     btnLogin.style.display = "none";
-    btnLogout.style.display = "none";
     btnAvatar.style.display = "inline-flex";
 
     if (user.photoURL) {
@@ -455,9 +454,8 @@ function updateAuthUI(user) {
       avatarImg.style.display = "none";
     }
   } else {
-    authStatus.textContent = "";
+    if (authStatus) authStatus.textContent = "";
     btnLogin.style.display = "inline-block";
-    btnLogout.style.display = "none";
     btnAvatar.style.display = "none";
   }
 
