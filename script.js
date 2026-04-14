@@ -673,84 +673,89 @@ function renderTable() {
   });
 }
 
-const cards = PAWRENTS.map(parent => {
-  const initials = parent.name
-    .split(/[\s&]+/)
-    .filter(Boolean)
-    .map(w => w[0].toUpperCase())
-    .slice(0, 2)
-    .join("");
+function renderPawrents() {
+  if (!pawrentsContainer) return;
 
-  return `
-    <div class="pawrents-card">
-      <div class="pawrents-banner" style="background:${parent.color};">
+  function isLightColor(hex) {
+    const c = hex.replace("#", "");
+    const r = parseInt(c.substring(0, 2), 16);
+    const g = parseInt(c.substring(2, 4), 16);
+    const b = parseInt(c.substring(4, 6), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 180;
+  }
 
-        <div class="pawrents-banner-left">
-          <div class="pawrents-avatar" style="background:${parent.avatarColor ?? 'rgba(255,255,255,0.18)'}; color:${parent.avatarTextColor ?? '#fff'};">
-            ${initials}
-          </div>
-          <div>
-            <div class="pawrents-banner-name" style="color:${parent.nameColor ?? '#fff'};">${parent.name}</div>
-            <div class="pawrents-banner-sub" style="color:${parent.nameColor ?? '#fff'};">${parent.location ?? ''}</div>
+  const cards = PAWRENTS.map(parent => {
+    const bannerTextColor = isLightColor(parent.color) ? "#fff" : "#fff";
+
+    return `
+      <div class="pawrents-card">
+        <div class="pawrents-banner" style="background:${parent.color}; color:${bannerTextColor}">
+          <div class="pawrents-banner-content">
+            <strong>${parent.name}</strong>
           </div>
         </div>
 
-        ${parent.dogImage
-          ? `<img class="pawrents-dog-img" src="${parent.dogImage}" alt="Photo of ${parent.name}'s dog" />`
-          : `<div class="pawrents-dog-img" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🐾</div>`
-        }
+        <div class="pawrents-body">
+          <div class="pawrents-role">${parent.role}</div>
 
+<div class="pawrents-stats">
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Breed</div>
+    <div class="pawrents-stat-value">${parent.breed}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Age</div>
+    <div class="pawrents-stat-value">${parent.age}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Favorite Food</div>
+    <div class="pawrents-stat-value">${parent.favoriteFood}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Favorite Song</div>
+    <div class="pawrents-stat-value">${parent.favoriteSong}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Favorite Activity</div>
+    <div class="pawrents-stat-value">${parent.favoriteActivity}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Personality</div>
+    <div class="pawrents-stat-value">${parent.personality}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Nickname</div>
+    <div class="pawrents-stat-value">${parent.nickname}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Fun Fact</div>
+    <div class="pawrents-stat-value">${parent.funFact}</div>
+  </div>
+</div>
+
+          <div class="pawrents-quote-box">
+            <div class="pawrents-quote-label">Signature Quote</div>
+<div class="pawrents-quotes">
+  ${parent.quotes.map(q => `
+    <div class="pawrents-quote">“${q}”</div>
+  `).join("")}
+</div>
+          </div>
+        </div>
       </div>
+    `;
+  }).join("");
 
-      <div class="pawrents-body">
-        <div class="pawrents-role">
-          <span class="pawrents-role-dot"></span>
-          ${parent.role}
-        </div>
-
-        <div class="pawrents-stats">
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Breed</span>
-            <span class="pawrents-stat-value">${parent.breed}</span>
-          </div>
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Age</span>
-            <span class="pawrents-stat-value">${parent.age}</span>
-          </div>
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Favorite food</span>
-            <span class="pawrents-stat-value">${parent.favoriteFood}</span>
-          </div>
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Favorite song</span>
-            <span class="pawrents-stat-value">${parent.favoriteSong}</span>
-          </div>
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Favorite activity</span>
-            <span class="pawrents-stat-value">${parent.favoriteActivity}</span>
-          </div>
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Personality</span>
-            <span class="pawrents-stat-value">${parent.personality}</span>
-          </div>
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Nickname</span>
-            <span class="pawrents-stat-value">${parent.nickname}</span>
-          </div>
-          <div class="pawrents-stat">
-            <span class="pawrents-stat-label">Fun fact</span>
-            <span class="pawrents-stat-value">${parent.funFact}</span>
-          </div>
-        </div>
-
-        <div class="pawrents-quote-box">
-          <div class="pawrents-quote-label">Signature quote</div>
-          ${parent.quotes.map(q => `<div class="pawrents-quote">"${q}"</div>`).join("")}
-        </div>
-      </div>
-    </div>
-  `;
-}).join("");
+  pawrentsContainer.innerHTML = `<div class="pawrents-grid">${cards}</div>`;
+}
 
 function renderChart() {
   const timelines = buildTimelines(allEntries);
