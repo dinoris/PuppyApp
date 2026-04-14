@@ -37,11 +37,14 @@
   </div>
 </div>
 
-  <div class="header-auth">
-    <div id="auth-status" class="auth-status"></div>
-    <button id="btn-login" class="btn btn-outline" style="display:none">Sign in with Google</button>
-    <button id="btn-logout" class="btn btn-ghost" style="display:none">Sign out</button>
-  </div>
+<div class="header-auth">
+  <button id="btn-login" class="btn btn-outline" style="display:none">Log in</button>
+
+  <button id="btn-avatar" class="avatar-btn" style="display:none" title="Sign out">
+    <img id="avatar-img" class="avatar-img" alt="Profile">
+    <span id="avatar-fallback" class="avatar-fallback"></span>
+  </button>
+</div>
 </header>
 
   <div id="readonly-banner" class="readonly-banner" style="display:none">

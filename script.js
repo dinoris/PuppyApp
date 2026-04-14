@@ -431,19 +431,34 @@ const awardMessage = document.getElementById("award-message");
 const awardFilterPuppy = document.getElementById("award-filter-puppy");
 const awardsContainer = document.getElementById("awards-container");
 const pawrentsContainer = document.getElementById("pawrents-container");
+const btnAvatar = document.getElementById("btn-avatar");
+const avatarImg = document.getElementById("avatar-img");
+const avatarFallback = document.getElementById("avatar-fallback");
 
 function updateAuthUI(user) {
   currentUser = user;
   isAdmin = ADMIN_EMAILS.includes(user?.email);
 
   if (user) {
-    authStatus.textContent = isAdmin ? `Editor: ${user.email}` : `Viewer: ${user.email}`;
+    authStatus.textContent = "";
     btnLogin.style.display = "none";
-    btnLogout.style.display = "inline-block";
+    btnLogout.style.display = "none";
+    btnAvatar.style.display = "inline-flex";
+
+    if (user.photoURL) {
+      avatarImg.src = user.photoURL;
+      avatarImg.style.display = "block";
+      avatarFallback.style.display = "none";
+    } else {
+      avatarFallback.textContent = (user.email || "U")[0].toUpperCase();
+      avatarFallback.style.display = "flex";
+      avatarImg.style.display = "none";
+    }
   } else {
     authStatus.textContent = "";
     btnLogin.style.display = "inline-block";
     btnLogout.style.display = "none";
+    btnAvatar.style.display = "none";
   }
 
   readonlyBanner.style.display = isAdmin ? "none" : "block";
@@ -464,7 +479,7 @@ btnLogin.addEventListener("click", async () => {
   }
 });
 
-btnLogout.addEventListener("click", async () => {
+btnAvatar.addEventListener("click", async () => {
   try {
     await signOut(auth);
   } catch (err) {
