@@ -916,38 +916,48 @@ td {
 .pawrents-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 24px;
 }
 
 .pawrents-card {
   background: #fff;
   border: 1px solid #eadfce;
-  border-radius: 22px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  border-radius: 26px;
+  box-shadow: 0 10px 28px rgba(120, 95, 55, 0.08);
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pawrents-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(120, 95, 55, 0.12);
 }
 
 .pawrents-banner {
   width: 100%;
-  padding: 14px 18px;
+  padding: 20px 22px;
 }
 
 .pawrents-banner-content {
-  font-weight: 700;
-  font-size: 2rem;
   font-family: 'Lora', serif;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.3px;
 }
 
 .pawrents-body {
-  padding: 18px 20px 20px;
+  padding: 22px 24px 24px;
 }
 
 .pawrents-role {
-  margin-bottom: 16px;
-  font-size: 1rem;
-  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 18px;
+  padding: 6px 12px;
+  background: #f6f1e8;
+  border: 1px solid #eadfce;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: #6b7280;
 }
 
@@ -959,32 +969,33 @@ td {
 }
 
 .pawrents-quote-box {
-  padding: 14px 16px;
-  background: #faf7f2;
-  border: 1px solid #eadfce;
-  border-radius: 16px;
+  padding: 18px 20px;
+  background: linear-gradient(to bottom, #fffdf9, #f8f3eb);
+  border: 1px solid #e6d8c4;
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .pawrents-quote-label {
-  margin-bottom: 8px;
-  font-size: 0.85rem;
+  margin-bottom: 12px;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #8b6f47;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.pawrents-quote {
-  font-style: italic;
-  line-height: 1.5;
-  color: #4a5568;
+  letter-spacing: 0.1em;
 }
 
 .pawrents-quotes {
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 
+.pawrents-quote {
+  font-style: italic;
+  line-height: 1.7;
+  color: #4a5568;
+  font-size: 1.02rem;
+}
 @media (max-width: 700px) {
   .pawrents-grid {
     grid-template-columns: 1fr;
@@ -992,5 +1003,43 @@ td {
 
   .pawrents-stats {
     grid-template-columns: 1fr;
+  }
+}
+
+.pawrents-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+  margin-bottom: 22px;
+}
+
+.pawrents-stat {
+  background: #faf7f2;
+  border: 1px solid #eadfce;
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+
+.pawrents-stat-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #8b6f47;
+  margin-bottom: 6px;
+}
+
+.pawrents-stat-value {
+  font-size: 1.02rem;
+  line-height: 1.4;
+  color: #4a5568;
+}
+@media (max-width: 700px) {
+  .pawrents-banner-content {
+    font-size: 2rem;
+  }
+
+  .pawrents-body {
+    padding: 18px 18px 20px;
   }
 }

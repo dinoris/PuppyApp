@@ -699,16 +699,47 @@ function renderPawrents() {
         <div class="pawrents-body">
           <div class="pawrents-role">${parent.role}</div>
 
-          <div class="pawrents-stats">
-            <div><strong>Breed:</strong> ${parent.breed}</div>
-            <div><strong>Age:</strong> ${parent.age}</div>
-            <div><strong>Favorite Food:</strong> ${parent.favoriteFood}</div>
-            <div><strong>Favorite Song:</strong> ${parent.favoriteSong}</div>
-            <div><strong>Favorite Activity:</strong> ${parent.favoriteActivity}</div>
-            <div><strong>Personality:</strong> ${parent.personality}</div>
-            <div><strong>Nickname:</strong> ${parent.nickname}</div>
-            <div><strong>Fun Fact:</strong> ${parent.funFact}</div>
-          </div>
+<div class="pawrents-stats">
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Breed</div>
+    <div class="pawrents-stat-value">${parent.breed}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Age</div>
+    <div class="pawrents-stat-value">${parent.age}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Favorite Food</div>
+    <div class="pawrents-stat-value">${parent.favoriteFood}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Favorite Song</div>
+    <div class="pawrents-stat-value">${parent.favoriteSong}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Favorite Activity</div>
+    <div class="pawrents-stat-value">${parent.favoriteActivity}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Personality</div>
+    <div class="pawrents-stat-value">${parent.personality}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Nickname</div>
+    <div class="pawrents-stat-value">${parent.nickname}</div>
+  </div>
+
+  <div class="pawrents-stat">
+    <div class="pawrents-stat-label">Fun Fact</div>
+    <div class="pawrents-stat-value">${parent.funFact}</div>
+  </div>
+</div>
 
           <div class="pawrents-quote-box">
             <div class="pawrents-quote-label">Signature Quote</div>
