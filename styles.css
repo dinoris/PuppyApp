@@ -933,10 +933,31 @@ td {
 
 /* Banner */
 .pawrents-banner {
-  padding: 18px 18px 14px;
+  padding: 18px 18px 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 13px;
+  position: relative;
+}
+
+.pawrents-banner-left {
   display: flex;
   align-items: center;
   gap: 13px;
+}
+
+/* Dog image — overlapping circle, bottom-right */
+.pawrents-dog-img {
+  position: absolute;
+  bottom: -24px;
+  right: 18px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  background: #e5e7eb;
 }
 
 .pawrents-avatar {
@@ -965,7 +986,7 @@ td {
 
 /* Body */
 .pawrents-body {
-  padding: 14px 18px 18px;
+  padding: 36px 18px 18px;
 }
 
 .pawrents-role {
