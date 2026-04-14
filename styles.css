@@ -1043,3 +1043,14 @@ td {
     padding: 18px 18px 20px;
   }
 }
+.app-logo {
+  width: 28px;
+  height: 28px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+h1 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
