@@ -684,22 +684,13 @@ const cards = PAWRENTS.map(parent => {
   return `
     <div class="pawrents-card">
       <div class="pawrents-banner" style="background:${parent.color};">
-
-        <div class="pawrents-banner-left">
-          <div class="pawrents-avatar" style="background:${parent.avatarColor ?? 'rgba(255,255,255,0.18)'}; color:${parent.avatarTextColor ?? '#fff'};">
-            ${initials}
-          </div>
-          <div>
-            <div class="pawrents-banner-name" style="color:${parent.nameColor ?? '#fff'};">${parent.name}</div>
-            <div class="pawrents-banner-sub" style="color:${parent.nameColor ?? '#fff'};">${parent.location ?? ''}</div>
-          </div>
+        <div class="pawrents-avatar" style="background:${parent.avatarColor ?? 'rgba(255,255,255,0.18)'}; color:${parent.avatarTextColor ?? '#fff'};">
+          ${initials}
         </div>
-
-        ${parent.dogImage
-          ? `<img class="pawrents-dog-img" src="${parent.dogImage}" alt="Photo of ${parent.name}'s dog" />`
-          : `<div class="pawrents-dog-img" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;">🐾</div>`
-        }
-
+        <div>
+          <div class="pawrents-banner-name" style="color:${parent.nameColor ?? '#fff'};">${parent.name}</div>
+          <div class="pawrents-banner-sub" style="color:${parent.nameColor ?? '#fff'};">${parent.location ?? ''}</div>
+        </div>
       </div>
 
       <div class="pawrents-body">
@@ -751,6 +742,8 @@ const cards = PAWRENTS.map(parent => {
     </div>
   `;
 }).join("");
+
+pawrentsContainer.innerHTML = `<div class="pawrents-grid">${cards}</div>`;
 
 function renderChart() {
   const timelines = buildTimelines(allEntries);
