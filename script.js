@@ -25,13 +25,55 @@ const FIREBASE_CONFIG = {
 const ADMIN_EMAILS = ["bios80@gmail.com", "mouniaabdelkader@gmail.com"];
 
 const PUPPIES = [
-  { id: 1, name: "Green", gender: "Boy", color: "#3a9e4a" },
-  { id: 2, name: "Pink", gender: "Girl", color: "#ed7db5" },
-  { id: 3, name: "Blue", gender: "Boy", color: "#4c92f4" },
-  { id: 4, name: "Red", gender: "Girl", color: "#b40000" },
-  { id: 5, name: "Yellow", gender: "Girl", color: "#f8e90b" },
-  { id: 7, name: "Orange", gender: "Boy", color: "#ff741e" },
-  { id: 8, name: "White", gender: "Girl", color: "#ededed" },
+  {
+    id: 1,
+    name: "Green",
+    gender: "Boy",
+    color: "#3a9e4a",
+    dogImage: "images/green.png",
+  },
+  {
+    id: 2,
+    name: "Pink",
+    gender: "Girl",
+    color: "#ed7db5",
+    dogImage: "images/pink.png",
+  },
+  {
+    id: 3,
+    name: "Blue",
+    gender: "Boy",
+    color: "#4c92f4",
+    dogImage: "images/blue.png",
+  },
+  {
+    id: 4,
+    name: "Red",
+    gender: "Girl",
+    color: "#b40000",
+    dogImage: "images/red.png",
+  },
+  {
+    id: 5,
+    name: "Yellow",
+    gender: "Girl",
+    color: "#f8e90b",
+    dogImage: "images/yellow.png",
+  },
+  {
+    id: 7,
+    name: "Orange",
+    gender: "Boy",
+    color: "#ff741e",
+    dogImage: "images/orange.png",
+  },
+  {
+    id: 8,
+    name: "White",
+    gender: "Girl",
+    color: "#ededed",
+    dogImage: "images/white.png",
+  },
 ];
 
 const TROPHY_OPTIONS = [
@@ -347,17 +389,32 @@ function renderPuppies() {
 
       // 🟡 NO DATA CASE
       if (arr.length === 0) {
+        const initials = puppy.name.slice(0, 2).toUpperCase();
+
         return `
         <div class="puppy-profile-card">
-          <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
-            <div class="puppy-banner-content">
-              <strong>${puppy.name}</strong>
+          <div class="puppy-banner" style="background:${puppy.color};">
+            <div class="puppy-banner-left">
+              <div class="puppy-avatar" style="background:rgba(255,255,255,0.18); color:${bannerTextColor};">
+                ${initials}
+              </div>
+              <div>
+                <div class="puppy-banner-name" style="color:${bannerTextColor};">${puppy.name}</div>
+                <div class="puppy-banner-sub" style="color:${bannerTextColor};">${puppy.gender}</div>
+              </div>
             </div>
+
+            ${
+              puppy.dogImage
+                ? `<img class="puppy-dog-img" src="${puppy.dogImage}" alt="Photo of ${puppy.name}" />`
+                : `<div class="puppy-dog-img" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🐾</div>`
+            }
           </div>
 
           <div class="puppy-profile-body">
-            <div class="puppy-gender-line">
-              ${genderIcon(puppy.gender)} ${puppy.gender}
+            <div class="puppy-role">
+              <span class="puppy-role-dot"></span>
+              Puppy Profile
             </div>
 
             <div class="empty-state">No weight data yet.</div>
@@ -382,105 +439,117 @@ function renderPuppies() {
         else latestStatus = "Good Gain";
       }
 
-      return `
-      <div class="puppy-profile-card">
-        <div class="puppy-banner" style="background:${puppy.color}; color:${bannerTextColor}">
-          <div class="puppy-banner-content">
-            <strong>${puppy.name}</strong>
-          </div>
-        </div>
-
-        <div class="puppy-profile-body">
-          <div class="puppy-gender-line">
-            ${genderIcon(puppy.gender)} ${puppy.gender}
-          </div>
-
-<div class="puppy-profile-stats">
-  <div>
-    <span class="stat-label">
-      <i class="bi bi-egg"></i> Birth
-    </span>
-    <span>${first.weight}g</span>
-  </div>
-
-  <div>
-    <span class="stat-label">
-      <i class="bi bi-speedometer2"></i> Current
-    </span>
-    <span>${last.weight}g</span>
-  </div>
-
-  <div>
-    <span class="stat-label">
-      <i class="bi bi-graph-up"></i> Total
-    </span>
-    <span>${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</span>
-  </div>
-
-  <div>
-    <span class="stat-label">
-      <i class="bi bi-arrow-up-right"></i> Latest
-    </span>
-    <span>${
-      latestChange === null
-        ? "—"
-        : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
-    }</span>
-  </div>
-
-  <div>
-    <span class="stat-label">
-      <i class="bi bi-activity"></i> Avg / Day
-    </span>
-    <span>${
-      avgDaily === null
-        ? "—"
-        : `${avgDaily > 0 ? "+" : ""}${Number(avgDaily).toFixed(1)}g`
-    }</span>
-  </div>
-
-  <div>
-    <span class="stat-label">
-      <i class="bi bi-heart-pulse"></i> Status
-    </span>
-    <span>${latestStatus}</span>
-  </div>
-</div>
-
-<div class="puppy-profile-section">
-  <h4>Milestones</h4>
-  <div class="puppy-milestones-list">
-    ${MILESTONE_OPTIONS.map((title) => {
-      const completed = completedMilestones.get(title);
+      const initials = puppy.name.slice(0, 2).toUpperCase();
 
       return `
-        <div class="puppy-milestone-item ${completed ? "is-complete" : ""}">
-          <div class="puppy-milestone-main">
-<span class="puppy-milestone-status">
-  <input type="checkbox" ${completed ? "checked" : ""} disabled />
-</span>
-            <span class="puppy-milestone-title">${title}</span>
+        <div class="puppy-profile-card">
+          <div class="puppy-banner" style="background:${puppy.color};">
+            <div class="puppy-banner-left">
+              <div class="puppy-avatar" style="background:rgba(255,255,255,0.18); color:${bannerTextColor};">
+                ${initials}
+              </div>
+              <div>
+                <div class="puppy-banner-name" style="color:${bannerTextColor};">${puppy.name}</div>
+                <div class="puppy-banner-sub" style="color:${bannerTextColor};">${puppy.gender}</div>
+              </div>
+            </div>
+
+            ${
+              puppy.dogImage
+                ? `<img class="puppy-dog-img" src="${puppy.dogImage}" alt="Photo of ${puppy.name}" />`
+                : `<div class="puppy-dog-img" style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;">🐾</div>`
+            }
           </div>
-          <div class="puppy-milestone-date">
-            ${completed ? formatDate(completed.date) : ""}
+
+          <div class="puppy-profile-body">
+            <div class="puppy-role">
+              <span class="puppy-role-dot"></span>
+              Puppy Profile
+            </div>
+
+            <div class="puppy-profile-stats">
+              <div class="puppy-stat">
+                <span class="puppy-stat-label"><i class="bi bi-egg"></i> Birth</span>
+                <span class="puppy-stat-value">${first.weight}g</span>
+              </div>
+
+              <div class="puppy-stat">
+                <span class="puppy-stat-label"><i class="bi bi-speedometer2"></i> Current</span>
+                <span class="puppy-stat-value">${last.weight}g</span>
+              </div>
+
+              <div class="puppy-stat">
+                <span class="puppy-stat-label"><i class="bi bi-graph-up"></i> Total Gain</span>
+                <span class="puppy-stat-value">${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</span>
+              </div>
+
+              <div class="puppy-stat">
+                <span class="puppy-stat-label"><i class="bi bi-arrow-up-right"></i> Latest Gain</span>
+                <span class="puppy-stat-value">${
+                  latestChange === null
+                    ? "—"
+                    : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
+                }</span>
+              </div>
+
+              <div class="puppy-stat">
+                <span class="puppy-stat-label"><i class="bi bi-activity"></i> Avg / Day</span>
+                <span class="puppy-stat-value">${
+                  avgDaily === null
+                    ? "—"
+                    : `${avgDaily > 0 ? "+" : ""}${Number(avgDaily).toFixed(1)}g`
+                }</span>
+              </div>
+
+              <div class="puppy-stat">
+                <span class="puppy-stat-label"><i class="bi bi-heart-pulse"></i> Status</span>
+                <span class="puppy-stat-value">${latestStatus}</span>
+              </div>
+            </div>
+
+            <div class="puppy-profile-section">
+              <h4>Milestones</h4>
+              <div class="puppy-milestones-list">
+                ${MILESTONE_OPTIONS.map((title) => {
+                  const completed = completedMilestones.get(title);
+
+                  return `
+                    <div class="puppy-milestone-item ${completed ? "is-complete" : ""}">
+                      <div class="puppy-milestone-main">
+                        <span class="puppy-milestone-status">
+                          <input type="checkbox" ${completed ? "checked" : ""} disabled />
+                        </span>
+                        <span class="puppy-milestone-title">${title}</span>
+                      </div>
+                      <div class="puppy-milestone-date">
+                        ${completed ? formatDate(completed.date) : ""}
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+
+            <div class="puppy-profile-section">
+              <h4>Trophies</h4>
+              ${
+                trophies.length
+                  ? `<div class="puppy-trophy-list">${trophies
+                      .map(
+                        (item) => `
+                      <div class="puppy-trophy-item">
+                        <span class="puppy-trophy-title">${item.title}</span>
+                        <span class="puppy-trophy-date">${formatDate(item.date)}</span>
+                      </div>
+                    `,
+                      )
+                      .join("")}</div>`
+                  : `<p class="empty-state">No trophies yet.</p>`
+              }
+            </div>
           </div>
         </div>
       `;
-    }).join("")}
-  </div>
-</div>
-
-          <div class="puppy-profile-section">
-            <h4>Trophies</h4>
-            ${
-              trophies.length
-                ? `<ul>${trophies.map((item) => `<li>${item.title} (${formatDate(item.date)})</li>`).join("")}</ul>`
-                : `<p class="empty-state">No trophies yet.</p>`
-            }
-          </div>
-        </div>
-      </div>
-    `;
     })
     .join("");
 
