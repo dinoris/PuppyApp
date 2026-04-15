@@ -84,7 +84,7 @@ quotes: [
     breed: "Yorkshire Terrier",
     age: "1 year",
     favoriteFood: "Toys",
-    favoriteSong: "",
+    favoriteSong: "Smooth Criminal by Michael Jackson (because of the sneaky vibes)",
     favoriteActivity: "Eating toyes",
     personality: "Energetic, scared, sneaky",
     nickname: "Good Boy, Leoncito, Pollino",
