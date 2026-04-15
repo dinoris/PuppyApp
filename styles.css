@@ -1028,34 +1028,58 @@ td {
   margin-bottom: 20px;
 }
 
-.puppy-milestones-table {
-  display: grid;
-  gap: 8px;
+.puppy-milestones-list {
+  display: flex;
+  flex-direction: column;
 }
 
-.puppy-milestone-row {
-  display: grid;
-  grid-template-columns: 28px 1fr auto;
-  gap: 10px;
+.puppy-milestone-item {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  padding: 8px 10px;
-  border: 1px solid #eadfce;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 0.5px solid #eadfce;
+}
+
+.puppy-milestone-item:last-child {
+  border-bottom: none;
+}
+
+.puppy-milestone-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .puppy-milestone-status {
-  font-size: 1rem;
-  text-align: center;
+  color: #b7b7b7;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.puppy-milestone-status input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--sage); /* your green */
+  cursor: default;
+}
+
+.puppy-milestone-item.is-complete .puppy-milestone-status {
+  color: var(--sage);
 }
 
 .puppy-milestone-title {
-  font-weight: 500;
+  font-size: 0.84rem;
+  color: #374151;
 }
 
 .puppy-milestone-date {
-  font-size: 0.9rem;
-  color: #7a869a;
+  font-size: 0.76rem;
+  color: #9ca3af;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .puppies-age-banner {

@@ -447,28 +447,28 @@ function renderPuppies() {
   </div>
 </div>
 
-          <div class="puppy-profile-section">
-            <h4>Milestones</h4>
-            <div class="puppy-milestones-table">
-              ${MILESTONE_OPTIONS.map((title) => {
-                const completed = completedMilestones.get(title);
+<div class="puppy-profile-section">
+  <h4>Milestones</h4>
+  <div class="puppy-milestones-list">
+    ${MILESTONE_OPTIONS.map((title) => {
+      const completed = completedMilestones.get(title);
 
-                return `
-                  <div class="puppy-milestone-row">
-                    <div class="puppy-milestone-status">
-                      ${completed ? "✅" : "—"}
-                    </div>
-                    <div class="puppy-milestone-title">
-                      ${title}
-                    </div>
-                    <div class="puppy-milestone-date">
-                      ${completed ? formatDate(completed.date) : ""}
-                    </div>
-                  </div>
-                `;
-              }).join("")}
-            </div>
+      return `
+        <div class="puppy-milestone-item ${completed ? "is-complete" : ""}">
+          <div class="puppy-milestone-main">
+<span class="puppy-milestone-status">
+  <input type="checkbox" ${completed ? "checked" : ""} disabled />
+</span>
+            <span class="puppy-milestone-title">${title}</span>
           </div>
+          <div class="puppy-milestone-date">
+            ${completed ? formatDate(completed.date) : ""}
+          </div>
+        </div>
+      `;
+    }).join("")}
+  </div>
+</div>
 
           <div class="puppy-profile-section">
             <h4>Trophies</h4>
