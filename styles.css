@@ -1178,24 +1178,20 @@ td {
   }
 }
 
-.puppy-avatar.male {
+.male {
   color: #4c92f4;
-  font-weight: 700;
 }
 
-.puppy-avatar.female {
+.female {
   color: #e05fa0;
-  font-weight: 700;
 }
 
-/* Gender styling */
-.gender.male {
-  color: #4c92f4;
+.gender {
   font-weight: bold;
 }
-.gender.female {
-  color: #e05fa0;
-  font-weight: bold;
+
+.puppy-avatar {
+  font-weight: 700;
 }
 
 .stat-label {
