@@ -1178,6 +1178,16 @@ td {
   }
 }
 
+.puppy-avatar.male {
+  color: #4c92f4;
+  font-weight: 700;
+}
+
+.puppy-avatar.female {
+  color: #e05fa0;
+  font-weight: 700;
+}
+
 /* Gender styling */
 .gender.male {
   color: #4c92f4;

@@ -390,6 +390,7 @@ function renderPuppies() {
       // 🟡 NO DATA CASE
       if (arr.length === 0) {
         const genderSymbol = puppy.gender === "Boy" ? "♂" : "♀";
+        const genderClass = puppy.gender === "Boy" ? "male" : "female";
 
         return `
         <div class="puppy-profile-card">
@@ -400,7 +401,6 @@ ${genderSymbol}
               </div>
               <div>
                 <div class="puppy-banner-name" style="color:${bannerTextColor};">${puppy.name}</div>
-                <div class="puppy-banner-sub" style="color:${bannerTextColor};">${puppy.gender}</div>
               </div>
             </div>
 
@@ -440,6 +440,7 @@ ${genderSymbol}
       }
 
       const genderSymbol = puppy.gender === "Boy" ? "♂" : "♀";
+      const genderClass = puppy.gender === "Boy" ? "male" : "female";
 
       return `
         <div class="puppy-profile-card">
@@ -450,7 +451,6 @@ ${genderSymbol}
               </div>
               <div>
                 <div class="puppy-banner-name" style="color:${bannerTextColor};">${puppy.name}</div>
-                <div class="puppy-banner-sub" style="color:${bannerTextColor};">${puppy.gender}</div>
               </div>
             </div>
 
