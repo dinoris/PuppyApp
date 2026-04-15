@@ -944,10 +944,10 @@ td {
 .puppies-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 24px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .puppies-grid {
     grid-template-columns: 1fr;
   }
@@ -955,48 +955,134 @@ td {
 
 .puppy-profile-card {
   background: #fff;
-  border: 1px solid #eadfce;
-  border-radius: 22px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  border: 0.5px solid #eadfce;
+  border-radius: 16px;
   overflow: hidden;
-  padding: 0;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease;
 }
 
-/* Banner (no margin, full width inside card) */
+.puppy-profile-card:hover {
+  transform: translateY(-3px);
+  border-color: #d4c4ae;
+}
+
 .puppy-banner {
-  width: 100%;
-  padding: 14px 18px;
+  padding: 18px 18px 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 13px;
+  position: relative;
 }
 
-.puppy-banner-content {
+.puppy-banner-left {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  font-weight: 700;
+  gap: 13px;
 }
 
-/* 👇 THIS is the key fix */
+.puppy-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.puppy-banner-name {
+  font-family: "Ephesis", cursive;
+  font-size: 2.6rem;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+.puppy-banner-sub {
+  font-size: 0.72rem;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.puppy-dog-img {
+  position: absolute;
+  bottom: -50px;
+  right: 16px;
+  width: 124px;
+  height: 124px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  background: #e5e7eb;
+}
+
 .puppy-profile-body {
-  padding: 18px 20px 20px;
+  padding: 36px 18px 18px;
 }
 
-/* Remove padding from stats (now handled by body) */
+.puppy-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 12px;
+  padding: 3px 9px;
+  background: #f6f1e8;
+  border: 0.5px solid #eadfce;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.puppy-role-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
 .puppy-profile-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 16px;
-  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
 }
 
-.puppy-profile-stats div {
+.puppy-stat {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 0.5px solid #eadfce;
 }
 
-@media (max-width: 500px) {
-  .puppy-profile-stats {
-    grid-template-columns: 1fr;
-  }
+.puppy-stat:last-child {
+  border-bottom: none;
+}
+
+.puppy-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.puppy-stat-label i {
+  font-size: 0.9rem;
+  color: var(--brown-light);
+}
+
+.puppy-stat-value {
+  font-size: 0.82rem;
+  color: #374151;
+  text-align: right;
 }
 
 .puppy-profile-section {
@@ -1006,33 +1092,16 @@ td {
 .puppy-profile-section h4 {
   margin-bottom: 8px;
   color: #8b6f47;
+  font-size: 0.9rem;
 }
 
-.puppy-profile-section ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-/* Gender styling */
-.gender.male {
-  color: #4c92f4;
-  font-weight: bold;
-}
-
-.gender.female {
-  color: #e05fa0;
-  font-weight: bold;
-}
-
-.puppy-gender-line {
-  margin-bottom: 20px;
-}
-
+.puppy-trophy-list,
 .puppy-milestones-list {
   display: flex;
   flex-direction: column;
 }
 
+.puppy-trophy-item,
 .puppy-milestone-item {
   display: flex;
   justify-content: space-between;
@@ -1042,6 +1111,7 @@ td {
   border-bottom: 0.5px solid #eadfce;
 }
 
+.puppy-trophy-item:last-child,
 .puppy-milestone-item:last-child {
   border-bottom: none;
 }
@@ -1054,7 +1124,6 @@ td {
 }
 
 .puppy-milestone-status {
-  color: #b7b7b7;
   flex-shrink: 0;
   line-height: 1;
 }
@@ -1062,24 +1131,22 @@ td {
 .puppy-milestone-status input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: var(--sage); /* your green */
+  accent-color: var(--sage);
   cursor: default;
-}
-
-.puppy-milestone-item.is-complete .puppy-milestone-status {
-  color: var(--sage);
 }
 
 .puppy-milestone-item.is-complete .puppy-milestone-title {
   color: var(--slate-light);
 }
 
-.puppy-milestone-title {
+.puppy-milestone-title,
+.puppy-trophy-title {
   font-size: 0.84rem;
   color: #374151;
 }
 
-.puppy-milestone-date {
+.puppy-milestone-date,
+.puppy-trophy-date {
   font-size: 0.76rem;
   color: #9ca3af;
   white-space: nowrap;
@@ -1093,6 +1160,22 @@ td {
   border: 1px solid #eadfce;
   border-radius: 18px;
   font-weight: 600;
+}
+
+@media (max-width: 700px) {
+  .puppy-banner-name {
+    font-size: 2.1rem;
+  }
+
+  .puppy-dog-img {
+    width: 104px;
+    height: 104px;
+    bottom: -42px;
+  }
+
+  .puppy-profile-body {
+    padding-top: 30px;
+  }
 }
 
 .stat-label {
