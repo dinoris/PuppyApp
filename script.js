@@ -389,14 +389,14 @@ function renderPuppies() {
 
       // 🟡 NO DATA CASE
       if (arr.length === 0) {
-        const initials = puppy.name.slice(0, 2).toUpperCase();
+        const genderSymbol = puppy.gender === "Boy" ? "♂" : "♀";
 
         return `
         <div class="puppy-profile-card">
           <div class="puppy-banner" style="background:${puppy.color};">
             <div class="puppy-banner-left">
               <div class="puppy-avatar" style="background:rgba(255,255,255,0.18); color:${bannerTextColor};">
-                ${initials}
+${genderSymbol}
               </div>
               <div>
                 <div class="puppy-banner-name" style="color:${bannerTextColor};">${puppy.name}</div>
@@ -439,14 +439,14 @@ function renderPuppies() {
         else latestStatus = "Good Gain";
       }
 
-      const initials = puppy.name.slice(0, 2).toUpperCase();
+      const genderSymbol = puppy.gender === "Boy" ? "♂" : "♀";
 
       return `
         <div class="puppy-profile-card">
           <div class="puppy-banner" style="background:${puppy.color};">
             <div class="puppy-banner-left">
               <div class="puppy-avatar" style="background:rgba(255,255,255,0.18); color:${bannerTextColor};">
-                ${initials}
+${genderSymbol}
               </div>
               <div>
                 <div class="puppy-banner-name" style="color:${bannerTextColor};">${puppy.name}</div>
