@@ -1070,6 +1070,10 @@ td {
   color: var(--sage);
 }
 
+.puppy-milestone-item.is-complete .puppy-milestone-title {
+  color: var(--slate-light);
+}
+
 .puppy-milestone-title {
   font-size: 0.84rem;
   color: #374151;
