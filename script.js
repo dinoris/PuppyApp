@@ -396,7 +396,7 @@ function renderPuppies() {
         <div class="puppy-profile-card">
           <div class="puppy-banner" style="background:${puppy.color};">
             <div class="puppy-banner-left">
-<div class="puppy-avatar ${genderClass}" style="background:rgba(255,255,255,0.18);">
+<div class="puppy-avatar ${genderClass}" style="background:rgba(255,255,255,0.75);">
   ${genderSymbol}
 </div>
               <div>
@@ -446,7 +446,7 @@ function renderPuppies() {
         <div class="puppy-profile-card">
           <div class="puppy-banner" style="background:${puppy.color};">
             <div class="puppy-banner-left">
-<div class="puppy-avatar ${genderClass}" style="background:rgba(255,255,255,0.18);">
+<div class="puppy-avatar ${genderClass}" style="background:rgba(255,255,255,0.75);">
   ${genderSymbol}
 </div>
               <div>
