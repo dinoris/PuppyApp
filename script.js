@@ -378,21 +378,56 @@ function renderPuppies() {
             ${genderIcon(puppy.gender)} ${puppy.gender}
           </div>
 
-          <div class="puppy-profile-stats">
-  <div><strong>🐣 Birth:</strong> ${first.weight}g</div>
-  <div><strong>⚖️ Current:</strong> ${last.weight}g</div>
-  <div><strong>📈 Total Gain:</strong> ${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</div>
-  <div><strong>🚀 Latest Gain:</strong> ${
-    latestChange === null
-      ? "—"
-      : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
-  }</div>
-  <div><strong>📊 Avg / Day:</strong> ${
-    avgDaily === null
-      ? "—"
-      : `${avgDaily > 0 ? "+" : ""}${Number(avgDaily).toFixed(1)}g`
-  }</div>
-  <div><strong>Status:</strong> ${latestStatus}</div>
+<div class="puppy-profile-stats">
+  <div>
+    <span class="stat-label">
+      <i class="bi bi-egg"></i> Birth
+    </span>
+    <span>${first.weight}g</span>
+  </div>
+
+  <div>
+    <span class="stat-label">
+      <i class="bi bi-speedometer2"></i> Current
+    </span>
+    <span>${last.weight}g</span>
+  </div>
+
+  <div>
+    <span class="stat-label">
+      <i class="bi bi-graph-up"></i> Total
+    </span>
+    <span>${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</span>
+  </div>
+
+  <div>
+    <span class="stat-label">
+      <i class="bi bi-arrow-up-right"></i> Latest
+    </span>
+    <span>${
+      latestChange === null
+        ? "—"
+        : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
+    }</span>
+  </div>
+
+  <div>
+    <span class="stat-label">
+      <i class="bi bi-activity"></i> Avg / Day
+    </span>
+    <span>${
+      avgDaily === null
+        ? "—"
+        : `${avgDaily > 0 ? "+" : ""}${Number(avgDaily).toFixed(1)}g`
+    }</span>
+  </div>
+
+  <div>
+    <span class="stat-label">
+      <i class="bi bi-heart-pulse"></i> Status
+    </span>
+    <span>${latestStatus}</span>
+  </div>
 </div>
 
           <div class="puppy-profile-section">

@@ -1066,6 +1066,19 @@ td {
   font-weight: 600;
 }
 
+.stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--slate);
+}
+
+.stat-label i {
+  font-size: 0.9rem;
+  color: var(--brown-light);
+}
+
 .pawrents-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
