@@ -1162,11 +1162,18 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     const tab = btn.dataset.tab;
     activeTab = tab;
 
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => {
+      b.classList.remove("active");
+      b.setAttribute("aria-selected", "false");
+    });
+
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
 
     btn.classList.add("active");
-    document.getElementById(`tab-${tab}`).classList.add("active");
+    btn.setAttribute("aria-selected", "true");
+
+    const panel = document.getElementById(`tab-${tab}`);
+    if (panel) panel.classList.add("active");
 
     if (tab === "chart") renderChart();
     if (tab === "insights") renderInsights();

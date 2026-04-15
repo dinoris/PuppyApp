@@ -1,5 +1,6 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,9 +10,11 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-
+  <link href="https://fonts.googleapis.com/css2?family=Ephesis&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
   <link rel="icon" type="image/png" href="/PuppyApp/icons/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/PuppyApp/icons/favicon.svg" />
   <link rel="shortcut icon" href="/PuppyApp/icons/favicon.ico" />
@@ -26,42 +29,71 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
+  <header class="app-header">
+    <div class="header-brand">
+      <img src="icons/web-app-manifest-192x192.png" class="app-logo" alt="logo" />
 
-<header class="app-header">
-<div class="header-brand">
-  <img src="icons/web-app-manifest-192x192.png" class="app-logo" alt="logo">
+      <div class="header-text">
+        <h1>Roma's Puppies Tracker</h1>
+        <p class="header-sub">Litter Growth Journal</p>
+      </div>
+    </div>
 
-  <div class="header-text">
-    <h1>Roma's Puppies Tracker</h1>
-    <p class="header-sub">Litter Growth Journal</p>
-  </div>
-</div>
+    <div class="header-auth">
+      <button id="btn-login" class="btn btn-outline" style="display: none">
+        Log in
+      </button>
 
-<div class="header-auth">
-  <button id="btn-login" class="btn btn-outline" style="display:none">Log in</button>
+      <button id="btn-avatar" class="avatar-btn" style="display: none" title="Sign out">
+        <img id="avatar-img" class="avatar-img" alt="Profile" />
+        <span id="avatar-fallback" class="avatar-fallback"></span>
+      </button>
+    </div>
+  </header>
 
-  <button id="btn-avatar" class="avatar-btn" style="display:none" title="Sign out">
-    <img id="avatar-img" class="avatar-img" alt="Profile">
-    <span id="avatar-fallback" class="avatar-fallback"></span>
-  </button>
-</div>
-</header>
-
-  <div id="readonly-banner" class="readonly-banner" style="display:none">
+  <div id="readonly-banner" class="readonly-banner" style="display: none">
     👁 Read-only mode — Only my Mommy and Daddy can add or delete entries
   </div>
 
   <main class="app-main">
+<nav class="tab-nav" role="tablist" aria-label="Main navigation">
+  <button class="tab-btn active" data-tab="cam" role="tab" aria-selected="true">
+    <i class="bi bi-camera-video"></i>
+    <span class="tab-label">Puppy Cam</span>
+    <span class="tab-badge live">LIVE</span>
+  </button>
 
-<nav class="tab-nav">
-  <button class="tab-btn active" data-tab="log">📋 Weight Log</button>
-  <button class="tab-btn" data-tab="chart">📈 Growth Chart</button>
-  <button class="tab-btn" data-tab="insights">💡 Insights</button>
-  <button class="tab-btn" data-tab="puppies">🐶 Puppies</button>
-  <button class="tab-btn" data-tab="cam">📹 Puppy Cam</button>
-  <button class="tab-btn" data-tab="trophies">🏆 Trophies &amp; Milestones</button>
-  <button class="tab-btn" data-tab="pawrents">🐾 Pawrents</button>
+  <button class="tab-btn" data-tab="log" role="tab" aria-selected="false">
+    <i class="bi bi-clipboard-data"></i>
+    <span class="tab-label">Weight Log</span>
+  </button>
+
+  <button class="tab-btn" data-tab="chart" role="tab" aria-selected="false">
+    <i class="bi bi-graph-up"></i>
+    <span class="tab-label">Growth Chart</span>
+  </button>
+
+  <button class="tab-btn" data-tab="insights" role="tab" aria-selected="false">
+    <i class="bi bi-lightbulb"></i>
+    <span class="tab-label">Insights</span>
+  </button>
+
+  <button class="tab-btn" data-tab="puppies" role="tab" aria-selected="false">
+    <i class="bi bi-heart"></i>
+    <span class="tab-label">Puppies</span>
+  </button>
+
+  <button class="tab-btn" data-tab="trophies" role="tab" aria-selected="false">
+    <i class="bi bi-trophy"></i>
+    <span class="tab-label">Trophies &amp; Milestones</span>
+  </button>
+
+  <button class="tab-btn" data-tab="pawrents" role="tab" aria-selected="false">
+    <i class="bi bi-people"></i>
+    <span class="tab-label">Pawrents</span>
+  </button>
 </nav>
 
     <section id="tab-log" class="tab-panel active">
@@ -81,7 +113,9 @@
             <input type="number" id="input-weight" placeholder="e.g. 320" min="0" step="1" />
           </div>
           <div class="form-group form-action">
-            <button id="btn-add" class="btn btn-primary" disabled>Add Entry</button>
+            <button id="btn-add" class="btn btn-primary" disabled>
+              Add Entry
+            </button>
           </div>
         </div>
         <p id="form-message" class="form-message"></p>
@@ -108,11 +142,13 @@
                 <th>Weight (g)</th>
                 <th>Change</th>
                 <th>Status</th>
-                <th id="col-delete" style="display:none"></th>
+                <th id="col-delete" style="display: none"></th>
               </tr>
             </thead>
             <tbody id="entries-tbody">
-              <tr><td colspan="8" class="empty-state">Loading entries…</td></tr>
+              <tr>
+                <td colspan="8" class="empty-state">Loading entries…</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -131,7 +167,9 @@
         <div class="chart-container">
           <canvas id="growth-chart"></canvas>
         </div>
-        <p class="chart-note">★ Stars on a line indicate the puppy doubled its birth weight.</p>
+        <p class="chart-note">
+          ★ Stars on a line indicate the puppy doubled its birth weight.
+        </p>
       </div>
     </section>
 
@@ -207,7 +245,9 @@
           </div>
 
           <div class="form-group trophy-action">
-            <button id="btn-award-add" class="btn btn-primary" disabled>Add</button>
+            <button id="btn-award-add" class="btn btn-primary" disabled>
+              Add
+            </button>
           </div>
         </div>
 
@@ -238,31 +278,34 @@
       </div>
     </section>
 
-<section id="tab-puppies" class="tab-panel">
-  <div id="puppies-container">No Puppy Cards yet.</div>
-</section>
+    <section id="tab-puppies" class="tab-panel">
+      <div id="puppies-container">No Puppy Cards yet.</div>
+    </section>
 
-<section id="tab-cam" class="tab-panel">
-  <div class="card">
-<h2 class="card-title">
-  Live Puppy Cam <span class="live-dot"></span>
-</h2>
-    <div class="video-wrap">
-      <iframe
-        src="https://www.youtube.com/embed/O8a-oVTYQSM?autoplay=1&mute=1&playsinline=1&rel=0"
-        title="Puppy Cam Live Stream"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
-        referrerpolicy="strict-origin-when-cross-origin">
-      </iframe>
-    </div>
-  </div>
-</section>
+    <section id="tab-cam" class="tab-panel">
+      <div class="card">
+        <h2 class="card-title">
+          Live Puppy Cam <span class="live-dot"></span>
+        </h2>
+        <div class="video-wrap">
+          <iframe src="https://www.youtube.com/embed/O8a-oVTYQSM?autoplay=1&mute=1&playsinline=1&rel=0"
+            title="Puppy Cam Live Stream" allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+                web-share;
+              " allowfullscreen referrerpolicy="strict-origin-when-cross-origin">
+          </iframe>
+        </div>
+      </div>
+    </section>
 
-<section id="tab-pawrents" class="tab-panel">
-  <div id="pawrents-container"></div>
-</section>
-
+    <section id="tab-pawrents" class="tab-panel">
+      <div id="pawrents-container"></div>
+    </section>
   </main>
 
   <footer class="app-footer">
@@ -271,4 +314,5 @@
 
   <script src="script.js" type="module"></script>
 </body>
+
 </html>
