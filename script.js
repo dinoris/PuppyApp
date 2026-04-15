@@ -83,7 +83,7 @@ quotes: [
     color: "#c8b089",
     breed: "Yorkshire Terrier",
     age: "1 year",
-    favoriteFood: "Toys",
+    favoriteFood: "Toys, pencils and crayons (basically anything that isn't dog food)",
     favoriteSong: "Smooth Criminal by Michael Jackson (because of the sneaky vibes)",
     favoriteActivity: "Eating toyes",
     personality: "Energetic, scared, sneaky",
