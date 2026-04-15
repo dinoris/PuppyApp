@@ -278,9 +278,24 @@
       </div>
     </section>
 
-    <section id="tab-puppies" class="tab-panel">
-      <div id="puppies-container">No Puppy Cards yet.</div>
-    </section>
+<section id="tab-puppies" class="tab-panel">
+  <div class="card">
+    <div class="table-header-row">
+      <h2 class="card-title">Puppy Profiles</h2>
+      <div class="table-filters">
+        <label for="puppy-sort">Sort by:</label>
+        <select id="puppy-sort">
+          <option value="default">Default order</option>
+          <option value="weight-desc">Current weight</option>
+          <option value="avg-daily-desc">Average daily gain</option>
+          <option value="latest-gain-desc">Latest gain</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="puppies-container">No Puppy Cards yet.</div>
+  </div>
+</section>
 
     <section id="tab-cam" class="tab-panel">
       <div class="card">

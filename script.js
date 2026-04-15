@@ -262,7 +262,47 @@ function renderPuppies() {
   const timelines = buildTimelines(allEntries);
   const combinedAwards = getCombinedAwards();
   const allDatesList = allDates(timelines);
-const puppyAge = allDatesList.length;
+  const puppyAge = allDatesList.length;
+  const sortValue = puppySort?.value || "default";
+
+  const sortedPuppies = [...PUPPIES].sort((a, b) => {
+    if (sortValue === "default") return a.id - b.id;
+
+    const arrA = timelines[a.id] || [];
+    const arrB = timelines[b.id] || [];
+
+    const firstA = arrA[0];
+    const lastA = arrA[arrA.length - 1];
+    const firstB = arrB[0];
+    const lastB = arrB[arrB.length - 1];
+
+    const currentWeightA = lastA ? lastA.weight : -1;
+    const currentWeightB = lastB ? lastB.weight : -1;
+
+    const totalGainA = firstA && lastA ? lastA.weight - firstA.weight : 0;
+    const totalGainB = firstB && lastB ? lastB.weight - firstB.weight : 0;
+
+    const avgDailyA = arrA.length > 1 ? totalGainA / (arrA.length - 1) : -1;
+    const avgDailyB = arrB.length > 1 ? totalGainB / (arrB.length - 1) : -1;
+
+    const latestGainA = arrA.length > 1 ? lastA.weight - arrA[arrA.length - 2].weight : -1;
+    const latestGainB = arrB.length > 1 ? lastB.weight - arrB[arrB.length - 2].weight : -1;
+
+    if (sortValue === "weight-desc") {
+      return currentWeightB - currentWeightA;
+    }
+
+    if (sortValue === "avg-daily-desc") {
+      return avgDailyB - avgDailyA;
+    }
+
+    if (sortValue === "latest-gain-desc") {
+      return latestGainB - latestGainA;
+    }
+
+    return a.id - b.id;
+  });
+
 
   function isLightColor(hex) {
     const c = hex.replace("#", "");
@@ -273,7 +313,7 @@ const puppyAge = allDatesList.length;
     return brightness > 180;
   }
 
-  const cards = PUPPIES.map(puppy => {
+  const cards = sortedPuppies.map(puppy => {
     const arr = timelines[puppy.id] || [];
     const puppyAwards = combinedAwards.filter(item => item.puppyId === puppy.id);
     const milestones = puppyAwards.filter(item => item.type === "milestone");
@@ -421,6 +461,7 @@ const alertsCont = document.getElementById("alerts-container");
 const milestonesCont = document.getElementById("milestones-container");
 const summaryBody = document.getElementById("puppy-summary-container");
 const puppiesContainer = document.getElementById("puppies-container");
+const puppySort = document.getElementById("puppy-sort");
 
 const awardPuppy = document.getElementById("award-puppy");
 const awardType = document.getElementById("award-type");
@@ -1204,6 +1245,7 @@ function initUI() {
   filterPuppy.addEventListener("change", renderTable);
   awardFilterPuppy.addEventListener("change", renderAwards);
   awardType.addEventListener("change", populateAwardTitleOptions);
+  if (puppySort) puppySort.addEventListener("change", renderPuppies);
 }
 
 initUI();
