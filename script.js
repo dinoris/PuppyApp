@@ -88,7 +88,7 @@ quotes: [
     favoriteActivity: "Eating toyes",
     personality: "Energetic, scared, sneaky",
     nickname: "Good Boy, Leoncito, Pollino",
-    funFact: "He has a few hidespots around the house where he stashes his toys and treats.",
+    funFact: "He has a few hidespots around the house where he stashes his loot and stolen goods.",
     quotes: [
   "That thing you are looking for? I haven't seen it.",
   "What was that noise?",
