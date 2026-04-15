@@ -63,17 +63,17 @@ const PAWRENTS = [
     dogImage: "images/roma.png",
     color: "#e8b7c8",
     breed: "Shih Tzu",
-    age: "1 year",
-    favoriteFood: "Anything",
-    favoriteSong: "Eye of the Tiger",
+    age: "almost 2 years",
+    favoriteFood: "Anything you leave unsupervised",
+    favoriteSong: "Hello by Adele (because of the dramatic vibes)",
     favoriteActivity: "Stealing socks",
     personality: "Sweet, protective, dramatic",
     nickname: "Bella, Romita, Good Girl",
-    funFact: "Can demand snacks with one look",
+    funFact: "She could have been a cat. She is friendly until she decides she doesn't like you.",
 quotes: [
-  "I carried this whole family on my back.",
+  "Who invited this people into my house?",
   "I'll keep an eye on your food. Don't worry.",
-  "Give me that sock!"
+  "Where did you put my sock?"
 ]  },
   {
     id: "dad",
@@ -82,16 +82,17 @@ quotes: [
     dogImage: "images/leone.png",
     color: "#c8b089",
     breed: "Yorkshire Terrier",
-    age: "almost 2 years",
-    favoriteFood: "The one I stole",
-    favoriteSong: "Single Ladies",
+    age: "1 year",
+    favoriteFood: "Toys",
+    favoriteSong: "",
     favoriteActivity: "Eating toyes",
     personality: "Energetic, scared, sneaky",
-    nickname: "Good Boy, Thief",
-    funFact: "Acts like he owns the couch",
+    nickname: "Good Boy, Leoncito, Pollino",
+    funFact: "He has a few hidespots around the house where he stashes his toys and treats.",
     quotes: [
   "That thing you are looking for? I haven't seen it.",
-  "What was that noise?."
+  "What was that noise?",
+  "Who said that toy animals need legs?"
 ]  }
 ];
 
