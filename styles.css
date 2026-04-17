@@ -918,6 +918,89 @@ td {
   background: linear-gradient(90deg, var(--sage-light), var(--sage));
 }
 
+.breed-timeline {
+  display: grid;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.breed-timeline-item {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--white), var(--cream));
+  box-shadow: var(--shadow-sm);
+}
+
+.breed-timeline-age {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sage);
+}
+
+.breed-timeline-text {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+.breed-milestone-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.breed-milestone-card {
+  padding: 1rem;
+  border: 1px solid var(--sand);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--white), var(--cream));
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.breed-milestone-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.55rem;
+}
+
+.breed-milestone-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--brown);
+  margin-bottom: 0.3rem;
+}
+
+.breed-milestone-range {
+  font-size: 0.82rem;
+  color: var(--slate-light);
+}
+
+@media (max-width: 900px) {
+  .breed-milestone-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .breed-timeline-item {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .breed-milestone-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Insights ─────────────────────────────────── */
 .insights-grid {
   display: grid;
