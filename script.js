@@ -1624,4 +1624,30 @@ function initUI() {
   if (puppySort) puppySort.addEventListener("change", renderPuppies);
 }
 
+const breedSelect = document.getElementById("breed-select");
+
+function activateTab(tabName) {
+  document.querySelectorAll(".tab-btn").forEach((b) => {
+    b.classList.remove("active");
+    b.setAttribute("aria-selected", "false");
+  });
+
+  document.querySelectorAll(".tab-panel").forEach((p) => {
+    p.classList.remove("active");
+  });
+
+  const panel = document.getElementById(`tab-${tabName}`);
+  if (panel) panel.classList.add("active");
+}
+
+breedSelect?.addEventListener("change", () => {
+  const value = breedSelect.value;
+
+  if (!value) return;
+
+  if (value === "shorkie") {
+    activateTab("breed");
+  }
+});
+
 initUI();
