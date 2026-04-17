@@ -823,6 +823,101 @@ td {
   }
 }
 
+.breed-facts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.breed-fact-card {
+  background: linear-gradient(180deg, var(--white), var(--cream));
+  border: 1px solid var(--sand);
+  border-radius: 18px;
+  padding: 1rem 1rem 0.95rem;
+  box-shadow: var(--shadow-sm);
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.breed-fact-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate-light);
+  margin-bottom: 0.6rem;
+}
+
+.breed-fact-value {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  line-height: 1.35;
+  color: var(--brown);
+}
+
+@media (max-width: 900px) {
+  .breed-facts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .breed-facts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.breed-traits {
+  display: grid;
+  gap: 1rem;
+}
+
+.breed-trait {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  background: linear-gradient(180deg, var(--white), var(--cream));
+  box-shadow: var(--shadow-sm);
+}
+
+.breed-trait-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.55rem;
+}
+
+.breed-trait-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--slate);
+}
+
+.breed-trait-score {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.breed-trait-bar {
+  width: 100%;
+  height: 10px;
+  background: var(--cream-dark);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--sand);
+}
+
+.breed-trait-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--sage-light), var(--sage));
+}
+
 /* ── Insights ─────────────────────────────────── */
 .insights-grid {
   display: grid;
