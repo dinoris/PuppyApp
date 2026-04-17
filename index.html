@@ -82,12 +82,24 @@
       </div>
 
       <div class="litter-toolbar-right">
+        <!-- UNITS -->
         <span class="unit-label">Units</span>
         <div class="unit-toggle" role="group" aria-label="Weight units">
           <button id="unit-g" class="unit-toggle-btn active" type="button">
             g
           </button>
           <button id="unit-oz" class="unit-toggle-btn" type="button">oz</button>
+        </div>
+
+        <!-- BREED -->
+        <span class="unit-label">Breed</span>
+        <div class="breed-dropdown">
+          <select id="breed-select">
+            <option value="">Select</option>
+            <option value="shorkie">Shorkie</option>
+            <option value="shihtzu" disabled>Shih Tzu (soon)</option>
+            <option value="yorkie" disabled>Yorkshire Terrier (soon)</option>
+          </select>
         </div>
       </div>
     </div>
@@ -398,6 +410,13 @@
             >
             </iframe>
           </div>
+        </div>
+      </section>
+
+      <section id="tab-breed" class="tab-panel">
+        <div class="card">
+          <h2 class="card-title">Shorkie Breed Guide</h2>
+          <p>Breed content coming next step...</p>
         </div>
       </section>
 
