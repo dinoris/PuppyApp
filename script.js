@@ -628,21 +628,16 @@ function renderPuppies() {
 </div>
 
 <div class="puppy-stat">
-  <span class="puppy-stat-label"><i class="bi bi-graph-up-arrow"></i> Trajectory</span>
+  <span class="puppy-stat-label"><i class="bi bi-graph-up-arrow"></i> Trend</span>
   <span class="puppy-stat-value">${trajectoryStatus}</span>
 </div>
 
 <div class="puppy-stat">
-  <span class="puppy-stat-label"><i class="bi bi-heart-pulse"></i> Status</span>
+  <span class="puppy-stat-label"><i class="bi bi-heart-pulse"></i> Today</span>
   <span class="puppy-stat-value">${latestStatus}</span>
 </div>
             </div>
-
-            <div class="puppy-stat">
-  <span class="puppy-stat-label"><i class="bi bi-graph-up-arrow"></i> Trajectory</span>
-  <span class="puppy-stat-value">${getTrajectoryStatus(arr)}</span>
-</div>
-
+            
             <div class="puppy-profile-section">
               <h4>Milestones</h4>
               <div class="puppy-milestones-list">
