@@ -1001,6 +1001,55 @@ td {
   }
 }
 
+.breed-guidance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.breed-guidance-card {
+  padding: 1rem;
+  border: 1px solid var(--sand);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--white), var(--cream));
+  box-shadow: var(--shadow-sm);
+}
+
+.breed-guidance-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.55rem;
+}
+
+.breed-guidance-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--brown);
+  margin-bottom: 0.4rem;
+}
+
+.breed-guidance-text {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--slate);
+}
+
+.breed-guidance-note {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--sage);
+  background: var(--sage-pale);
+  border: 1px solid rgba(107, 143, 113, 0.18);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+}
+
+@media (max-width: 700px) {
+  .breed-guidance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Insights ─────────────────────────────────── */
 .insights-grid {
   display: grid;
