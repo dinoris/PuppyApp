@@ -1050,6 +1050,44 @@ td {
   }
 }
 
+.breed-funfacts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.breed-funfact-card {
+  padding: 1rem;
+  border: 1px solid var(--sand);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--white), var(--cream));
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+
+.breed-funfact-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.breed-funfact-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--slate);
+}
+
+@media (max-width: 900px) {
+  .breed-funfacts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .breed-funfacts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Insights ─────────────────────────────────── */
 .insights-grid {
   display: grid;
