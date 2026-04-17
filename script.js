@@ -358,6 +358,23 @@ function allDates(timelines) {
   return [...set].sort();
 }
 
+function getTrajectoryStatus(arr) {
+  if (!arr || arr.length < 3) return "Not enough data";
+
+  const last = arr[arr.length - 1].weight;
+  const prev = arr[arr.length - 2].weight;
+  const prev2 = arr[arr.length - 3].weight;
+
+  const gain1 = last - prev;
+  const gain2 = prev - prev2;
+  const avgRecentGain = (gain1 + gain2) / 2;
+
+  if (gain1 < 0) return "Weight drop";
+  if (avgRecentGain < 5) return "Slower growth";
+  if (avgRecentGain < 10) return "Steady growth";
+  return "Strong growth";
+}
+
 function getAutomaticAwards() {
   const timelines = buildTimelines(allEntries);
   const autoAwards = [];
@@ -516,6 +533,7 @@ function renderPuppies() {
 
       const doubleTarget = first.weight * 2;
       const doubleProgress = (last.weight / doubleTarget) * 100;
+      const trajectoryStatus = getTrajectoryStatus(arr);
 
       function getTrajectoryStatus(arr) {
         if (arr.length < 3) return "Not enough data";
@@ -604,15 +622,20 @@ function renderPuppies() {
                 }</span>
               </div>
 
-              <div class="puppy-stat">
+<div class="puppy-stat">
   <span class="puppy-stat-label"><i class="bi bi-bullseye"></i> Double Progress</span>
   <span class="puppy-stat-value">${doubleProgress.toFixed(0)}%</span>
 </div>
 
-              <div class="puppy-stat">
-                <span class="puppy-stat-label"><i class="bi bi-heart-pulse"></i> Status</span>
-                <span class="puppy-stat-value">${latestStatus}</span>
-              </div>
+<div class="puppy-stat">
+  <span class="puppy-stat-label"><i class="bi bi-graph-up-arrow"></i> Trajectory</span>
+  <span class="puppy-stat-value">${trajectoryStatus}</span>
+</div>
+
+<div class="puppy-stat">
+  <span class="puppy-stat-label"><i class="bi bi-heart-pulse"></i> Status</span>
+  <span class="puppy-stat-value">${latestStatus}</span>
+</div>
             </div>
 
             <div class="puppy-stat">
