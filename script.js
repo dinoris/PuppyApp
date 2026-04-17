@@ -162,7 +162,7 @@ let growthChart = null;
 let activeTab = "log";
 
 const LITTER_BIRTH_DATE = "2026-04-10";
-let weightUnit = "g";
+let weightUnit = localStorage.getItem("puppyWeightUnit") || "g";
 
 function getPuppy(id) {
   return PUPPIES.find((p) => p.id === Number(id));
@@ -735,11 +735,13 @@ btnAvatar.addEventListener("click", async () => {
 
 btnUnitG?.addEventListener("click", () => {
   weightUnit = "g";
+  localStorage.setItem("puppyWeightUnit", weightUnit);
   renderAll();
 });
 
 btnUnitOz?.addEventListener("click", () => {
   weightUnit = "oz";
+  localStorage.setItem("puppyWeightUnit", weightUnit);
   renderAll();
 });
 
@@ -1098,7 +1100,11 @@ function renderChart() {
     });
 
     const birthWeight = arr.length > 0 ? arr[0].weight : null;
-    const dataPoints = dates.map((d) => dateMap[d] ?? null);
+    const dataPoints = dates.map((d) => {
+      const value = dateMap[d] ?? null;
+      if (value === null) return null;
+      return weightUnit === "oz" ? gramsToOunces(value) : value;
+    });
 
     const pointStyles = dates.map((d) => {
       if (!birthWeight || !dateMap[d]) return "circle";
@@ -1136,9 +1142,10 @@ function renderChart() {
         return found ? found.weight : null;
       }).filter((v) => v !== null);
 
-      return weights.length > 0
-        ? Math.round(weights.reduce((s, v) => s + v, 0) / weights.length)
-        : null;
+      if (weights.length === 0) return null;
+
+      const avg = weights.reduce((s, v) => s + v, 0) / weights.length;
+      return weightUnit === "oz" ? gramsToOunces(avg) : avg;
     });
 
     datasets.push({
@@ -1178,9 +1185,14 @@ function renderChart() {
         tooltip: {
           callbacks: {
             label(ctx) {
-              return ctx.parsed.y !== null
-                ? ` ${ctx.dataset.label}: ${ctx.parsed.y}g`
-                : null;
+              if (ctx.parsed.y === null) return null;
+
+              const formatted =
+                weightUnit === "oz"
+                  ? `${Number(ctx.parsed.y).toFixed(1)} oz`
+                  : `${Number(ctx.parsed.y).toFixed(1)} g`;
+
+              return ` ${ctx.dataset.label}: ${formatted}`;
             },
           },
           backgroundColor: "#fff",
@@ -1204,11 +1216,14 @@ function renderChart() {
           ticks: {
             font: { family: "'DM Sans', sans-serif", size: 11 },
             color: "#718096",
-            callback: (v) => v + "g",
+            callback: (v) =>
+              weightUnit === "oz"
+                ? `${Number(v).toFixed(1)} oz`
+                : `${Number(v).toFixed(0)} g`,
           },
           title: {
             display: true,
-            text: "Weight (g)",
+            text: weightUnit === "oz" ? "Weight (oz)" : "Weight (g)",
             color: "#8b6f47",
             font: { family: "'Lora', serif", size: 12 },
           },
