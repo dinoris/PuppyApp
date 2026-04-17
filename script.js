@@ -514,6 +514,9 @@ function renderPuppies() {
 
       const avgDaily = arr.length > 1 ? totalGain / (arr.length - 1) : null;
 
+      const doubleTarget = first.weight * 2;
+      const doubleProgress = (last.weight / doubleTarget) * 100;
+
       function getTrajectoryStatus(arr) {
         if (arr.length < 3) return "Not enough data";
 
@@ -600,6 +603,11 @@ function renderPuppies() {
                     : formatWeightChange(avgDaily, weightUnit, 1)
                 }</span>
               </div>
+
+              <div class="puppy-stat">
+  <span class="puppy-stat-label"><i class="bi bi-bullseye"></i> Double Progress</span>
+  <span class="puppy-stat-value">${doubleProgress.toFixed(0)}%</span>
+</div>
 
               <div class="puppy-stat">
                 <span class="puppy-stat-label"><i class="bi bi-heart-pulse"></i> Status</span>
