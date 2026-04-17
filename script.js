@@ -1564,31 +1564,37 @@ function renderAwards() {
   });
 }
 
+function activateTab(tab) {
+  activeTab = tab;
+
+  document.querySelectorAll(".tab-btn").forEach((b) => {
+    b.classList.remove("active");
+    b.setAttribute("aria-selected", "false");
+  });
+
+  document.querySelectorAll(".tab-panel").forEach((p) => {
+    p.classList.remove("active");
+  });
+
+  const matchingButton = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+  if (matchingButton) {
+    matchingButton.classList.add("active");
+    matchingButton.setAttribute("aria-selected", "true");
+  }
+
+  const panel = document.getElementById(`tab-${tab}`);
+  if (panel) panel.classList.add("active");
+
+  if (tab === "chart") renderChart();
+  if (tab === "insights") renderInsights();
+  if (tab === "puppies") renderPuppies();
+  if (tab === "trophies") renderAwards();
+  if (tab === "pawrents") renderPawrents();
+}
+
 document.querySelectorAll(".tab-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
-    const tab = btn.dataset.tab;
-    activeTab = tab;
-
-    document.querySelectorAll(".tab-btn").forEach((b) => {
-      b.classList.remove("active");
-      b.setAttribute("aria-selected", "false");
-    });
-
-    document
-      .querySelectorAll(".tab-panel")
-      .forEach((p) => p.classList.remove("active"));
-
-    btn.classList.add("active");
-    btn.setAttribute("aria-selected", "true");
-
-    const panel = document.getElementById(`tab-${tab}`);
-    if (panel) panel.classList.add("active");
-
-    if (tab === "chart") renderChart();
-    if (tab === "insights") renderInsights();
-    if (tab === "puppies") renderPuppies();
-    if (tab === "trophies") renderAwards();
-    if (tab === "pawrents") renderPawrents();
+    activateTab(btn.dataset.tab);
   });
 });
 
@@ -1625,20 +1631,6 @@ function initUI() {
 }
 
 const breedSelect = document.getElementById("breed-select");
-
-function activateTab(tabName) {
-  document.querySelectorAll(".tab-btn").forEach((b) => {
-    b.classList.remove("active");
-    b.setAttribute("aria-selected", "false");
-  });
-
-  document.querySelectorAll(".tab-panel").forEach((p) => {
-    p.classList.remove("active");
-  });
-
-  const panel = document.getElementById(`tab-${tabName}`);
-  if (panel) panel.classList.add("active");
-}
 
 breedSelect?.addEventListener("change", () => {
   const value = breedSelect.value;

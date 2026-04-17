@@ -277,6 +277,25 @@ h3 {
   outline-offset: 2px;
 }
 
+.breed-dropdown select {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--slate);
+  background: var(--white);
+  border: 1px solid var(--sand-mid);
+  border-radius: 999px;
+  padding: 0.42rem 0.9rem;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.breed-dropdown select:focus {
+  outline: none;
+  border-color: var(--sage);
+  box-shadow: 0 0 0 3px rgba(107, 143, 113, 0.15);
+}
+
 /* ── Main Layout ──────────────────────────────── */
 .app-main {
   max-width: 1100px;
