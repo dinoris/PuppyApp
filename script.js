@@ -1283,6 +1283,131 @@ function renderChart() {
   });
 }
 
+let breedGrowthChart = null;
+
+function renderBreedGrowthChart() {
+  const canvas = document.getElementById("breed-growth-chart");
+  if (!canvas) return;
+
+  const timelines = buildTimelines(allEntries);
+
+  const litterSeries = [];
+  const maxDays = 14;
+
+  for (let dayIndex = 0; dayIndex < maxDays; dayIndex++) {
+    const dayPercents = [];
+
+    PUPPIES.forEach((puppy) => {
+      const arr = timelines[puppy.id] || [];
+      if (!arr.length) return;
+
+      const birthWeight = arr[0].weight;
+      const entry = arr[dayIndex];
+      if (!entry || !birthWeight) return;
+
+      const percentOfBirth = (entry.weight / birthWeight) * 100;
+      dayPercents.push(percentOfBirth);
+    });
+
+    if (dayPercents.length) {
+      const avgPercent =
+        dayPercents.reduce((sum, val) => sum + val, 0) / dayPercents.length;
+      litterSeries.push(Number(avgPercent.toFixed(1)));
+    } else {
+      litterSeries.push(null);
+    }
+  }
+
+  const referenceSeries = [
+    100, 108, 116, 126, 138, 152, 168, 182, 194, 200, 208, 216, 224, 232,
+  ];
+
+  const labels = Array.from({ length: maxDays }, (_, i) => `Day ${i + 1}`);
+
+  const ctx = canvas.getContext("2d");
+
+  if (breedGrowthChart) {
+    breedGrowthChart.destroy();
+  }
+
+  breedGrowthChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Expected Small-Breed Growth",
+          data: referenceSeries,
+          borderColor: "#8b6f47",
+          backgroundColor: "transparent",
+          borderWidth: 2.5,
+          borderDash: [6, 4],
+          tension: 0.3,
+          pointRadius: 2,
+          spanGaps: true,
+        },
+        {
+          label: "Your Litter Average",
+          data: litterSeries,
+          borderColor: "#6b8f71",
+          backgroundColor: "rgba(107, 143, 113, 0.10)",
+          borderWidth: 3,
+          tension: 0.3,
+          pointRadius: 3,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            usePointStyle: true,
+            padding: 16,
+            font: { family: "'DM Sans', sans-serif", size: 12 },
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              if (ctx.parsed.y == null) return null;
+              return ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}%`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: "#f0ebe1" },
+          ticks: {
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            color: "#718096",
+          },
+        },
+        y: {
+          min: 90,
+          grid: { color: "#f0ebe1" },
+          ticks: {
+            callback: (value) => `${value}%`,
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            color: "#718096",
+          },
+          title: {
+            display: true,
+            text: "% of Birth Weight",
+            color: "#8b6f47",
+            font: { family: "'Lora', serif", size: 12 },
+          },
+        },
+      },
+    },
+  });
+}
+
 toggleAverage.addEventListener("change", renderChart);
 
 function renderInsights() {
@@ -1590,6 +1715,7 @@ function activateTab(tab) {
   if (tab === "puppies") renderPuppies();
   if (tab === "trophies") renderAwards();
   if (tab === "pawrents") renderPawrents();
+  if (tab === "breed") renderBreedGrowthChart();
 }
 
 document.querySelectorAll(".tab-btn").forEach((btn) => {
