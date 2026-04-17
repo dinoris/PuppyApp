@@ -161,6 +161,9 @@ let allAwards = [];
 let growthChart = null;
 let activeTab = "log";
 
+const LITTER_BIRTH_DATE = "2026-04-10";
+let weightUnit = "g";
+
 function getPuppy(id) {
   return PUPPIES.find((p) => p.id === Number(id));
 }
@@ -175,6 +178,77 @@ function formatDate(dateStr) {
     day: "numeric",
     year: "numeric",
   });
+}
+
+function getEffectiveBirthDate() {
+  if (LITTER_BIRTH_DATE) return LITTER_BIRTH_DATE;
+  if (!allEntries.length) return null;
+
+  const sorted = [...allEntries].sort((a, b) => a.date.localeCompare(b.date));
+  return sorted[0]?.date || null;
+}
+
+function getLitterAgeLabel() {
+  const birthDateString = getEffectiveBirthDate();
+  if (!birthDateString) return "Litter Age: Day —";
+
+  const birth = new Date(birthDateString + "T00:00:00");
+  const today = new Date();
+
+  birth.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  const diffMs = today - birth;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  return `Litter Age: Day ${diffDays + 1}`;
+}
+
+function gramsToOunces(grams) {
+  return grams / 28.3495;
+}
+
+function formatWeight(grams, unit = weightUnit, decimals = 1) {
+  if (grams == null || Number.isNaN(Number(grams))) return "—";
+
+  const numeric = Number(grams);
+
+  if (unit === "oz") {
+    return `${gramsToOunces(numeric).toFixed(decimals)} oz`;
+  }
+
+  if (decimals === 0) {
+    return `${Math.round(numeric)} g`;
+  }
+
+  return `${numeric.toFixed(decimals)} g`;
+}
+
+function formatWeightChange(grams, unit = weightUnit, decimals = 1) {
+  if (grams == null || Number.isNaN(Number(grams))) return "—";
+
+  const numeric = Number(grams);
+  const formatted = formatWeight(Math.abs(numeric), unit, decimals);
+
+  if (numeric > 0) return `+${formatted}`;
+  if (numeric < 0) return `-${formatted}`;
+  return unit === "oz" ? `0.0 oz` : `0.0 g`;
+}
+
+function calculatePercentChange(currentWeight, previousWeight) {
+  if (
+    currentWeight == null ||
+    previousWeight == null ||
+    Number(previousWeight) === 0
+  ) {
+    return null;
+  }
+
+  return (
+    ((Number(currentWeight) - Number(previousWeight)) /
+      Number(previousWeight)) *
+    100
+  );
 }
 
 function genderIcon(gender) {
@@ -257,14 +331,22 @@ function statusBadge(change, isFirst) {
   return '<span class="badge badge-good">✓ Good Gain</span>';
 }
 
-function changeCell(change, isFirst) {
+function changeCell(change, isFirst, currentWeight, previousWeight) {
   if (isFirst || change === null) return '<span class="change-neu">—</span>';
 
-  const formatted = Number(change).toFixed(1);
+  const percent = calculatePercentChange(currentWeight, previousWeight);
+  const changeText = formatWeightChange(change, weightUnit, 1);
+  const percentText = percent === null ? "" : ` (${percent.toFixed(1)}%)`;
 
-  if (change > 0) return `<span class="change-pos">+${formatted}g</span>`;
-  if (change < 0) return `<span class="change-neg">${formatted}g</span>`;
-  return '<span class="change-neu">±0g</span>';
+  if (change > 0) {
+    return `<span class="change-pos">${changeText}${percentText}</span>`;
+  }
+
+  if (change < 0) {
+    return `<span class="change-neg">${changeText}${percentText}</span>`;
+  }
+
+  return `<span class="change-neu">${changeText}${percentText}</span>`;
 }
 
 function allDates(timelines) {
@@ -317,8 +399,7 @@ function renderPuppies() {
 
   const timelines = buildTimelines(allEntries);
   const combinedAwards = getCombinedAwards();
-  const allDatesList = allDates(timelines);
-  const puppyAge = allDatesList.length;
+  const litterAgeText = getLitterAgeLabel().replace("Litter Age: ", "");
   const sortValue = puppySort?.value || "default";
 
   const sortedPuppies = [...PUPPIES].sort((a, b) => {
@@ -470,17 +551,17 @@ function renderPuppies() {
             <div class="puppy-profile-stats">
               <div class="puppy-stat">
                 <span class="puppy-stat-label"><i class="bi bi-egg"></i> Birth</span>
-                <span class="puppy-stat-value">${first.weight}g</span>
+                <span class="puppy-stat-value">${formatWeight(first.weight, weightUnit, 1)}</span>
               </div>
 
               <div class="puppy-stat">
                 <span class="puppy-stat-label"><i class="bi bi-speedometer2"></i> Current</span>
-                <span class="puppy-stat-value">${last.weight}g</span>
+                <span class="puppy-stat-value">${formatWeight(last.weight, weightUnit, 1)}</span>
               </div>
 
               <div class="puppy-stat">
                 <span class="puppy-stat-label"><i class="bi bi-graph-up"></i> Total Gain</span>
-                <span class="puppy-stat-value">${totalGain > 0 ? "+" : ""}${Number(totalGain).toFixed(1)}g</span>
+                <span class="puppy-stat-value">${formatWeightChange(totalGain, weightUnit, 1)}</span>
               </div>
 
               <div class="puppy-stat">
@@ -488,7 +569,7 @@ function renderPuppies() {
                 <span class="puppy-stat-value">${
                   latestChange === null
                     ? "—"
-                    : `${latestChange > 0 ? "+" : ""}${Number(latestChange).toFixed(1)}g`
+                    : `${formatWeightChange(latestChange, weightUnit, 1)} (${calculatePercentChange(last.weight, arr[arr.length - 2].weight)?.toFixed(1)}%)`
                 }</span>
               </div>
 
@@ -497,7 +578,7 @@ function renderPuppies() {
                 <span class="puppy-stat-value">${
                   avgDaily === null
                     ? "—"
-                    : `${avgDaily > 0 ? "+" : ""}${Number(avgDaily).toFixed(1)}g`
+                    : formatWeightChange(avgDaily, weightUnit, 1)
                 }</span>
               </div>
 
@@ -555,7 +636,7 @@ function renderPuppies() {
 
   puppiesContainer.innerHTML = `
   <div class="puppies-age-banner">
-    Puppies are <strong>${puppyAge} day${puppyAge === 1 ? "" : "s"} old</strong>
+    Puppies are <strong>${litterAgeText}</strong>
   </div>
   <div class="puppies-grid">${cards}</div>
 `;
@@ -564,6 +645,9 @@ function renderPuppies() {
 const btnLogin = document.getElementById("btn-login");
 const btnLogout = document.getElementById("btn-logout");
 const authStatus = document.getElementById("auth-status");
+const litterAgeLabel = document.getElementById("litter-age-label");
+const btnUnitG = document.getElementById("unit-g");
+const btnUnitOz = document.getElementById("unit-oz");
 const readonlyBanner = document.getElementById("readonly-banner");
 const btnAdd = document.getElementById("btn-add");
 const inputPuppy = document.getElementById("input-puppy");
@@ -649,7 +733,18 @@ btnAvatar.addEventListener("click", async () => {
   }
 });
 
+btnUnitG?.addEventListener("click", () => {
+  weightUnit = "g";
+  renderAll();
+});
+
+btnUnitOz?.addEventListener("click", () => {
+  weightUnit = "oz";
+  renderAll();
+});
+
 onAuthStateChanged(auth, (user) => updateAuthUI(user));
+renderToolbar();
 
 const entriesRef = ref(db, "entries");
 const awardsRef = ref(db, "awards");
@@ -806,7 +901,22 @@ async function deleteAward(awardId) {
   }
 }
 
+function renderToolbar() {
+  if (litterAgeLabel) {
+    litterAgeLabel.textContent = getLitterAgeLabel();
+  }
+
+  if (btnUnitG) {
+    btnUnitG.classList.toggle("active", weightUnit === "g");
+  }
+
+  if (btnUnitOz) {
+    btnUnitOz.classList.toggle("active", weightUnit === "oz");
+  }
+}
+
 function renderAll() {
+  renderToolbar();
   renderTable();
   renderChart();
   renderInsights();
@@ -823,7 +933,15 @@ function renderTable() {
     const pid = Number(pidStr);
     arr.forEach((item, i) => {
       const change = computeChange(arr, i);
-      rows.push({ ...item, puppyId: pid, change, isFirst: i === 0 });
+      const previousWeight = i > 0 ? arr[i - 1].weight : null;
+
+      rows.push({
+        ...item,
+        puppyId: pid,
+        change,
+        previousWeight,
+        isFirst: i === 0,
+      });
     });
   }
 
@@ -859,8 +977,8 @@ function renderTable() {
           </div>
         </td>
         <td>${genderIcon(puppy.gender)} ${puppy.gender}</td>
-        <td><strong>${row.weight}g</strong></td>
-        <td>${changeCell(row.change, row.isFirst)}</td>
+        <td><strong>${formatWeight(row.weight, weightUnit, 1)}</strong></td>
+        <td>${changeCell(row.change, row.isFirst, row.weight, row.previousWeight)}</td>
         <td>${statusBadge(row.change, row.isFirst)}</td>
         <td>${deleteBtn}</td>
       </tr>`;

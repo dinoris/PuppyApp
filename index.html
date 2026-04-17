@@ -76,7 +76,21 @@
         </button>
       </div>
     </header>
+    <div class="litter-toolbar">
+      <div class="litter-toolbar-left">
+        <span id="litter-age-label">Litter Age: Day —</span>
+      </div>
 
+      <div class="litter-toolbar-right">
+        <span class="unit-label">Units</span>
+        <div class="unit-toggle" role="group" aria-label="Weight units">
+          <button id="unit-g" class="unit-toggle-btn active" type="button">
+            g
+          </button>
+          <button id="unit-oz" class="unit-toggle-btn" type="button">oz</button>
+        </div>
+      </div>
+    </div>
     <div id="readonly-banner" class="readonly-banner" style="display: none">
       👁 Read-only mode — Only my Mommy and Daddy can add or delete entries
     </div>
@@ -199,8 +213,8 @@
                   <th>Day #</th>
                   <th>Puppy</th>
                   <th>Gender</th>
-                  <th>Weight (g)</th>
-                  <th>Change</th>
+                  <th>Weight</th>
+                  <th>Daily Gain</th>
                   <th>Status</th>
                   <th id="col-delete" style="display: none"></th>
                 </tr>
