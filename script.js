@@ -94,6 +94,7 @@ const MILESTONE_OPTIONS = [
   "Lost Umbilical Cord",
   "Eyes Opened",
   "Started Hearing Sounds",
+  "Started Crawling",
   "Started Walking",
   "First Bark",
   "First Tail Wag",
@@ -513,6 +514,24 @@ function renderPuppies() {
 
       const avgDaily = arr.length > 1 ? totalGain / (arr.length - 1) : null;
 
+      function getTrajectoryStatus(arr) {
+        if (arr.length < 3) return "Not enough data";
+
+        const last = arr[arr.length - 1].weight;
+        const prev = arr[arr.length - 2].weight;
+        const prev2 = arr[arr.length - 3].weight;
+
+        const gain1 = last - prev;
+        const gain2 = prev - prev2;
+
+        const avg = (gain1 + gain2) / 2;
+
+        if (gain1 < 0) return "Weight drop";
+        if (avg < 5) return "Slower growth";
+        if (avg < 10) return "Steady growth";
+        return "Strong growth";
+      }
+
       let latestStatus = "First Entry";
       if (latestChange !== null) {
         if (latestChange < 0) latestStatus = "Weight Loss";
@@ -587,6 +606,11 @@ function renderPuppies() {
                 <span class="puppy-stat-value">${latestStatus}</span>
               </div>
             </div>
+
+            <div class="puppy-stat">
+  <span class="puppy-stat-label"><i class="bi bi-graph-up-arrow"></i> Trajectory</span>
+  <span class="puppy-stat-value">${getTrajectoryStatus(arr)}</span>
+</div>
 
             <div class="puppy-profile-section">
               <h4>Milestones</h4>
@@ -1351,6 +1375,8 @@ function renderInsights() {
 
     const first = arr[0];
     const last = arr[arr.length - 1];
+    const doubleTarget = first.weight * 2;
+    const progress = (last.weight / doubleTarget) * 100;
     const totalGain = last.weight - first.weight;
     const days = arr.length;
     const avgDaily = days > 1 ? totalGain / (days - 1) : null;
