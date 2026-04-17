@@ -1248,13 +1248,12 @@ function renderInsights() {
   const heaviest = sorted[0];
   const lightest = sorted[sorted.length - 1];
 
-  insHeaviest.textContent = `${getPuppy(heaviest.puppyId)?.name} (${heaviest.weight}g)`;
-  insLightest.textContent = `${getPuppy(lightest.puppyId)?.name} (${lightest.weight}g)`;
+  insHeaviest.textContent = `${getPuppy(heaviest.puppyId)?.name} (${formatWeight(heaviest.weight, weightUnit, 1)})`;
+  insLightest.textContent = `${getPuppy(lightest.puppyId)?.name} (${formatWeight(lightest.weight, weightUnit, 1)})`;
 
-  const avg = Math.round(
-    latestEntries.reduce((s, e) => s + e.weight, 0) / latestEntries.length,
-  );
-  insAvg.textContent = `${avg}g`;
+  const avg =
+    latestEntries.reduce((s, e) => s + e.weight, 0) / latestEntries.length;
+  insAvg.textContent = formatWeight(avg, weightUnit, 1);
 
   const gainers = Object.entries(timelines)
     .map(([pid, arr]) => {
@@ -1269,7 +1268,7 @@ function renderInsights() {
 
   if (gainers.length > 0) {
     const top = gainers[0];
-    insGainer.textContent = `${getPuppy(top.puppyId)?.name} (+${Number(top.gain).toFixed(1)}g)`;
+    insGainer.textContent = `${getPuppy(top.puppyId)?.name} (${formatWeightChange(top.gain, weightUnit, 1)})`;
   } else {
     insGainer.textContent = "—";
   }
@@ -1282,11 +1281,12 @@ function renderInsights() {
     const prev = arr[arr.length - 2];
     const change = last.weight - prev.weight;
     const puppy = getPuppy(Number(pid));
+    const percent = calculatePercentChange(last.weight, prev.weight);
 
     if (change < 0) {
-      alerts.push({ type: "loss", puppy, change, date: last.date });
+      alerts.push({ type: "loss", puppy, change, percent, date: last.date });
     } else if (change < 10) {
-      alerts.push({ type: "low", puppy, change, date: last.date });
+      alerts.push({ type: "low", puppy, change, percent, date: last.date });
     }
   }
 
@@ -1297,14 +1297,18 @@ function renderInsights() {
       .map((a) => {
         const icon = a.type === "loss" ? "⬇" : "⚠";
         const cls = a.type === "loss" ? "alert-loss" : "alert-low";
+        const changeText = formatWeightChange(a.change, weightUnit, 1);
+        const percentText =
+          a.percent === null ? "" : ` (${a.percent.toFixed(1)}%)`;
+
         const label =
           a.type === "loss"
-            ? `Weight loss of ${Number(Math.abs(a.change)).toFixed(1)}g on ${a.date}`
-            : `Low gain of ${Number(a.change).toFixed(1)}g on ${a.date}`;
+            ? `Weight loss of ${changeText}${percentText} on ${formatDate(a.date)}`
+            : `Low gain of ${changeText}${percentText} on ${formatDate(a.date)}`;
 
         return `<div class="alert-item ${cls}">
         <span>${icon}</span>
-        <div><strong>${a.puppy?.name}</strong> — ${label}</div>
+        <div><strong>${a.puppy?.name}</strong> - ${label}</div>
       </div>`;
       })
       .join("");
@@ -1319,7 +1323,7 @@ function renderInsights() {
       .map(
         (m) => `
       <div class="milestone-item">
-        🎉 <strong>${m.puppyId ? getPuppy(m.puppyId)?.name : ""}</strong> doubled birth weight! (${m.notes} on ${m.date})
+        🎉 <strong>${m.puppyId ? getPuppy(m.puppyId)?.name : ""}</strong> doubled birth weight! (${formatWeight(m.notes?.match(/^(\d+(\.\d+)?)g/) ? Number(m.notes.match(/^(\d+(\.\d+)?)g/)[1]) : null, weightUnit, 1)} → ${formatWeight(m.notes?.match(/→\s*(\d+(\.\d+)?)g/) ? Number(m.notes.match(/→\s*(\d+(\.\d+)?)g/)[1]) : null, weightUnit, 1)} on ${formatDate(m.date)})
       </div>
     `,
       )
@@ -1334,7 +1338,7 @@ function renderInsights() {
     const last = arr[arr.length - 1];
     const totalGain = last.weight - first.weight;
     const days = arr.length;
-    const avgDaily = days > 1 ? Math.round(totalGain / (days - 1)) : "—";
+    const avgDaily = days > 1 ? totalGain / (days - 1) : null;
 
     return { puppy, first, last, totalGain, days, avgDaily };
   }).filter(Boolean);
@@ -1370,10 +1374,10 @@ function renderInsights() {
                 </div>
               </td>
               <td>${r.puppy.gender}</td>
-              <td>${r.first.weight}g</td>
-              <td>${r.last.weight}g</td>
-              <td>${r.totalGain > 0 ? "+" : ""}${Number(r.totalGain).toFixed(1)}g</td>
-              <td>${r.avgDaily !== "—" ? r.avgDaily + "g" : "—"}</td>
+              <td>${formatWeight(r.first.weight, weightUnit, 1)}</td>
+              <td>${formatWeight(r.last.weight, weightUnit, 1)}</td>
+              <td>${formatWeightChange(r.totalGain, weightUnit, 1)}</td>
+              <td>${r.avgDaily !== null ? formatWeightChange(r.avgDaily, weightUnit, 1) : "—"}</td>
               <td>${r.days}</td>
             </tr>
           `,
