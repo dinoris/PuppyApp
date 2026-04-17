@@ -716,6 +716,113 @@ td {
   text-align: right;
 }
 
+/* ── Breed Page ──────────────────────────────── */
+.breed-hero-card {
+  overflow: hidden;
+}
+
+.breed-hero {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.breed-kicker {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sage);
+  margin-bottom: 0.45rem;
+}
+
+.breed-title {
+  font-size: 2.3rem;
+  color: var(--brown);
+  margin-bottom: 0.55rem;
+}
+
+.breed-subtitle {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--slate);
+  max-width: 58ch;
+  margin-bottom: 0.85rem;
+}
+
+.breed-note {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--sage);
+  background: var(--sage-pale);
+  border: 1px solid rgba(107, 143, 113, 0.18);
+  border-radius: 999px;
+  padding: 0.38rem 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.breed-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.breed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--cream-dark);
+  color: var(--brown);
+  border: 1px solid var(--sand);
+  border-radius: 999px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.breed-chip i {
+  color: var(--brown-light);
+}
+
+.breed-hero-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.breed-hero-image {
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 1px solid var(--sand);
+  box-shadow: var(--shadow-md);
+  background: var(--cream-dark);
+}
+
+@media (max-width: 800px) {
+  .breed-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .breed-hero-copy {
+    order: 2;
+  }
+
+  .breed-hero-visual {
+    order: 1;
+  }
+
+  .breed-title {
+    font-size: 1.9rem;
+  }
+
+  .breed-hero-image {
+    max-width: 220px;
+  }
+}
+
 /* ── Insights ─────────────────────────────────── */
 .insights-grid {
   display: grid;
