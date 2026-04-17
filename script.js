@@ -974,6 +974,10 @@ function renderAll() {
   renderInsights();
   renderPuppies();
   renderAwards();
+
+  if (activeTab === "breed") {
+    renderBreedGrowthChart();
+  }
 }
 
 function renderTable() {
