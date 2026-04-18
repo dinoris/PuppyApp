@@ -202,7 +202,7 @@ function getLitterAgeLabel() {
   const diffMs = today - birth;
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  return `Litter Age: Day ${diffDays + 1}`;
+  return `Litter Age: Day ${diffDays}`;
 }
 
 function gramsToOunces(grams) {
