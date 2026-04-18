@@ -723,16 +723,15 @@ td {
   padding: 0;
 }
 
-.breed-hero-copy {
-  padding: 1.5rem;
-  border-right: 1px solid var(--sand);
-}
-
 .breed-hero {
   display: grid;
-  grid-template-columns: 1.35fr 0.85fr;
-  gap: 1.5rem;
-  align-items: center;
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.95fr);
+  align-items: stretch;
+  gap: 0;
+}
+
+.breed-hero-copy {
+  padding: 1.5rem;
 }
 
 .breed-kicker {
@@ -811,8 +810,6 @@ td {
   height: auto;
   display: block;
   border-radius: 0;
-  border: 1px solid var(--sand);
-  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 800px) {
