@@ -222,6 +222,29 @@ const BREED_GUIDES = {
       ["🎾", "Social Play", "Around 5–6 weeks"],
       ["🎓", "Early Training Readiness", "Around 6–8 weeks"],
     ],
+
+    guidance: [
+      [
+        "📈",
+        "Healthy Daily Gain",
+        "In the early neonatal stage, small breed puppies are generally expected to gain about 5% to 10% of body weight per day.",
+      ],
+      [
+        "🎯",
+        "Weight Doubling",
+        "A common healthy checkpoint is doubling birth weight within about 7 to 10 days.",
+      ],
+      [
+        "⚠️",
+        "No Gain in 24 Hours",
+        "No measurable gain over 24 hours can be an early warning sign and should be watched closely.",
+      ],
+      [
+        "🚨",
+        "Weight Loss",
+        "Weight loss is a stronger warning signal and usually deserves prompt attention.",
+      ],
+    ],
   },
 
   shihtzu: {
@@ -301,6 +324,29 @@ const BREED_GUIDES = {
       ["🎾", "Social Play", "Around 5–6 weeks"],
       ["🎓", "Early Training Readiness", "Around 6–8 weeks"],
     ],
+
+    guidance: [
+      [
+        "📈",
+        "Healthy Daily Gain",
+        "Small breed puppies like Shih Tzus typically gain around 5% to 10% of body weight daily in early stages.",
+      ],
+      [
+        "🎯",
+        "Weight Doubling",
+        "Many healthy puppies double their birth weight within about 7 to 10 days.",
+      ],
+      [
+        "⚠️",
+        "No Gain in 24 Hours",
+        "A lack of daily gain should be monitored closely, especially in the first two weeks.",
+      ],
+      [
+        "🚨",
+        "Weight Loss",
+        "Weight loss is a warning sign and should be addressed quickly.",
+      ],
+    ],
   },
 
   yorkie: {
@@ -367,6 +413,29 @@ const BREED_GUIDES = {
       ["🥣", "Weaning Begins", "Around 4–6 weeks"],
       ["🎾", "Social Play", "Around 5–6 weeks"],
       ["🎓", "Early Training Readiness", "Around 6–8 weeks"],
+    ],
+
+    guidance: [
+      [
+        "📈",
+        "Healthy Daily Gain",
+        "Yorkshire Terrier puppies typically gain about 5% to 10% of body weight daily early on.",
+      ],
+      [
+        "🎯",
+        "Weight Doubling",
+        "A common milestone is doubling birth weight within 7 to 10 days.",
+      ],
+      [
+        "⚠️",
+        "No Gain in 24 Hours",
+        "No weight gain in a 24-hour period should be monitored carefully.",
+      ],
+      [
+        "🚨",
+        "Weight Loss",
+        "Weight loss is a stronger signal that may require immediate attention.",
+      ],
     ],
   },
 };
@@ -1946,6 +2015,7 @@ function activateTab(tab) {
     renderBreedFacts();
     renderBreedTraits();
     renderBreedMilestones();
+    renderBreedGuidance();
     renderBreedFunFacts();
     renderBreedChartText();
     renderBreedGrowthChart();
@@ -2089,6 +2159,24 @@ function renderBreedMilestones() {
           <div class="breed-milestone-icon">${icon}</div>
           <div class="breed-milestone-title">${title}</div>
           <div class="breed-milestone-range">${range}</div>
+        </div>
+      `,
+    )
+    .join("");
+}
+
+function renderBreedGuidance() {
+  const data = BREED_GUIDES[currentBreed];
+  const container = document.getElementById("breed-guidance");
+  if (!data || !container) return;
+
+  container.innerHTML = data.guidance
+    .map(
+      ([icon, title, text]) => `
+        <div class="breed-guidance-card">
+          <div class="breed-guidance-icon">${icon}</div>
+          <div class="breed-guidance-title">${title}</div>
+          <div class="breed-guidance-text">${text}</div>
         </div>
       `,
     )
