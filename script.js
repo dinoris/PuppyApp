@@ -452,6 +452,7 @@ let allAwards = [];
 let growthChart = null;
 let activeTab = "log";
 let currentBreed = "shorkie";
+let insightBreed = "shorkie";
 
 const LITTER_BIRTH_DATE = "2026-04-10";
 let weightUnit = localStorage.getItem("puppyWeightUnit") || "g";
@@ -1002,6 +1003,7 @@ const toggleAverage = document.getElementById("toggle-average");
 
 const insHeaviest = document.getElementById("ins-heaviest-val");
 const insLightest = document.getElementById("ins-lightest-val");
+const insightBreedSelect = document.getElementById("insight-breed-select");
 const insAvg = document.getElementById("ins-avg-val");
 const insGainer = document.getElementById("ins-gainer-val");
 const alertsCont = document.getElementById("alerts-container");
@@ -2192,7 +2194,10 @@ function activateTab(tab) {
   if (panel) panel.classList.add("active");
 
   if (tab === "chart") renderChart();
-  if (tab === "insights") renderInsights();
+  if (tab === "insights") {
+    renderInsights();
+    renderInsightGrowthComparison();
+  }
   if (tab === "puppies") renderPuppies();
   if (tab === "trophies") renderAwards();
   if (tab === "pawrents") renderPawrents();
@@ -2370,6 +2375,292 @@ function renderBreedGuidance() {
     .join("");
 }
 
+let insightGrowthChart = null;
+
+function getReferenceSeriesForBreed(breedKey) {
+  const base = {
+    shorkie: [
+      100, 108, 116, 126, 138, 152, 168, 182, 194, 200, 208, 216, 224, 232,
+    ],
+    shihtzu: [
+      100, 107, 115, 124, 136, 150, 165, 178, 190, 198, 206, 214, 222, 230,
+    ],
+    yorkie: [
+      100, 109, 118, 128, 140, 154, 170, 184, 196, 202, 210, 218, 226, 234,
+    ],
+  };
+
+  return base[breedKey] || base.shorkie;
+}
+
+function renderInsightGrowthComparison() {
+  const canvas = document.getElementById("insight-growth-chart");
+  const box = document.getElementById("insight-chart-insight");
+  const sub = document.getElementById("insight-chart-subinsights");
+
+  if (!canvas || !box || !sub) return;
+
+  const timelines = buildTimelines(allEntries);
+  const maxDays = 14;
+  const litterSeries = [];
+
+  for (let dayIndex = 0; dayIndex < maxDays; dayIndex++) {
+    const dayPercents = [];
+
+    PUPPIES.forEach((puppy) => {
+      const arr = timelines[puppy.id] || [];
+      if (!arr.length) return;
+
+      const birthWeight = arr[0].weight;
+      const entry = arr[dayIndex];
+      if (!entry || !birthWeight) return;
+
+      dayPercents.push((entry.weight / birthWeight) * 100);
+    });
+
+    if (dayPercents.length) {
+      const avgPercent =
+        dayPercents.reduce((sum, val) => sum + val, 0) / dayPercents.length;
+      litterSeries.push(Number(avgPercent.toFixed(1)));
+    } else {
+      litterSeries.push(null);
+    }
+  }
+
+  const referenceSeries = getReferenceSeriesForBreed(insightBreed);
+  const labels = Array.from({ length: maxDays }, (_, i) => `Day ${i + 1}`);
+
+  const latestIndex = [...litterSeries]
+    .map((v, i) => ({ v, i }))
+    .filter((item) => item.v !== null)
+    .map((item) => item.i)
+    .pop();
+
+  if (latestIndex === undefined) {
+    box.innerHTML = `
+      <strong>Not enough data yet.</strong>
+      Add more weight entries to compare your litter against the selected breed reference.
+    `;
+    box.className = "breed-chart-insight";
+    sub.innerHTML = "";
+  } else {
+    const actual = litterSeries[latestIndex];
+    const expected = referenceSeries[latestIndex];
+    const diff = actual - expected;
+
+    let headline = "";
+    let detail = "";
+    let toneClass = "is-on-track";
+
+    if (diff >= 12) {
+      headline = `Your litter is tracking above the ${BREED_GUIDES[insightBreed].name} reference.`;
+      detail =
+        "Recent average growth is meaningfully above the selected reference curve.";
+      toneClass = "is-above";
+    } else if (diff >= 4) {
+      headline = `Your litter is slightly above the ${BREED_GUIDES[insightBreed].name} reference.`;
+      detail =
+        "Recent average growth is a bit ahead of the selected reference curve.";
+      toneClass = "is-above";
+    } else if (diff <= -12) {
+      headline = `Your litter is tracking below the ${BREED_GUIDES[insightBreed].name} reference.`;
+      detail =
+        "Recent average growth is meaningfully below the selected reference curve and deserves closer attention.";
+      toneClass = "is-below";
+    } else if (diff <= -4) {
+      headline = `Your litter is slightly below the ${BREED_GUIDES[insightBreed].name} reference.`;
+      detail =
+        "Recent average growth is a bit under the selected reference curve.";
+      toneClass = "is-below";
+    } else {
+      headline = `Your litter is tracking close to the ${BREED_GUIDES[insightBreed].name} reference.`;
+      detail =
+        "Recent average growth is broadly aligned with the selected reference curve.";
+      toneClass = "is-on-track";
+    }
+
+    box.innerHTML = `
+      <strong>${headline}</strong>
+      ${detail}
+    `;
+    box.className = `breed-chart-insight ${toneClass}`;
+
+    const puppyStats = PUPPIES.map((puppy) => {
+      const arr = timelines[puppy.id] || [];
+      if (!arr.length) return null;
+
+      const birthWeight = arr[0].weight;
+      const last = arr[arr.length - 1];
+      const prev = arr.length > 1 ? arr[arr.length - 2] : null;
+      const prev2 = arr.length > 2 ? arr[arr.length - 3] : null;
+
+      const currentPercent = birthWeight
+        ? (last.weight / birthWeight) * 100
+        : null;
+      const latestGainPct =
+        prev && prev.weight
+          ? ((last.weight - prev.weight) / prev.weight) * 100
+          : null;
+
+      let trendLabel = "Not enough recent data";
+      if (prev && prev2 && prev.weight && prev2.weight) {
+        const gain1 = ((last.weight - prev.weight) / prev.weight) * 100;
+        const gain2 = ((prev.weight - prev2.weight) / prev2.weight) * 100;
+        const trendDelta = gain1 - gain2;
+
+        if (trendDelta > 1.5) trendLabel = "Recent growth is improving";
+        else if (trendDelta < -1.5) trendLabel = "Growth is slowing slightly";
+        else trendLabel = "Growth remains steady";
+      }
+
+      return {
+        puppy,
+        currentPercent,
+        latestGainPct,
+        trendLabel,
+      };
+    }).filter(Boolean);
+
+    const performer = [...puppyStats]
+      .filter((p) => p.latestGainPct != null)
+      .sort((a, b) => b.latestGainPct - a.latestGainPct)[0];
+
+    const watchItem = [...puppyStats]
+      .filter((p) => p.currentPercent != null)
+      .sort((a, b) => a.currentPercent - b.currentPercent)[0];
+
+    let litterTrend = "Not enough recent data";
+    if (
+      latestIndex >= 2 &&
+      litterSeries[latestIndex] != null &&
+      litterSeries[latestIndex - 1] != null &&
+      litterSeries[latestIndex - 2] != null
+    ) {
+      const gain1 = litterSeries[latestIndex] - litterSeries[latestIndex - 1];
+      const gain2 =
+        litterSeries[latestIndex - 1] - litterSeries[latestIndex - 2];
+      const trendDelta = gain1 - gain2;
+
+      if (trendDelta > 2)
+        litterTrend = "Growth is improving over the last 2 days";
+      else if (trendDelta < -2)
+        litterTrend = "Growth is slowing over the last 2 days";
+      else litterTrend = "Growth remains steady over the last 2 days";
+    }
+
+    sub.innerHTML = `
+      <div class="breed-subinsight-card">
+        <div class="breed-subinsight-label">Top performer</div>
+        <div class="breed-subinsight-text">
+          ${
+            performer
+              ? `<strong>${performer.puppy.name}</strong> is showing the strongest recent gain.`
+              : `Not enough data yet.`
+          }
+        </div>
+      </div>
+
+      <div class="breed-subinsight-card">
+        <div class="breed-subinsight-label">Watch closely</div>
+        <div class="breed-subinsight-text">
+          ${
+            watchItem
+              ? `<strong>${watchItem.puppy.name}</strong> is currently the furthest below the litter pace.`
+              : `Not enough data yet.`
+          }
+        </div>
+      </div>
+
+      <div class="breed-subinsight-card">
+        <div class="breed-subinsight-label">Trend</div>
+        <div class="breed-subinsight-text">
+          ${litterTrend}
+        </div>
+      </div>
+    `;
+  }
+
+  const ctx = canvas.getContext("2d");
+  if (insightGrowthChart) insightGrowthChart.destroy();
+
+  insightGrowthChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: `${BREED_GUIDES[insightBreed].name} Reference`,
+          data: referenceSeries,
+          borderColor: "#8b6f47",
+          backgroundColor: "transparent",
+          borderWidth: 2.5,
+          borderDash: [6, 4],
+          tension: 0.3,
+          pointRadius: 2,
+          spanGaps: true,
+        },
+        {
+          label: "Your Litter Average",
+          data: litterSeries,
+          borderColor: "#6b8f71",
+          backgroundColor: "rgba(107, 143, 113, 0.10)",
+          borderWidth: 3,
+          tension: 0.3,
+          pointRadius: 3,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            usePointStyle: true,
+            padding: 16,
+            font: { family: "'DM Sans', sans-serif", size: 12 },
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label(ctx) {
+              if (ctx.parsed.y == null) return null;
+              return ` ${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(1)}%`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: "#f0ebe1" },
+          ticks: {
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            color: "#718096",
+          },
+        },
+        y: {
+          min: 90,
+          grid: { color: "#f0ebe1" },
+          ticks: {
+            callback: (value) => `${value}%`,
+            font: { family: "'DM Sans', sans-serif", size: 11 },
+            color: "#718096",
+          },
+          title: {
+            display: true,
+            text: "% of Birth Weight",
+            color: "#8b6f47",
+            font: { family: "'Lora', serif", size: 12 },
+          },
+        },
+      },
+    },
+  });
+}
+
 function initUI() {
   inputPuppy.innerHTML =
     `<option value="">— select puppy —</option>` +
@@ -2414,6 +2705,14 @@ breedSelect?.addEventListener("change", () => {
   console.log("Selected breed:", currentBreed);
 
   activateTab("breed");
+});
+
+insightBreedSelect?.addEventListener("change", () => {
+  insightBreed = insightBreedSelect.value || "shorkie";
+
+  if (activeTab === "insights") {
+    renderInsightGrowthComparison();
+  }
 });
 
 initUI();
