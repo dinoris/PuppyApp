@@ -202,6 +202,26 @@ const BREED_GUIDES = {
         "Shorkies are usually affectionate companion dogs that love attention and closeness.",
       ],
     ],
+
+    milestoneTimeline: [
+      ["0–3 days", "Nursing begins, puppies need warmth and constant care."],
+      ["7–10 days", "Healthy puppies often double their birth weight."],
+      ["10–14 days", "Eyes begin to open."],
+      ["2–3 weeks", "First attempts at walking and reacting to sound."],
+      ["3–4 weeks", "Baby teeth begin and exploration increases."],
+      ["4–6 weeks", "Weaning begins and soft food is introduced."],
+      ["5–6 weeks", "Social play becomes more noticeable."],
+      ["6–8 weeks", "More independence and ready for early training."],
+    ],
+
+    milestoneCards: [
+      ["👀", "Eyes Open", "Around 10–14 days"],
+      ["🐾", "First Steps", "Around 2–3 weeks"],
+      ["🦷", "First Teeth", "Around 3 weeks"],
+      ["🥣", "Weaning Begins", "Around 4–6 weeks"],
+      ["🎾", "Social Play", "Around 5–6 weeks"],
+      ["🎓", "Early Training Readiness", "Around 6–8 weeks"],
+    ],
   },
 
   shihtzu: {
@@ -255,6 +275,32 @@ const BREED_GUIDES = {
         "Despite their elegant look, they can be playful and surprisingly sturdy little dogs.",
       ],
     ],
+
+    milestoneTimeline: [
+      ["0–3 days", "Nursing begins, puppies need warmth and close monitoring."],
+      [
+        "7–10 days",
+        "Healthy puppies often approach or reach double birth weight.",
+      ],
+      ["10–14 days", "Eyes begin to open."],
+      ["2–3 weeks", "Early walking attempts and sound awareness begin."],
+      ["3–4 weeks", "Baby teeth begin and curiosity increases."],
+      ["4–6 weeks", "Weaning usually begins with soft food."],
+      ["5–6 weeks", "Play and social interaction become more active."],
+      [
+        "6–8 weeks",
+        "Growing independence and readiness for gentle early training.",
+      ],
+    ],
+
+    milestoneCards: [
+      ["👀", "Eyes Open", "Around 10–14 days"],
+      ["🐾", "First Steps", "Around 2–3 weeks"],
+      ["🦷", "First Teeth", "Around 3–4 weeks"],
+      ["🥣", "Weaning Begins", "Around 4–6 weeks"],
+      ["🎾", "Social Play", "Around 5–6 weeks"],
+      ["🎓", "Early Training Readiness", "Around 6–8 weeks"],
+    ],
   },
 
   yorkie: {
@@ -298,6 +344,29 @@ const BREED_GUIDES = {
       ["🎀", "Their silky coat is one of their most iconic features."],
       ["👀", "They tend to stay very aware of what is happening around them."],
       ["❤️", "They often form especially strong bonds with their people."],
+    ],
+
+    milestoneTimeline: [
+      ["0–3 days", "Nursing begins, puppies need warmth and steady care."],
+      [
+        "7–10 days",
+        "Healthy puppies often double birth weight around this stage.",
+      ],
+      ["10–14 days", "Eyes begin to open."],
+      ["2–3 weeks", "Walking attempts and response to sound begin."],
+      ["3–4 weeks", "Baby teeth appear and exploration increases."],
+      ["4–6 weeks", "Weaning usually starts with soft food."],
+      ["5–6 weeks", "Social play becomes more visible."],
+      ["6–8 weeks", "More independence and early training readiness develop."],
+    ],
+
+    milestoneCards: [
+      ["👀", "Eyes Open", "Around 10–14 days"],
+      ["🐾", "First Steps", "Around 2–3 weeks"],
+      ["🦷", "First Teeth", "Around 3–4 weeks"],
+      ["🥣", "Weaning Begins", "Around 4–6 weeks"],
+      ["🎾", "Social Play", "Around 5–6 weeks"],
+      ["🎓", "Early Training Readiness", "Around 6–8 weeks"],
     ],
   },
 };
@@ -1875,6 +1944,10 @@ function activateTab(tab) {
   if (tab === "breed") {
     renderBreedHero();
     renderBreedFacts();
+    renderBreedTraits();
+    renderBreedMilestones();
+    renderBreedFunFacts();
+    renderBreedChartText();
     renderBreedGrowthChart();
   }
 }
@@ -1931,6 +2004,95 @@ function renderBreedFacts() {
 
     container.appendChild(card);
   });
+}
+
+function renderBreedTraits() {
+  const data = BREED_GUIDES[currentBreed];
+  const container = document.getElementById("breed-traits");
+  if (!data || !container) return;
+
+  container.innerHTML = data.temperament
+    .map(([label, score]) => {
+      const percent = Math.max(0, Math.min(5, score)) * 20;
+      return `
+        <div class="breed-trait">
+          <div class="breed-trait-top">
+            <span class="breed-trait-label">${label}</span>
+            <span class="breed-trait-score">${score}/5</span>
+          </div>
+          <div class="breed-trait-bar">
+            <span style="width: ${percent}%"></span>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function renderBreedFunFacts() {
+  const data = BREED_GUIDES[currentBreed];
+  const container = document.getElementById("breed-funfacts");
+  if (!data || !container) return;
+
+  container.innerHTML = data.funFacts
+    .map(
+      ([icon, text]) => `
+        <div class="breed-funfact-card">
+          <div class="breed-funfact-icon">${icon}</div>
+          <div class="breed-funfact-text">${text}</div>
+        </div>
+      `,
+    )
+    .join("");
+}
+
+function renderBreedChartText() {
+  const data = BREED_GUIDES[currentBreed];
+  if (!data) return;
+
+  const title = document.getElementById("breed-chart-title");
+  const note = document.getElementById("breed-chart-note");
+
+  if (title) {
+    title.textContent = `${data.name} Growth Reference Chart`;
+  }
+
+  if (note) {
+    note.textContent =
+      `Reference curve based on veterinary guidelines for small breed puppies. ` +
+      `${data.name} puppies may vary as individuals.`;
+  }
+}
+
+function renderBreedMilestones() {
+  const data = BREED_GUIDES[currentBreed];
+  const timeline = document.getElementById("breed-timeline");
+  const cards = document.getElementById("breed-milestone-cards");
+
+  if (!data || !timeline || !cards) return;
+
+  timeline.innerHTML = (data.milestoneTimeline || [])
+    .map(
+      ([age, text]) => `
+        <div class="breed-timeline-item">
+          <div class="breed-timeline-age">${age}</div>
+          <div class="breed-timeline-text">${text}</div>
+        </div>
+      `,
+    )
+    .join("");
+
+  cards.innerHTML = (data.milestoneCards || [])
+    .map(
+      ([icon, title, range]) => `
+        <div class="breed-milestone-card">
+          <div class="breed-milestone-icon">${icon}</div>
+          <div class="breed-milestone-title">${title}</div>
+          <div class="breed-milestone-range">${range}</div>
+        </div>
+      `,
+    )
+    .join("");
 }
 
 function initUI() {

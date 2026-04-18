@@ -441,155 +441,15 @@
         <div class="card">
           <h2 class="card-title">Temperament</h2>
 
-          <div class="breed-traits">
-            <div class="breed-trait">
-              <div class="breed-trait-top">
-                <span class="breed-trait-label">Friendliness</span>
-                <span class="breed-trait-score">4/5</span>
-              </div>
-              <div class="breed-trait-bar">
-                <span style="width: 80%"></span>
-              </div>
-            </div>
-
-            <div class="breed-trait">
-              <div class="breed-trait-top">
-                <span class="breed-trait-label">Energy</span>
-                <span class="breed-trait-score">3/5</span>
-              </div>
-              <div class="breed-trait-bar">
-                <span style="width: 60%"></span>
-              </div>
-            </div>
-
-            <div class="breed-trait">
-              <div class="breed-trait-top">
-                <span class="breed-trait-label">Trainability</span>
-                <span class="breed-trait-score">3/5</span>
-              </div>
-              <div class="breed-trait-bar">
-                <span style="width: 60%"></span>
-              </div>
-            </div>
-
-            <div class="breed-trait">
-              <div class="breed-trait-top">
-                <span class="breed-trait-label">Social Nature</span>
-                <span class="breed-trait-score">4/5</span>
-              </div>
-              <div class="breed-trait-bar">
-                <span style="width: 80%"></span>
-              </div>
-            </div>
-
-            <div class="breed-trait">
-              <div class="breed-trait-top">
-                <span class="breed-trait-label">Grooming Needs</span>
-                <span class="breed-trait-score">3/5</span>
-              </div>
-              <div class="breed-trait-bar">
-                <span style="width: 60%"></span>
-              </div>
-            </div>
-          </div>
+          <div class="breed-traits" id="breed-traits"></div>
         </div>
 
         <div class="card">
           <h2 class="card-title">Puppy Development Milestones</h2>
 
-          <div class="breed-timeline">
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">0–3 days</div>
-              <div class="breed-timeline-text">
-                Nursing begins, puppies need warmth and constant care.
-              </div>
-            </div>
+          <div class="breed-timeline" id="breed-timeline"></div>
 
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">7–10 days</div>
-              <div class="breed-timeline-text">
-                Healthy puppies often double their birth weight.
-              </div>
-            </div>
-
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">10–14 days</div>
-              <div class="breed-timeline-text">Eyes begin to open.</div>
-            </div>
-
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">2–3 weeks</div>
-              <div class="breed-timeline-text">
-                First attempts at walking and reacting to sound.
-              </div>
-            </div>
-
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">3–4 weeks</div>
-              <div class="breed-timeline-text">
-                Baby teeth begin and exploration increases.
-              </div>
-            </div>
-
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">4–6 weeks</div>
-              <div class="breed-timeline-text">
-                Weaning begins and soft food is introduced.
-              </div>
-            </div>
-
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">5–6 weeks</div>
-              <div class="breed-timeline-text">
-                Social play becomes more noticeable.
-              </div>
-            </div>
-
-            <div class="breed-timeline-item">
-              <div class="breed-timeline-age">6–8 weeks</div>
-              <div class="breed-timeline-text">
-                More independence and ready for early training.
-              </div>
-            </div>
-          </div>
-
-          <div class="breed-milestone-grid">
-            <div class="breed-milestone-card">
-              <div class="breed-milestone-icon">👀</div>
-              <div class="breed-milestone-title">Eyes Open</div>
-              <div class="breed-milestone-range">Around 10–14 days</div>
-            </div>
-
-            <div class="breed-milestone-card">
-              <div class="breed-milestone-icon">🐾</div>
-              <div class="breed-milestone-title">First Steps</div>
-              <div class="breed-milestone-range">Around 2–3 weeks</div>
-            </div>
-
-            <div class="breed-milestone-card">
-              <div class="breed-milestone-icon">🦷</div>
-              <div class="breed-milestone-title">First Teeth</div>
-              <div class="breed-milestone-range">Around 3 weeks</div>
-            </div>
-
-            <div class="breed-milestone-card">
-              <div class="breed-milestone-icon">🥣</div>
-              <div class="breed-milestone-title">Weaning Begins</div>
-              <div class="breed-milestone-range">Around 4–6 weeks</div>
-            </div>
-
-            <div class="breed-milestone-card">
-              <div class="breed-milestone-icon">🎾</div>
-              <div class="breed-milestone-title">Social Play</div>
-              <div class="breed-milestone-range">Around 5–6 weeks</div>
-            </div>
-
-            <div class="breed-milestone-card">
-              <div class="breed-milestone-icon">🎓</div>
-              <div class="breed-milestone-title">Early Training Readiness</div>
-              <div class="breed-milestone-range">Around 6–8 weeks</div>
-            </div>
-          </div>
+          <div class="breed-milestone-grid" id="breed-milestone-cards"></div>
         </div>
 
         <div class="card">
@@ -642,67 +502,19 @@
         <div class="card">
           <h2 class="card-title">Fun Facts</h2>
 
-          <div class="breed-funfacts-grid">
-            <div class="breed-funfact-card">
-              <div class="breed-funfact-icon">🐶</div>
-              <div class="breed-funfact-text">
-                Shorkies often have a big-dog attitude in a very tiny body.
-              </div>
-            </div>
-
-            <div class="breed-funfact-card">
-              <div class="breed-funfact-icon">📣</div>
-              <div class="breed-funfact-text">
-                They can inherit the Yorkie’s alert barking and love to announce
-                things.
-              </div>
-            </div>
-
-            <div class="breed-funfact-card">
-              <div class="breed-funfact-icon">🧸</div>
-              <div class="breed-funfact-text">
-                They tend to bond very closely with their humans and often
-                become little velcro dogs.
-              </div>
-            </div>
-
-            <div class="breed-funfact-card">
-              <div class="breed-funfact-icon">🏡</div>
-              <div class="breed-funfact-text">
-                Their small size makes them especially well suited for indoor
-                living and apartments.
-              </div>
-            </div>
-
-            <div class="breed-funfact-card">
-              <div class="breed-funfact-icon">🎨</div>
-              <div class="breed-funfact-text">
-                Coat colors and textures can vary quite a bit, even within the
-                same litter.
-              </div>
-            </div>
-
-            <div class="breed-funfact-card">
-              <div class="breed-funfact-icon">❤️</div>
-              <div class="breed-funfact-text">
-                Shorkies are usually affectionate companion dogs that love
-                attention and closeness.
-              </div>
-            </div>
-          </div>
+          <div class="breed-funfacts-grid" id="breed-funfacts"></div>
         </div>
 
         <div class="card">
-          <h2 class="card-title">Growth Reference Chart</h2>
+          <h2 class="card-title" id="breed-chart-title">
+            Growth Reference Chart
+          </h2>
 
           <div class="chart-container breed-chart-container">
             <canvas id="breed-growth-chart"></canvas>
           </div>
 
-          <p class="chart-note">
-            Reference curve based on veterinary guidelines for small breed
-            puppies. Individual puppies may vary.
-          </p>
+          <p class="chart-note" id="breed-chart-note"></p>
         </div>
       </section>
 
