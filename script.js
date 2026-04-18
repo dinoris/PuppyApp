@@ -2208,9 +2208,6 @@ function activateTab(tab) {
     renderBreedMilestones();
     renderBreedGuidance();
     renderBreedFunFacts();
-    renderBreedChartText();
-    renderBreedChartInsight();
-    renderBreedGrowthChart();
   }
 }
 
