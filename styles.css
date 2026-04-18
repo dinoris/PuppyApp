@@ -793,23 +793,28 @@ td {
 
 .breed-hero-visual {
   display: flex;
-  justify-content: flex-end;
-  align-self: stretch;
+  justify-content: stretch;
+  align-items: stretch;
+  min-width: 0;
 }
 
 .breed-hero-image-wrap {
   width: 100%;
-  max-width: 420px;
   height: 100%;
-  display: flex;
-  align-items: stretch;
+  min-height: 360px;
+  overflow: hidden;
+  border-left: 1px solid var(--sand);
 }
 
 .breed-hero-image {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
+  object-position: center center;
+  border: 0;
   border-radius: 0;
+  box-shadow: none;
 }
 
 @media (max-width: 800px) {
@@ -825,12 +830,14 @@ td {
     order: 1;
   }
 
-  .breed-title {
-    font-size: 1.9rem;
+  .breed-hero-image-wrap {
+    min-height: 220px;
+    border-left: 0;
+    border-bottom: 1px solid var(--sand);
   }
 
-  .breed-hero-image {
-    max-width: 220px;
+  .breed-title {
+    font-size: 1.9rem;
   }
 }
 
