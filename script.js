@@ -1872,7 +1872,10 @@ function activateTab(tab) {
   if (tab === "puppies") renderPuppies();
   if (tab === "trophies") renderAwards();
   if (tab === "pawrents") renderPawrents();
-  if (tab === "breed") renderBreedGrowthChart();
+  if (tab === "breed") {
+    renderBreedHero();
+    renderBreedGrowthChart();
+  }
 }
 
 document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -1880,6 +1883,34 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
     activateTab(btn.dataset.tab);
   });
 });
+
+function renderBreedHero() {
+  const data = BREED_GUIDES[currentBreed];
+  if (!data) return;
+
+  document.getElementById("breed-kicker").textContent = data.kicker;
+  document.getElementById("breed-title").textContent = data.name;
+  document.getElementById("breed-subtitle").textContent = data.subtitle;
+  document.getElementById("breed-note").textContent = data.note;
+
+  const img = document.getElementById("breed-image");
+  if (img) img.src = data.image;
+
+  const chips = document.getElementById("breed-chips");
+  if (chips) {
+    const chipIcons = ["bi-heart-fill", "bi-rulers", "bi-speedometer2"];
+
+    chips.innerHTML = data.chips
+      .map(
+        (chip, index) => `
+          <span class="breed-chip">
+            <i class="bi ${chipIcons[index] || "bi-dot"}"></i> ${chip}
+          </span>
+        `,
+      )
+      .join("");
+  }
+}
 
 function initUI() {
   inputPuppy.innerHTML =
@@ -1921,6 +1952,9 @@ breedSelect?.addEventListener("change", () => {
   if (!value) return;
 
   currentBreed = value;
+
+  console.log("Selected breed:", currentBreed);
+
   activateTab("breed");
 });
 
