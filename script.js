@@ -313,6 +313,7 @@ let allEntries = [];
 let allAwards = [];
 let growthChart = null;
 let activeTab = "log";
+let currentBreed = "shorkie";
 
 const LITTER_BIRTH_DATE = "2026-04-10";
 let weightUnit = localStorage.getItem("puppyWeightUnit") || "g";
@@ -1919,9 +1920,8 @@ breedSelect?.addEventListener("change", () => {
 
   if (!value) return;
 
-  if (value === "shorkie") {
-    activateTab("breed");
-  }
+  currentBreed = value;
+  activateTab("breed");
 });
 
 initUI();
