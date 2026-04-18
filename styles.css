@@ -717,9 +717,15 @@ td {
 }
 
 /* ── Breed Page ──────────────────────────────── */
+
 .breed-hero-card {
   overflow: hidden;
-  padding: 0 0 0 1.5rem;
+  padding: 0;
+}
+
+.breed-hero-copy {
+  padding: 1.5rem;
+  border-right: 1px solid var(--sand);
 }
 
 .breed-hero {
