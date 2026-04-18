@@ -1092,6 +1092,41 @@ td {
   }
 }
 
+.breed-chart-insight {
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  border-left: 5px solid transparent;
+  background: var(--cream);
+}
+
+.breed-chart-insight strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+  color: var(--brown);
+}
+
+/* 🟢 On track */
+.breed-chart-insight.is-on-track {
+  background: #eef7f1;
+  border-left-color: #4caf7a;
+}
+
+/* 🟡 Slightly off */
+.breed-chart-insight.is-below {
+  background: #fff6e6;
+  border-left-color: #e6a23c;
+}
+
+/* 🔴 Concerning */
+.breed-chart-insight.is-above {
+  background: #eaf3ff;
+  border-left-color: #4a7bd1;
+}
+
 /* ── Insights ─────────────────────────────────── */
 .insights-grid {
   display: grid;
