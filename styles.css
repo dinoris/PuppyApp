@@ -794,13 +794,15 @@ td {
 .breed-hero-image-wrap {
   width: 100%;
   max-width: 420px;
-  aspect-ratio: 16 / 9;
+  height: 100%;
+  display: flex;
 }
 
 .breed-hero-image {
   width: 100%;
-  height: 100%;
-  object-fit: cover; /* fills container cleanly */
+  height: auto;
+  display: block;
+  object-fit: cover;
   border-radius: 0;
   border: 1px solid var(--sand);
   box-shadow: var(--shadow-md);
