@@ -718,8 +718,10 @@ td {
 
 /* ── Breed Page ──────────────────────────────── */
 .breed-hero-card {
-  padding-right: 0;
   overflow: hidden;
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 0;
 }
 
 .breed-hero {
