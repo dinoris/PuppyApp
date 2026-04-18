@@ -157,7 +157,7 @@ const BREED_GUIDES = {
     subtitle:
       "A small companion mix of Shih Tzu and Yorkshire Terrier, known for affection, personality, and adaptability.",
     note: "Based on veterinary guidelines for small breed puppies",
-    image: "images/shorkie.png",
+    image: "images/shorkie.webp",
     chips: ["Companion Dog", "Toy Size", "4–9 lbs"],
 
     quickFacts: [
@@ -253,7 +253,7 @@ const BREED_GUIDES = {
     subtitle:
       "A classic toy companion breed known for its affectionate nature, charming personality, and luxurious coat.",
     note: "Based on veterinary guidelines for small breed puppies",
-    image: "images/shih_tzu.png",
+    image: "images/shihtzu.webp",
     chips: ["Companion Dog", "Toy Size", "9–16 lbs"],
 
     quickFacts: [
@@ -355,7 +355,7 @@ const BREED_GUIDES = {
     subtitle:
       "A tiny terrier with a bold personality, high alertness, and a strong bond with its favorite people.",
     note: "Based on veterinary guidelines for small breed puppies",
-    image: "images/yorkshire_terrier.png",
+    image: "images/yorkie.webp",
     chips: ["Terrier Spirit", "Toy Size", "4–7 lbs"],
 
     quickFacts: [
