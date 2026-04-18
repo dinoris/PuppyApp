@@ -1578,6 +1578,97 @@ function renderChart() {
   });
 }
 
+function renderBreedChartInsight() {
+  const box = document.getElementById("breed-chart-insight");
+  if (!box) return;
+
+  const timelines = buildTimelines(allEntries);
+  const maxDays = 14;
+
+  const litterSeries = [];
+
+  for (let dayIndex = 0; dayIndex < maxDays; dayIndex++) {
+    const dayPercents = [];
+
+    PUPPIES.forEach((puppy) => {
+      const arr = timelines[puppy.id] || [];
+      if (!arr.length) return;
+
+      const birthWeight = arr[0].weight;
+      const entry = arr[dayIndex];
+      if (!entry || !birthWeight) return;
+
+      dayPercents.push((entry.weight / birthWeight) * 100);
+    });
+
+    if (dayPercents.length) {
+      const avgPercent =
+        dayPercents.reduce((sum, val) => sum + val, 0) / dayPercents.length;
+      litterSeries.push(avgPercent);
+    } else {
+      litterSeries.push(null);
+    }
+  }
+
+  const latestIndex = [...litterSeries]
+    .map((v, i) => ({ v, i }))
+    .filter((item) => item.v !== null)
+    .map((item) => item.i)
+    .pop();
+
+  if (latestIndex === undefined) {
+    box.innerHTML = `
+      <strong>Not enough data yet.</strong>
+      Add more weight entries to compare your litter with the reference curve.
+    `;
+    box.className = "breed-chart-insight";
+    return;
+  }
+
+  const referenceSeries = [
+    100, 108, 116, 126, 138, 152, 168, 182, 194, 200, 208, 216, 224, 232,
+  ];
+
+  const actual = litterSeries[latestIndex];
+  const expected = referenceSeries[latestIndex];
+  const diff = actual - expected;
+
+  let headline = "";
+  let detail = "";
+  let toneClass = "is-on-track";
+
+  if (diff >= 12) {
+    headline = "Your litter is tracking above expected growth.";
+    detail =
+      "Recent average growth is meaningfully above the reference curve for small-breed puppies.";
+    toneClass = "is-above";
+  } else if (diff >= 4) {
+    headline = "Your litter is slightly above expected growth.";
+    detail = "Recent average growth is a bit ahead of the reference curve.";
+    toneClass = "is-above";
+  } else if (diff <= -12) {
+    headline = "Your litter is tracking below expected growth.";
+    detail =
+      "Recent average growth is meaningfully below the reference curve and deserves closer attention.";
+    toneClass = "is-below";
+  } else if (diff <= -4) {
+    headline = "Your litter is slightly below expected growth.";
+    detail = "Recent average growth is a bit under the reference curve.";
+    toneClass = "is-below";
+  } else {
+    headline = "Your litter is tracking close to expected growth.";
+    detail =
+      "Recent average growth is broadly aligned with the reference curve for small-breed puppies.";
+    toneClass = "is-on-track";
+  }
+
+  box.innerHTML = `
+    <strong>${headline}</strong>
+    ${detail}
+  `;
+  box.className = `breed-chart-insight ${toneClass}`;
+}
+
 let breedGrowthChart = null;
 
 function renderBreedGrowthChart() {
@@ -2018,6 +2109,7 @@ function activateTab(tab) {
     renderBreedGuidance();
     renderBreedFunFacts();
     renderBreedChartText();
+    renderBreedChartInsight();
     renderBreedGrowthChart();
   }
 }
