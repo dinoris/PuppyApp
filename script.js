@@ -150,6 +150,158 @@ const PAWRENTS = [
   },
 ];
 
+const BREED_GUIDES = {
+  shorkie: {
+    name: "Shorkie",
+    kicker: "Breed Guide",
+    subtitle:
+      "A small companion mix of Shih Tzu and Yorkshire Terrier, known for affection, personality, and adaptability.",
+    note: "Based on veterinary guidelines for small breed puppies",
+    image: "images/shorkie.png",
+    chips: ["Companion Dog", "Toy Size", "4–9 lbs"],
+
+    quickFacts: [
+      ["Size", "Toy"],
+      ["Weight", "4–9 lbs"],
+      ["Height", "5–9 in"],
+      ["Lifespan", "11–16 yrs"],
+      ["Maturity", "6–12 months"],
+      ["Exercise", "Low–Moderate"],
+      ["Food Intake", "200–320 cal/day"],
+      ["Common Colors", "Black, tan, gold, red, white mixes"],
+    ],
+
+    temperament: [
+      ["Friendliness", 4],
+      ["Energy", 3],
+      ["Trainability", 3],
+      ["Social Nature", 4],
+      ["Grooming Needs", 3],
+    ],
+
+    funFacts: [
+      ["🐶", "Shorkies often have a big-dog attitude in a very tiny body."],
+      [
+        "📣",
+        "They can inherit the Yorkie’s alert barking and love to announce things.",
+      ],
+      [
+        "🧸",
+        "They tend to bond very closely with their humans and often become little velcro dogs.",
+      ],
+      [
+        "🏡",
+        "Their small size makes them especially well suited for indoor living and apartments.",
+      ],
+      [
+        "🎨",
+        "Coat colors and textures can vary quite a bit, even within the same litter.",
+      ],
+      [
+        "❤️",
+        "Shorkies are usually affectionate companion dogs that love attention and closeness.",
+      ],
+    ],
+  },
+
+  shihtzu: {
+    name: "Shih Tzu",
+    kicker: "Breed Guide",
+    subtitle:
+      "A classic toy companion breed known for its affectionate nature, charming personality, and luxurious coat.",
+    note: "Based on veterinary guidelines for small breed puppies",
+    image: "images/roma.png",
+    chips: ["Companion Dog", "Toy Size", "9–16 lbs"],
+
+    quickFacts: [
+      ["Size", "Toy"],
+      ["Weight", "9–16 lbs"],
+      ["Height", "8–11 in"],
+      ["Lifespan", "10–18 yrs"],
+      ["Maturity", "10–12 months"],
+      ["Exercise", "Low–Moderate"],
+      ["Food Intake", "320–550 cal/day"],
+      ["Common Colors", "Gold, white, black, liver, brindle mixes"],
+    ],
+
+    temperament: [
+      ["Friendliness", 5],
+      ["Energy", 3],
+      ["Trainability", 3],
+      ["Social Nature", 4],
+      ["Grooming Needs", 5],
+    ],
+
+    funFacts: [
+      [
+        "👑",
+        "Shih Tzus were bred as companion dogs and are famous for their regal little presence.",
+      ],
+      [
+        "🛋️",
+        "They are often happiest close to their humans, whether on a lap or nearby cushion.",
+      ],
+      [
+        "💇",
+        "Their coat can be kept long and flowing or trimmed into an easier puppy cut.",
+      ],
+      [
+        "🏠",
+        "They adapt very well to indoor life and are excellent house companions.",
+      ],
+      ["😊", "They are usually friendly, expressive, and full of personality."],
+      [
+        "🐾",
+        "Despite their elegant look, they can be playful and surprisingly sturdy little dogs.",
+      ],
+    ],
+  },
+
+  yorkie: {
+    name: "Yorkshire Terrier",
+    kicker: "Breed Guide",
+    subtitle:
+      "A tiny terrier with a bold personality, high alertness, and a strong bond with its favorite people.",
+    note: "Based on veterinary guidelines for small breed puppies",
+    image: "images/leone.png",
+    chips: ["Terrier Spirit", "Toy Size", "4–7 lbs"],
+
+    quickFacts: [
+      ["Size", "Toy"],
+      ["Weight", "4–7 lbs"],
+      ["Height", "7–8 in"],
+      ["Lifespan", "11–15 yrs"],
+      ["Maturity", "8–12 months"],
+      ["Exercise", "Moderate"],
+      ["Food Intake", "180–260 cal/day"],
+      ["Common Colors", "Blue & tan, black & tan, gold tones"],
+    ],
+
+    temperament: [
+      ["Friendliness", 4],
+      ["Energy", 4],
+      ["Trainability", 3],
+      ["Social Nature", 3],
+      ["Grooming Needs", 4],
+    ],
+
+    funFacts: [
+      ["📣", "Yorkies are small dogs with very big opinions."],
+      [
+        "⚡",
+        "They are often more energetic and alert than people expect from a toy breed.",
+      ],
+      [
+        "🦁",
+        "They are known for their confidence and fearless terrier attitude.",
+      ],
+      ["🎀", "Their silky coat is one of their most iconic features."],
+      ["👀", "They tend to stay very aware of what is happening around them."],
+      ["❤️", "They often form especially strong bonds with their people."],
+    ],
+  },
+};
+
 const app = initializeApp(FIREBASE_CONFIG);
 const auth = getAuth(app);
 const db = getDatabase(app);
