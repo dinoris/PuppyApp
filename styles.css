@@ -789,20 +789,21 @@ td {
 .breed-hero-visual {
   display: flex;
   justify-content: flex-end;
+  align-self: stretch;
 }
 
 .breed-hero-image-wrap {
   width: 100%;
-  max-width: 50%;
+  max-width: 420px;
   height: 100%;
   display: flex;
+  align-items: stretch;
 }
 
 .breed-hero-image {
   width: 100%;
   height: auto;
   display: block;
-  object-fit: cover;
   border-radius: 0;
   border: 1px solid var(--sand);
   box-shadow: var(--shadow-md);
