@@ -1127,6 +1127,46 @@ td {
   border-left-color: #4a7bd1;
 }
 
+.breed-chart-subinsights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.breed-subinsight-card {
+  background: linear-gradient(180deg, var(--white), var(--cream));
+  border: 1px solid var(--sand);
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.breed-subinsight-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--slate-light);
+  margin-bottom: 0.45rem;
+}
+
+.breed-subinsight-text {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--slate);
+}
+
+.breed-subinsight-text strong {
+  color: var(--brown);
+}
+
+@media (max-width: 900px) {
+  .breed-chart-subinsights {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Insights ─────────────────────────────────── */
 .insights-grid {
   display: grid;
