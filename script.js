@@ -1772,40 +1772,11 @@ function renderBreedGrowthChart() {
   const canvas = document.getElementById("breed-growth-chart");
   if (!canvas) return;
 
-  const timelines = buildTimelines(allEntries);
-
-  const litterSeries = [];
-  const maxDays = 14;
-
-  for (let dayIndex = 0; dayIndex < maxDays; dayIndex++) {
-    const dayPercents = [];
-
-    PUPPIES.forEach((puppy) => {
-      const arr = timelines[puppy.id] || [];
-      if (!arr.length) return;
-
-      const birthWeight = arr[0].weight;
-      const entry = arr[dayIndex];
-      if (!entry || !birthWeight) return;
-
-      const percentOfBirth = (entry.weight / birthWeight) * 100;
-      dayPercents.push(percentOfBirth);
-    });
-
-    if (dayPercents.length) {
-      const avgPercent =
-        dayPercents.reduce((sum, val) => sum + val, 0) / dayPercents.length;
-      litterSeries.push(Number(avgPercent.toFixed(1)));
-    } else {
-      litterSeries.push(null);
-    }
-  }
-
-  const referenceSeries = [
-    100, 108, 116, 126, 138, 152, 168, 182, 194, 200, 208, 216, 224, 232,
-  ];
-
-  const labels = Array.from({ length: maxDays }, (_, i) => `Day ${i + 1}`);
+  const referenceSeries = getReferenceSeriesForBreed(currentBreed);
+  const labels = Array.from(
+    { length: referenceSeries.length },
+    (_, i) => `Day ${i + 1}`,
+  );
 
   const ctx = canvas.getContext("2d");
 
@@ -1819,21 +1790,10 @@ function renderBreedGrowthChart() {
       labels,
       datasets: [
         {
-          label: "Expected Small-Breed Growth",
+          label: `${BREED_GUIDES[currentBreed].name} Reference`,
           data: referenceSeries,
           borderColor: "#8b6f47",
-          backgroundColor: "transparent",
-          borderWidth: 2.5,
-          borderDash: [6, 4],
-          tension: 0.3,
-          pointRadius: 2,
-          spanGaps: true,
-        },
-        {
-          label: "Your Litter Average",
-          data: litterSeries,
-          borderColor: "#6b8f71",
-          backgroundColor: "rgba(107, 143, 113, 0.10)",
+          backgroundColor: "rgba(139, 111, 71, 0.08)",
           borderWidth: 3,
           tension: 0.3,
           pointRadius: 3,
@@ -2208,6 +2168,8 @@ function activateTab(tab) {
     renderBreedMilestones();
     renderBreedGuidance();
     renderBreedFunFacts();
+    renderBreedChartText();
+    renderBreedGrowthChart();
   }
 }
 

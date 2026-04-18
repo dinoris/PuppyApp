@@ -495,12 +495,15 @@
           <div class="breed-funfacts-grid" id="breed-funfacts"></div>
         </div>
         <div class="card">
-          <h2 class="card-title">Growth Reference</h2>
+          <h2 class="card-title" id="breed-chart-title">Growth Reference</h2>
 
-          <p class="chart-note">
-            This page provides general growth expectations based on small-breed
-            guidelines. For live comparison with your litter and personalized
-            insights, visit the Insights page.
+          <div class="chart-container breed-chart-container">
+            <canvas id="breed-growth-chart"></canvas>
+          </div>
+
+          <p class="chart-note" id="breed-chart-note">
+            Reference curve based on veterinary guidelines for small breed
+            puppies.
           </p>
         </div>
       </section>
