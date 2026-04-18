@@ -1580,7 +1580,8 @@ function renderChart() {
 
 function renderBreedChartInsight() {
   const box = document.getElementById("breed-chart-insight");
-  if (!box) return;
+  const sub = document.getElementById("breed-chart-subinsights");
+  if (!box || !sub) return;
 
   const timelines = buildTimelines(allEntries);
   const maxDays = 14;
@@ -1622,6 +1623,7 @@ function renderBreedChartInsight() {
       Add more weight entries to compare your litter with the reference curve.
     `;
     box.className = "breed-chart-insight";
+    sub.innerHTML = "";
     return;
   }
 
@@ -1667,6 +1669,99 @@ function renderBreedChartInsight() {
     ${detail}
   `;
   box.className = `breed-chart-insight ${toneClass}`;
+
+  const puppyStats = PUPPIES.map((puppy) => {
+    const arr = timelines[puppy.id] || [];
+    if (!arr.length) return null;
+
+    const birthWeight = arr[0].weight;
+    const last = arr[arr.length - 1];
+    const prev = arr.length > 1 ? arr[arr.length - 2] : null;
+    const prev2 = arr.length > 2 ? arr[arr.length - 3] : null;
+
+    const currentPercent = birthWeight
+      ? (last.weight / birthWeight) * 100
+      : null;
+    const latestGainPct =
+      prev && prev.weight
+        ? ((last.weight - prev.weight) / prev.weight) * 100
+        : null;
+
+    let trendLabel = "Not enough recent data";
+    if (prev && prev2 && prev.weight && prev2.weight) {
+      const gain1 = ((last.weight - prev.weight) / prev.weight) * 100;
+      const gain2 = ((prev.weight - prev2.weight) / prev2.weight) * 100;
+      const trendDelta = gain1 - gain2;
+
+      if (trendDelta > 1.5) trendLabel = "Recent growth is improving";
+      else if (trendDelta < -1.5) trendLabel = "Growth is slowing slightly";
+      else trendLabel = "Growth remains steady";
+    }
+
+    return {
+      puppy,
+      currentPercent,
+      latestGainPct,
+      trendLabel,
+    };
+  }).filter(Boolean);
+
+  const performer = [...puppyStats]
+    .filter((p) => p.latestGainPct != null)
+    .sort((a, b) => b.latestGainPct - a.latestGainPct)[0];
+
+  const watchItem = [...puppyStats]
+    .filter((p) => p.currentPercent != null)
+    .sort((a, b) => a.currentPercent - b.currentPercent)[0];
+
+  let litterTrend = "Not enough recent data";
+  if (
+    latestIndex >= 2 &&
+    litterSeries[latestIndex] != null &&
+    litterSeries[latestIndex - 1] != null &&
+    litterSeries[latestIndex - 2] != null
+  ) {
+    const gain1 = litterSeries[latestIndex] - litterSeries[latestIndex - 1];
+    const gain2 = litterSeries[latestIndex - 1] - litterSeries[latestIndex - 2];
+    const trendDelta = gain1 - gain2;
+
+    if (trendDelta > 2)
+      litterTrend = "Growth is improving over the last 2 days";
+    else if (trendDelta < -2)
+      litterTrend = "Growth is slowing over the last 2 days";
+    else litterTrend = "Growth remains steady over the last 2 days";
+  }
+
+  sub.innerHTML = `
+    <div class="breed-subinsight-card">
+      <div class="breed-subinsight-label">Top performer</div>
+      <div class="breed-subinsight-text">
+        ${
+          performer
+            ? `<strong>${performer.puppy.name}</strong> is showing the strongest recent gain.`
+            : `Not enough data yet.`
+        }
+      </div>
+    </div>
+
+    <div class="breed-subinsight-card">
+      <div class="breed-subinsight-label">Watch closely</div>
+      <div class="breed-subinsight-text">
+        ${
+          watchItem
+            ? `<strong>${watchItem.puppy.name}</strong> is currently the furthest below the litter pace.`
+            : `Not enough data yet.`
+        }
+      </div>
+    </div>
+
+    <div class="breed-subinsight-card">
+      <div class="breed-subinsight-label">Trend</div>
+      <div class="breed-subinsight-text">
+        ${litterTrend}
+      </div>
+    </div>
+  `;
 }
 
 let breedGrowthChart = null;
