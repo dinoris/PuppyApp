@@ -1874,6 +1874,7 @@ function activateTab(tab) {
   if (tab === "pawrents") renderPawrents();
   if (tab === "breed") {
     renderBreedHero();
+    renderBreedFacts();
     renderBreedGrowthChart();
   }
 }
@@ -1910,6 +1911,26 @@ function renderBreedHero() {
       )
       .join("");
   }
+}
+
+function renderBreedFacts() {
+  const data = BREED_GUIDES[currentBreed];
+  const container = document.getElementById("breed-facts");
+  if (!data || !container) return;
+
+  container.innerHTML = "";
+
+  data.quickFacts.forEach(([label, value]) => {
+    const card = document.createElement("div");
+    card.className = "breed-fact-card";
+
+    card.innerHTML = `
+      <div class="breed-fact-label">${label}</div>
+      <div class="breed-fact-value">${value}</div>
+    `;
+
+    container.appendChild(card);
+  });
 }
 
 function initUI() {
