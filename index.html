@@ -300,6 +300,32 @@
           <h2 class="card-title">📊 Per-Puppy Summary</h2>
           <div id="puppy-summary-container"></div>
         </div>
+
+        <div class="card">
+          <div class="chart-header-row">
+            <h2 class="card-title">Growth Reference</h2>
+
+            <div class="table-filters">
+              <label for="insight-breed-select">Compare to:</label>
+              <select id="insight-breed-select">
+                <option value="shorkie">Shorkie</option>
+                <option value="shihtzu">Shih Tzu</option>
+                <option value="yorkie">Yorkshire Terrier</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="breed-chart-insight" id="insight-chart-insight"></div>
+
+          <div
+            class="breed-chart-subinsights"
+            id="insight-chart-subinsights"
+          ></div>
+
+          <div class="chart-container">
+            <canvas id="insight-growth-chart"></canvas>
+          </div>
+        </div>
       </section>
 
       <section id="tab-trophies" class="tab-panel">
