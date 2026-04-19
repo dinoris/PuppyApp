@@ -784,7 +784,7 @@ function renderPuppies() {
         const genderClass = puppy.gender === "Boy" ? "male" : "female";
 
         return `
-        <div class="puppy-profile-card">
+        <div class="puppy-profile-card" data-puppy-id="${puppy.id}">
           <div class="puppy-banner" style="background:${puppy.color};">
             <div class="puppy-banner-left">
 <div class="puppy-avatar ${genderClass}" style="background:rgba(255,255,255,0.75);">
@@ -856,7 +856,7 @@ function renderPuppies() {
       const genderClass = puppy.gender === "Boy" ? "male" : "female";
 
       return `
-        <div class="puppy-profile-card">
+        <div class="puppy-profile-card" data-puppy-id="${puppy.id}">
           <div class="puppy-banner" style="background:${puppy.color};">
             <div class="puppy-banner-left">
 <div class="puppy-avatar ${genderClass}" style="background:rgba(255,255,255,0.75);">
