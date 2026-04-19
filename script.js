@@ -2513,9 +2513,9 @@ function renderInsightGrowthComparison() {
         <div class="breed-subinsight-text">
           ${
             performer
-              ? `<span class="puppy-link" data-puppy-id="${performer.puppy.id}">
+              ? `<button type="button" class="puppy-link" data-puppy-id="${performer.puppy.id}">
   ${performer.puppy.name}
-  </span> is showing the strongest recent gain.`
+</button> is showing the strongest recent gain.`
               : `Not enough data yet.`
           }
         </div>
