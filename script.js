@@ -1268,6 +1268,8 @@ function renderAll() {
   renderPuppies();
   renderAwards();
 
+  bindPuppyLinks(); // 🔥 THIS is the important addition
+
   if (activeTab === "breed") {
     renderBreedGrowthChart();
   }
@@ -2621,11 +2623,11 @@ function renderInsightGrowthComparison() {
     },
   });
 
-  bindInsightPuppyLinks();
+  bindPuppyLinks();
 }
 
-function bindInsightPuppyLinks() {
-  document.querySelectorAll(".puppy-link[data-puppy-id]").forEach((link) => {
+function bindPuppyLinks(root = document) {
+  root.querySelectorAll(".puppy-link[data-puppy-id]").forEach((link) => {
     link.addEventListener("click", () => {
       const puppyId = Number(link.dataset.puppyId);
 
