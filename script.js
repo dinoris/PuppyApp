@@ -2513,7 +2513,9 @@ function renderInsightGrowthComparison() {
         <div class="breed-subinsight-text">
           ${
             performer
-              ? `<strong>${performer.puppy.name}</strong> is showing the strongest recent gain.`
+              ? `<span class="puppy-link" data-puppy-id="${performer.puppy.id}">
+  ${performer.puppy.name}
+  </span> is showing the strongest recent gain.`
               : `Not enough data yet.`
           }
         </div>
@@ -2524,7 +2526,9 @@ function renderInsightGrowthComparison() {
         <div class="breed-subinsight-text">
           ${
             watchItem
-              ? `<strong>${watchItem.puppy.name}</strong> is currently the furthest below the litter pace.`
+              ? `<span class="puppy-link" data-puppy-id="${watchItem.puppy.id}">
+  ${watchItem.puppy.name}
+  </span> is currently the furthest below the litter pace.`
               : `Not enough data yet.`
           }
         </div>
@@ -2617,6 +2621,30 @@ function renderInsightGrowthComparison() {
         },
       },
     },
+  });
+
+  bindInsightPuppyLinks();
+}
+
+function bindInsightPuppyLinks() {
+  document.querySelectorAll(".puppy-link[data-puppy-id]").forEach((link) => {
+    link.addEventListener("click", () => {
+      const puppyId = Number(link.dataset.puppyId);
+
+      activateTab("puppies");
+
+      requestAnimationFrame(() => {
+        const target = document.querySelector(
+          `.puppy-profile-card[data-puppy-id="${puppyId}"]`,
+        );
+
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "center" });
+          target.classList.add("puppy-card-flash");
+          setTimeout(() => target.classList.remove("puppy-card-flash"), 1800);
+        }
+      });
+    });
   });
 }
 
