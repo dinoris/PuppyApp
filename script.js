@@ -2640,8 +2640,18 @@ function bindPuppyLinks(root = document) {
 
         if (target) {
           target.scrollIntoView({ behavior: "smooth", block: "center" });
-          target.classList.add("puppy-card-flash");
-          setTimeout(() => target.classList.remove("puppy-card-flash"), 1800);
+
+          setTimeout(() => {
+            document.body.classList.add("puppy-focus-mode");
+
+            target.classList.add("puppy-card-flash");
+
+            setTimeout(() => {
+              target.classList.remove("puppy-card-flash");
+
+              document.body.classList.remove("puppy-focus-mode");
+            }, 1800);
+          }, 200);
         }
       });
     });

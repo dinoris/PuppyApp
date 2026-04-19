@@ -1518,9 +1518,11 @@ td {
   border: 0.5px solid #eadfce;
   border-radius: 16px;
   overflow: hidden;
+
   transition:
-    transform 0.18s ease,
-    border-color 0.18s ease;
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .puppy-profile-card:hover {
@@ -2065,27 +2067,47 @@ h1 {
 }
 
 /* Focus (keyboard accessibility) */
-.puppy-link:focus-visible {
-  outline: 2px solid rgba(196, 99, 58, 0.25);
-  outline-offset: 2px;
-}
-
-/* Flash effect (keep yours, slightly refined) */
 .puppy-card-flash {
-  animation: puppyCardFlash 1.8s ease;
+  animation: puppyCardFocus 1.8s ease;
+  z-index: 2;
+  position: relative;
 }
 
-@keyframes puppyCardFlash {
+@keyframes puppyCardFocus {
   0% {
+    transform: scale(1);
     box-shadow: 0 0 0 0 rgba(196, 99, 58, 0.45);
     border-color: var(--terra);
   }
-  35% {
-    box-shadow: 0 0 0 12px rgba(196, 99, 58, 0.18);
+
+  25% {
+    transform: scale(1.03);
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.15),
+      0 0 0 10px rgba(196, 99, 58, 0.2);
     border-color: var(--terra);
   }
+
+  60% {
+    transform: scale(1.02);
+    box-shadow:
+      0 8px 20px rgba(0, 0, 0, 0.12),
+      0 0 0 6px rgba(196, 99, 58, 0.15);
+  }
+
   100% {
+    transform: scale(1);
     box-shadow: none;
     border-color: #eadfce;
   }
+}
+
+body.puppy-focus-mode .puppy-profile-card {
+  opacity: 0.5;
+  filter: blur(1px);
+}
+
+body.puppy-focus-mode .puppy-profile-card.puppy-card-flash {
+  opacity: 1;
+  filter: none;
 }
