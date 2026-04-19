@@ -2514,8 +2514,7 @@ function renderInsightGrowthComparison() {
           ${
             performer
               ? `<button type="button" class="puppy-link" data-puppy-id="${performer.puppy.id}">
-  ${performer.puppy.name}
-</button> is showing the strongest recent gain.`
+  ${performer.puppy.name} </button> is showing the strongest recent gain.`
               : `Not enough data yet.`
           }
         </div>
@@ -2526,9 +2525,8 @@ function renderInsightGrowthComparison() {
         <div class="breed-subinsight-text">
           ${
             watchItem
-              ? `<span class="puppy-link" data-puppy-id="${watchItem.puppy.id}">
-  ${watchItem.puppy.name}
-  </span> is currently the furthest below the litter pace.`
+              ? `<button type="button" class="puppy-link" data-puppy-id="${watchItem.puppy.id}">
+  ${watchItem.puppy.name} </button> is currently the furthest below the litter pace.`
               : `Not enough data yet.`
           }
         </div>
