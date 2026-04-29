@@ -1533,7 +1533,7 @@ function renderChart() {
 
   const minValue = Math.min(...allChartValues);
   const maxValue = Math.max(...allChartValues);
-  const padding = weightUnit === "oz" ? 1.5 : 40;
+  const padding = weightUnit === "oz" ? 2.5 : 80;
 
   const ctx = document.getElementById("growth-chart").getContext("2d");
 
