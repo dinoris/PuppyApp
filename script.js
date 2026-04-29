@@ -1441,29 +1441,46 @@ function renderChart() {
     return dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   });
 
+  const allChartValues = [];
+
   const datasets = PUPPIES.map((puppy) => {
     const arr = timelines[puppy.id] || [];
     const dateMap = {};
+
     arr.forEach((item) => {
       dateMap[item.date] = item.weight;
     });
 
     const birthWeight = arr.length > 0 ? arr[0].weight : null;
+
     const dataPoints = dates.map((d) => {
       const value = dateMap[d] ?? null;
       if (value === null) return null;
-      return weightUnit === "oz" ? gramsToOunces(value) : value;
+
+      const convertedValue = weightUnit === "oz" ? gramsToOunces(value) : value;
+
+      allChartValues.push(convertedValue);
+      return convertedValue;
     });
 
-    const pointStyles = dates.map((d) => {
-      if (!birthWeight || !dateMap[d]) return "circle";
-      return dateMap[d] >= birthWeight * 2 ? "star" : "circle";
-    });
+    let doubledIndex = null;
 
-    const pointRadii = dates.map((d) => {
-      if (!birthWeight || !dateMap[d]) return 3;
-      return dateMap[d] >= birthWeight * 2 ? 9 : 3;
-    });
+    if (birthWeight) {
+      for (let i = 0; i < dates.length; i++) {
+        const originalWeight = dateMap[dates[i]] ?? null;
+
+        if (originalWeight !== null && originalWeight >= birthWeight * 2) {
+          doubledIndex = i;
+          break;
+        }
+      }
+    }
+
+    const pointStyles = dates.map((_, i) =>
+      i === doubledIndex ? "star" : "circle",
+    );
+
+    const pointRadii = dates.map((_, i) => (i === doubledIndex ? 9 : 3));
 
     const hasData = dataPoints.some((v) => v !== null);
 
@@ -1494,7 +1511,10 @@ function renderChart() {
       if (weights.length === 0) return null;
 
       const avg = weights.reduce((s, v) => s + v, 0) / weights.length;
-      return weightUnit === "oz" ? gramsToOunces(avg) : avg;
+      const convertedAvg = weightUnit === "oz" ? gramsToOunces(avg) : avg;
+
+      allChartValues.push(convertedAvg);
+      return convertedAvg;
     });
 
     datasets.push({
@@ -1510,6 +1530,10 @@ function renderChart() {
       pointStyle: "circle",
     });
   }
+
+  const minValue = Math.min(...allChartValues);
+  const maxValue = Math.max(...allChartValues);
+  const padding = weightUnit === "oz" ? 1.5 : 40;
 
   const ctx = document.getElementById("growth-chart").getContext("2d");
 
@@ -1561,8 +1585,11 @@ function renderChart() {
           },
         },
         y: {
+          suggestedMin: Math.max(0, minValue - padding),
+          suggestedMax: maxValue + padding,
           grid: { color: "#f0ebe1" },
           ticks: {
+            maxTicksLimit: 6,
             font: { family: "'DM Sans', sans-serif", size: 11 },
             color: "#718096",
             callback: (v) =>
