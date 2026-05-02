@@ -481,20 +481,29 @@ function getEffectiveBirthDate() {
   return sorted[0]?.date || null;
 }
 
+function getDayNumberFromDate(dateStr) {
+  const birthDateString = getEffectiveBirthDate();
+  if (!birthDateString || !dateStr) return "—";
+
+  const birth = new Date(birthDateString + "T00:00:00");
+  const entryDate = new Date(dateStr + "T00:00:00");
+
+  birth.setHours(0, 0, 0, 0);
+  entryDate.setHours(0, 0, 0, 0);
+
+  const diffMs = entryDate - birth;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  return diffDays + 1;
+}
+
 function getLitterAgeLabel() {
   const birthDateString = getEffectiveBirthDate();
   if (!birthDateString) return "Litter Age: Day —";
 
-  const birth = new Date(birthDateString + "T00:00:00");
-  const today = new Date();
+  const dayNumber = getDayNumberFromDate(todayStr());
 
-  birth.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
-
-  const diffMs = today - birth;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  return `Litter Age: Day ${diffDays}`;
+  return `Litter Age: Day ${dayNumber}`;
 }
 
 function gramsToOunces(grams) {
@@ -1318,21 +1327,21 @@ function renderTable() {
         : "";
 
       return `
-      <tr>
-        <td>${formatDate(row.date)}</td>
-        <td><strong>Day ${row.dayNumber}</strong></td>
-        <td>
-          <div class="puppy-cell">
-            <span class="color-dot" style="background:${puppy.color}"></span>
-            ${puppy.name}
-          </div>
-        </td>
-        <td>${genderIcon(puppy.gender)} ${puppy.gender}</td>
-        <td><strong>${formatWeight(row.weight, weightUnit, 1)}</strong></td>
-        <td>${changeCell(row.change, row.isFirst, row.weight, row.previousWeight)}</td>
-        <td>${statusBadge(row.change, row.isFirst)}</td>
-        <td>${deleteBtn}</td>
-      </tr>`;
+<tr>
+  <td>${formatDate(row.date)}</td>
+  <td><strong>Day ${getDayNumberFromDate(row.date)}</strong></td>
+  <td>
+    <div class="puppy-cell">
+      <span class="color-dot" style="background:${puppy.color}"></span>
+      ${puppy.name}
+    </div>
+  </td>
+  <td>${genderIcon(puppy.gender)} ${puppy.gender}</td>
+  <td><strong>${formatWeight(row.weight, weightUnit, 1)}</strong></td>
+  <td>${changeCell(row.change, row.isFirst, row.weight, row.previousWeight)}</td>
+  <td>${statusBadge(row.change, row.isFirst)}</td>
+  <td>${deleteBtn}</td>
+</tr>`;
     })
     .join("");
 
