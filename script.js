@@ -1445,53 +1445,38 @@ function renderChart() {
   }
 
   const showAverage = toggleAverage.checked;
-  const dateLabels = dates.map((d) => {
-    const dt = new Date(d + "T00:00:00");
-    return dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  });
-
   const allChartValues = [];
 
   const datasets = PUPPIES.map((puppy) => {
     const arr = timelines[puppy.id] || [];
-    const dateMap = {};
-
-    arr.forEach((item) => {
-      dateMap[item.date] = item.weight;
-    });
 
     const birthWeight = arr.length > 0 ? arr[0].weight : null;
 
-    const dataPoints = dates.map((d) => {
-      const value = dateMap[d] ?? null;
-      if (value === null) return null;
-
-      const convertedValue = weightUnit === "oz" ? gramsToOunces(value) : value;
-
-      allChartValues.push(convertedValue);
-      return convertedValue;
-    });
-
-    let doubledIndex = null;
+    let doubledDate = null;
 
     if (birthWeight) {
-      for (let i = 0; i < dates.length; i++) {
-        const originalWeight = dateMap[dates[i]] ?? null;
-
-        if (originalWeight !== null && originalWeight >= birthWeight * 2) {
-          doubledIndex = i;
+      for (const item of arr) {
+        if (item.weight >= birthWeight * 2) {
+          doubledDate = item.date;
           break;
         }
       }
     }
 
-    const pointStyles = dates.map((_, i) =>
-      i === doubledIndex ? "star" : "circle",
-    );
+    const dataPoints = arr.map((item) => {
+      const convertedValue =
+        weightUnit === "oz" ? gramsToOunces(item.weight) : item.weight;
 
-    const pointRadii = dates.map((_, i) => (i === doubledIndex ? 9 : 3));
+      allChartValues.push(convertedValue);
 
-    const hasData = dataPoints.some((v) => v !== null);
+      return {
+        x: getDayNumberFromDate(item.date),
+        y: convertedValue,
+        date: item.date,
+      };
+    });
+
+    const hasData = dataPoints.length > 0;
 
     return hasData
       ? {
@@ -1502,29 +1487,41 @@ function renderChart() {
           borderWidth: 2.5,
           tension: 0.3,
           spanGaps: true,
-          pointStyle: pointStyles,
-          pointRadius: pointRadii,
+          parsing: false,
+          pointStyle: dataPoints.map((point) =>
+            point.date === doubledDate ? "star" : "circle",
+          ),
+          pointRadius: dataPoints.map((point) =>
+            point.date === doubledDate ? 9 : 3,
+          ),
           pointHoverRadius: 6,
         }
       : null;
   }).filter(Boolean);
 
   if (showAverage && dates.length > 0) {
-    const avgData = dates.map((d) => {
-      const weights = PUPPIES.map((p) => {
-        const arr = timelines[p.id] || [];
-        const found = arr.find((e) => e.date === d);
-        return found ? found.weight : null;
-      }).filter((v) => v !== null);
+    const avgData = dates
+      .map((d) => {
+        const weights = PUPPIES.map((p) => {
+          const arr = timelines[p.id] || [];
+          const found = arr.find((e) => e.date === d);
+          return found ? found.weight : null;
+        }).filter((v) => v !== null);
 
-      if (weights.length === 0) return null;
+        if (weights.length === 0) return null;
 
-      const avg = weights.reduce((s, v) => s + v, 0) / weights.length;
-      const convertedAvg = weightUnit === "oz" ? gramsToOunces(avg) : avg;
+        const avg = weights.reduce((s, v) => s + v, 0) / weights.length;
+        const convertedAvg = weightUnit === "oz" ? gramsToOunces(avg) : avg;
 
-      allChartValues.push(convertedAvg);
-      return convertedAvg;
-    });
+        allChartValues.push(convertedAvg);
+
+        return {
+          x: getDayNumberFromDate(d),
+          y: convertedAvg,
+          date: d,
+        };
+      })
+      .filter(Boolean);
 
     datasets.push({
       label: "Litter Average",
@@ -1535,6 +1532,7 @@ function renderChart() {
       borderDash: [6, 3],
       tension: 0.3,
       spanGaps: true,
+      parsing: false,
       pointRadius: 2,
       pointStyle: "circle",
     });
@@ -1550,11 +1548,11 @@ function renderChart() {
 
   growthChart = new Chart(ctx, {
     type: "line",
-    data: { labels: dateLabels, datasets },
+    data: { datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      interaction: { mode: "index", intersect: false },
+      interaction: { mode: "nearest", intersect: false },
       plugins: {
         legend: {
           position: "bottom",
@@ -1566,6 +1564,10 @@ function renderChart() {
         },
         tooltip: {
           callbacks: {
+            title(items) {
+              const point = items[0].raw;
+              return `Day ${point.x} • ${formatDate(point.date)}`;
+            },
             label(ctx) {
               if (ctx.parsed.y === null) return null;
 
@@ -1587,10 +1589,19 @@ function renderChart() {
       },
       scales: {
         x: {
+          type: "linear",
           grid: { color: "#f0ebe1" },
           ticks: {
+            stepSize: 1,
             font: { family: "'DM Sans', sans-serif", size: 11 },
             color: "#718096",
+            callback: (v) => `Day ${v}`,
+          },
+          title: {
+            display: true,
+            text: "Age",
+            color: "#8b6f47",
+            font: { family: "'Lora', serif", size: 12 },
           },
         },
         y: {
